@@ -102,6 +102,14 @@
   display: none;
 }
 
+/* No scripting at all: nothing would ever take the screen away again, so it
+   is never put up in the first place. */
+@media (scripting: none) {
+  [data-splash-screen] {
+    display: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

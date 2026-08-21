@@ -72,6 +72,15 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
       return () => clearTimeout(timer);
     }
 
+    // The clip is cut twice, once for each shape of screen, and the source is
+    // named here rather than in the markup so only the one that will actually
+    // be watched is ever fetched. Chosen by the shape of the window rather than
+    // its width, so a tablet held upright is treated as what it is.
+    if (film) {
+      const upright = window.matchMedia("(orientation: portrait)").matches;
+      film.src = upright ? "/loader/openingmobile.mp4" : "/loader/opening.mp4";
+    }
+
     document.body.style.overflow = "hidden";
 
     let closing = false;
@@ -177,14 +186,17 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
       className="fixed inset-0 z-200 flex flex-col items-center justify-center gap-8 bg-brand-deep"
     >
       {/* The clip is the screen once it plays; the mark holds the frame while
-          it buffers, and is what is left if it never plays at all. */}
+          it buffers, and is what is left if it never plays at all.
+
+          Covered rather than contained, and with the source set above rather
+          than here: each cut is close enough to the shape of the screen it is
+          meant for that filling it trims edges rather than halves. */}
       <video
         ref={clip}
-        src="/loader/opening.mp4"
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 h-full w-full object-contain"
+        className="absolute inset-0 h-full w-full object-cover"
       />
 
       <div ref={mark} className="relative px-8">
