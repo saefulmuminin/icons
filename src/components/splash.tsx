@@ -10,9 +10,9 @@ const SEEN = "iconz-splash";
 /**
  * Longest anyone waits at the door. Set just past the opening clip so it can
  * finish, with the skip below for anyone who would rather not wait at all.
- * Re-time this whenever the clip is recut — it currently runs 10.0s.
+ * Re-time this whenever the clip is recut — it currently runs 5.0s.
  */
-const HOLD = 10400;
+const HOLD = 5400;
 
 /**
  * Whether this session has already had the screen. Read through a store
