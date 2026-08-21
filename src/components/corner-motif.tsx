@@ -2,29 +2,32 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const ART = /\.(svg|png|webp|avif|jpe?g)$/i;
+const NAMED = /pattern|motif/i;
 
 /**
  * Finds the house motif. Anything dropped into public/pattern counts, whatever
- * it is called; elsewhere under public, a name carrying "pattern" or "motif"
- * counts too. Nothing found means nothing is drawn, so the section is never
- * left with a broken frame.
+ * it is called; in public/image a name carrying "pattern" or "motif" counts
+ * too. Nothing found means nothing is drawn, so the section is never left with
+ * a broken frame.
+ *
+ * Each folder is spelled out at its own call rather than walked from a list.
+ * A path the bundler cannot read statically makes it trace the whole project
+ * into the server output, which on a deploy ships the entire repository — node
+ * modules included — inside the function.
  */
 function motifSrc() {
-  const roots: [dir: string, prefix: string][] = [
-    [join(process.cwd(), "public", "pattern"), "/pattern"],
-    [join(process.cwd(), "public"), ""],
-    [join(process.cwd(), "public", "image"), "/image"],
-  ];
+  const pattern = join(process.cwd(), "public", "pattern");
+  if (existsSync(pattern)) {
+    const file = readdirSync(pattern).find((name) => ART.test(name));
+    if (file) return encodeURI(`/pattern/${file}`);
+  }
 
-  for (const [dir, prefix] of roots) {
-    if (!existsSync(dir)) continue;
-
-    const named = prefix === "/pattern";
-    const file = readdirSync(dir).find(
-      (name) => ART.test(name) && (named || /pattern|motif/i.test(name)),
+  const image = join(process.cwd(), "public", "image");
+  if (existsSync(image)) {
+    const file = readdirSync(image).find(
+      (name) => ART.test(name) && NAMED.test(name),
     );
-
-    if (file) return encodeURI(`${prefix}/${file}`);
+    if (file) return encodeURI(`/image/${file}`);
   }
 
   return null;
