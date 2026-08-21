@@ -11,11 +11,11 @@ const en = {
   navProceedings: "Proceedings",
   register: "Register",
   langSwitch: "ID",
+  langSwitchTo: "Switch to Indonesian",
   menu: "Menu",
   closeMenu: "Close menu",
   toTop: "Back to top",
 
-  heroBadge: "Bogor, Indonesia · 2026",
   heroCta1: "Register now",
   heroCta2: "Submit a paper",
   heroSoundOn: "Turn on the video sound",
@@ -52,6 +52,21 @@ const en = {
   registerNewTab: "Open in a new tab",
   splashSkip: "Skip",
   loading: "Loading",
+
+  notFoundCode: "Error 404",
+  notFoundTitle: "This page could not be found",
+  notFoundText:
+    "The address may have been mistyped, or the page has moved since it was linked. Everything the site holds is one of the links below.",
+  notFoundHome: "Back to home",
+  notFoundElse: "Or go straight to",
+
+  errorCode: "Something went wrong",
+  errorTitle: "This page could not be loaded",
+  errorText:
+    "Something gave way on our side rather than yours. Trying again usually clears it; if it does not, the home page is a safe place to land.",
+  errorRetry: "Try again",
+  errorHome: "Back to home",
+  errorRef: "Reference",
   speakerProfile: "View profile",
   profileEducation: "Education",
   profileWork: "Professional experience",
@@ -133,11 +148,11 @@ const id: Dict = {
   navProceedings: "Prosiding",
   register: "Daftar",
   langSwitch: "EN",
+  langSwitchTo: "Ganti ke bahasa Inggris",
   menu: "Menu",
   closeMenu: "Tutup menu",
   toTop: "Kembali ke atas",
 
-  heroBadge: "Bogor, Indonesia · 2026",
   heroCta1: "Daftar sekarang",
   heroCta2: "Kirim makalah",
   heroSoundOn: "Nyalakan suara video",
@@ -174,6 +189,21 @@ const id: Dict = {
   registerNewTab: "Buka di tab baru",
   splashSkip: "Lewati",
   loading: "Memuat",
+
+  notFoundCode: "Eror 404",
+  notFoundTitle: "Halaman ini tidak ditemukan",
+  notFoundText:
+    "Alamatnya mungkin salah ketik, atau halamannya sudah dipindahkan sejak ditautkan. Seluruh isi situs ada di tautan-tautan di bawah ini.",
+  notFoundHome: "Kembali ke beranda",
+  notFoundElse: "Atau langsung ke",
+
+  errorCode: "Terjadi kesalahan",
+  errorTitle: "Halaman ini gagal dimuat",
+  errorText:
+    "Ada yang bermasalah di sisi kami, bukan di sisi Anda. Biasanya cukup dicoba lagi; kalau masih sama, beranda adalah tempat yang aman untuk kembali.",
+  errorRetry: "Coba lagi",
+  errorHome: "Kembali ke beranda",
+  errorRef: "Kode rujukan",
   speakerProfile: "Lihat profil",
   profileEducation: "Pendidikan",
   profileWork: "Pengalaman kerja",

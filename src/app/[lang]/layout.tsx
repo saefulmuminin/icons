@@ -29,6 +29,15 @@ export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
 }
 
+/**
+ * The two languages above are the only ones there are. Turning params away at
+ * the routing level rather than inside the layout is what lets a language the
+ * site does not publish — `/fr` — reach `global-not-found.tsx` with a real 404
+ * on it, instead of throwing above the layout where nothing is left to catch
+ * it but Next's own bare screen.
+ */
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
@@ -68,6 +77,8 @@ export default async function RootLayout({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
+  // Unreachable at runtime with `dynamicParams` off — kept because it is what
+  // narrows `lang` from a bare string to one of the two the dictionary knows.
   if (!isLang(lang)) notFound();
 
   const t = getDictionary(lang);

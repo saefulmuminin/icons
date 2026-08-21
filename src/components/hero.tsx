@@ -40,7 +40,6 @@ export function Hero({ lang, t }: { lang: Lang; t: Dict }) {
       return;
     }
 
-    const badge = node.querySelector<HTMLElement>('[data-hero="badge"]');
     const title = node.querySelector<HTMLElement>('[data-hero="title"]');
     const theme = node.querySelector<HTMLElement>('[data-hero="theme"]');
     const actions = node.querySelectorAll<HTMLElement>('[data-hero="action"]');
@@ -57,9 +56,6 @@ export function Hero({ lang, t }: { lang: Lang; t: Dict }) {
 
     const intro = createTimeline({ defaults: { ease: "outExpo" } });
 
-    if (badge) {
-      intro.add(badge, { opacity: [0, 1], y: [-14, 0], duration: 700 }, 150);
-    }
     if (title) {
       intro.add(
         title,
@@ -158,16 +154,9 @@ export function Hero({ lang, t }: { lang: Lang; t: Dict }) {
 
       <Container className="relative flex flex-1 flex-col justify-center pt-16 pb-14 sm:pt-20 sm:pb-16">
         <div data-hero-content className="max-w-184">
-          <div
-            data-hero="badge"
-            className="inline-flex items-center rounded-full border border-white/20 bg-white/8 px-4 py-2 font-sans text-[0.6875rem] font-semibold tracking-[0.22em] uppercase text-mint-soft backdrop-blur-sm"
-          >
-            {t.heroBadge}
-          </div>
-
           <h1
             data-hero="title"
-            className="mt-7 -ml-[0.055em] font-display text-[clamp(2.625rem,6.1vw,5.5rem)] leading-[0.98] font-extrabold tracking-[-0.038em] text-balance [text-shadow:0_2px_28px_rgba(4,20,13,0.55)]"
+            className="-ml-[0.055em] font-display text-[clamp(2.625rem,6.1vw,5.5rem)] leading-[0.98] font-extrabold tracking-[-0.038em] text-balance [text-shadow:0_2px_28px_rgba(4,20,13,0.55)]"
           >
             <ConferenceName />
           </h1>

@@ -1,21 +1,132 @@
 "use client";
 
+import { animate, stagger } from "animejs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Dict, Lang } from "@/lib/i18n";
 import { localizedHref, NAV_ITEMS } from "@/lib/nav";
+import { Flag } from "./flag";
 import { Container, Cta } from "./ui";
 import logo from "@/../public/iconz10-logo.png";
 
 export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
   const pathname = usePathname();
 
-  // The menu is open only for the page it was opened on, so navigating
-  // anywhere — including via back/forward — closes it without an effect.
-  const [openFor, setOpenFor] = useState<string | null>(null);
-  const open = openFor === pathname;
+  const [open, setOpen] = useState(false);
+  // The panel outlives `open` by exactly the length of its closing animation.
+  const [shown, setShown] = useState(false);
+
+  const drawer = useRef<HTMLElement>(null);
+  const topBar = useRef<HTMLSpanElement>(null);
+  const lowBar = useRef<HTMLSpanElement>(null);
+
+  // Landing anywhere new closes the menu — back and forward included. Adjusted
+  // while rendering rather than from an effect, so the menu is already down in
+  // the first frame of the new page instead of being taken away in the second.
+  //
+  // This used to remember which page the menu was opened on and call it open
+  // only there, which quietly meant returning to that page opened it again by
+  // itself: open the menu at home, walk to a page, click the mark to come back,
+  // and the menu was waiting.
+  const [seen, setSeen] = useState(pathname);
+  if (seen !== pathname) {
+    setSeen(pathname);
+    setOpen(false);
+  }
+
+  // Into the DOM first; the animation below picks it up once it is there.
+  if (open && !shown) setShown(true);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  useEffect(() => {
+    const panel = drawer.current;
+    if (!panel) return;
+
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const items = panel.querySelectorAll("[data-menu-item]");
+
+    if (open) {
+      // Measured before the height is taken away: `scrollHeight` reports what
+      // the content wants even while the panel is clipped to nothing.
+      const full = panel.scrollHeight;
+
+      const runs = [
+        animate(panel, {
+          height: [0, full],
+          opacity: [0, 1],
+          duration: still ? 1 : 340,
+          ease: "outQuad",
+          // Handing the height back at the end keeps the panel honest if the
+          // phone is turned while the menu is open.
+          onComplete: () => {
+            panel.style.height = "auto";
+          },
+        }),
+        animate(items, {
+          opacity: [0, 1],
+          y: [-10, 0],
+          duration: still ? 1 : 300,
+          delay: stagger(40, { start: 90 }),
+          ease: "outQuad",
+        }),
+      ];
+
+      return () => {
+        for (const run of runs) run.pause();
+      };
+    }
+
+    const run = animate(panel, {
+      height: [panel.scrollHeight, 0],
+      opacity: [1, 0],
+      duration: still ? 1 : 240,
+      ease: "inQuad",
+      onComplete: () => setShown(false),
+    });
+
+    return () => run.pause();
+  }, [open, shown]);
+
+  // The two rules fold into a cross and unfold back into a menu.
+  useEffect(() => {
+    const top = topBar.current;
+    const low = lowBar.current;
+    if (!top || !low) return;
+
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = still ? 1 : 300;
+
+    const runs = [
+      animate(top, {
+        y: open ? 3.5 : 0,
+        rotate: open ? 45 : 0,
+        duration,
+        ease: "outBack",
+      }),
+      animate(low, {
+        y: open ? -3.5 : 0,
+        rotate: open ? -45 : 0,
+        duration,
+        ease: "outBack",
+      }),
+    ];
+
+    return () => {
+      for (const run of runs) run.pause();
+    };
+  }, [open]);
 
   const isActive = (path: string) =>
     pathname === localizedHref(lang, path) ||
@@ -105,14 +216,18 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
         </nav>
 
         <div className="ml-auto flex flex-none items-center gap-2.5 lg:ml-0">
+          {/* Flag first, code second: on a phone the picture is what carries
+              at a glance, and the two letters confirm it. */}
           <Link
             href={swapped}
-            className={`rounded-full border px-3 py-2 font-sans text-xs font-semibold tracking-[0.06em] no-underline transition-colors ${
+            aria-label={t.langSwitchTo}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 font-sans text-xs font-semibold tracking-[0.06em] no-underline transition-colors sm:px-3 sm:py-2 ${
               overlay
                 ? "border-white/35 text-white hover:border-white hover:bg-white/10"
                 : "border-ink/18 text-ink hover:border-brand hover:text-brand"
             }`}
           >
+            <Flag lang={otherLang} className="h-3 w-[1.125rem] sm:h-3.5 sm:w-5" />
             {t.langSwitch}
           </Link>
 
@@ -128,7 +243,7 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
 
           <button
             type="button"
-            onClick={() => setOpenFor(open ? null : pathname)}
+            onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? t.closeMenu : t.menu}
@@ -139,28 +254,29 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
             }`}
           >
             <span
-              className={`block h-px w-4 transition-transform ${
-                overlay ? "bg-white" : "bg-ink"
-              } ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
+              ref={topBar}
+              className={`block h-px w-4 ${overlay ? "bg-white" : "bg-ink"}`}
             />
             <span
-              className={`block h-px w-4 transition-transform ${
-                overlay ? "bg-white" : "bg-ink"
-              } ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`}
+              ref={lowBar}
+              className={`block h-px w-4 ${overlay ? "bg-white" : "bg-ink"}`}
             />
           </button>
         </div>
       </Container>
 
-      {open && (
+      {shown && (
         <nav
           id="mobile-nav"
-          className="border-t border-ink/10 bg-cream lg:hidden"
+          ref={drawer}
+          style={{ height: 0, opacity: 0 }}
+          className="overflow-hidden border-t border-ink/10 bg-cream lg:hidden"
         >
           <Container className="flex flex-col gap-1 py-3">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.key}
+                data-menu-item
                 href={localizedHref(lang, item.path)}
                 aria-current={isActive(item.path) ? "page" : undefined}
                 className={`rounded-lg px-3 py-2.5 font-display text-[0.9375rem] font-semibold no-underline ${
@@ -172,7 +288,8 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
                 {t[item.key]}
               </Link>
             ))}
-            <div className="mt-2 sm:hidden">
+
+            <div data-menu-item className="mt-2 sm:hidden">
               <Cta
                 href={localizedHref(lang, "/register")}
                 className="w-full text-center"
