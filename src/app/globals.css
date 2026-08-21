@@ -31,6 +31,7 @@
   /* Motion */
   --animate-marquee: marquee 46s linear infinite;
   --animate-blob: blob 16s ease-in-out infinite;
+  --animate-sweep: sweep 1.1s ease-in-out infinite;
 
   /* Type */
   --font-sans: var(--font-instrument), system-ui, sans-serif;
@@ -83,6 +84,16 @@
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* A loader bar: a third of the track, run from one end clean off the other. */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
   }
 }
 

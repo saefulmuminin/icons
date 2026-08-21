@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
+import { RouteLoader } from "@/components/route-loader";
 import { SPLASH_GUARD, Splash } from "@/components/splash";
 import { SiteHeader } from "@/components/site-header";
 import { ToTop } from "@/components/to-top";
@@ -88,6 +89,7 @@ export default async function RootLayout({
       <body>
         <script dangerouslySetInnerHTML={{ __html: SPLASH_GUARD }} />
         <Splash skipLabel={t.splashSkip} />
+        <RouteLoader label={t.loading} />
 
         <noscript>
           <style>{`[data-hero], [data-reveal] { opacity: 1 }`}</style>
