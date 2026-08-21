@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, createTimeline } from "animejs";
+import { animate } from "animejs";
 import Image from "next/image";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import logo from "@/../public/iconz10-logo.png";
@@ -90,31 +90,55 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
       });
     };
 
-    const show = createTimeline({ defaults: { ease: "outExpo" } });
+    // Each part runs on its own rather than off one timeline, so the mark can
+    // be pulled out the moment the clip takes over without a tween further
+    // along the line fading it straight back in.
+    const parts: ReturnType<typeof animate>[] = [];
 
-    if (mark.current) {
-      show.add(
-        mark.current,
-        {
+    const markIn = mark.current
+      ? animate(mark.current, {
           opacity: [0, 1],
           scale: [0.92, 1],
           filter: ["blur(12px)", "blur(0px)"],
           duration: 800,
-        },
-        80,
-      );
-    }
+          delay: 80,
+          ease: "outExpo",
+        })
+      : null;
+    if (markIn) parts.push(markIn);
+
     if (bar.current) {
-      show.add(
-        bar.current,
-        { scaleX: [0, 1], duration: HOLD, ease: "inOutQuad" },
-        200,
+      parts.push(
+        animate(bar.current, {
+          scaleX: [0, 1],
+          duration: HOLD,
+          delay: 200,
+          ease: "inOutQuad",
+        }),
       );
     }
 
     if (skip.current) {
-      show.add(skip.current, { opacity: [0, 1], duration: 500 }, 1500);
+      parts.push(
+        animate(skip.current, {
+          opacity: [0, 1],
+          duration: 500,
+          delay: 1500,
+          ease: "outExpo",
+        }),
+      );
     }
+
+    // The clip carries the mark itself, so the still logo would only show it a
+    // second time once frames are actually on screen. It bows out there and
+    // stays put for a refused autoplay or a clip that never arrives.
+    const takeOver = () => {
+      markIn?.pause();
+      if (mark.current) {
+        animate(mark.current, { opacity: 0, duration: 420, ease: "outQuad" });
+      }
+    };
+    film?.addEventListener("playing", takeOver, { once: true });
 
     // The clip is the star, but nobody should be held at the door: it ends
     // when the clip ends, when the cap runs out, or the moment anyone asks.
@@ -131,9 +155,10 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
       document.body.style.overflow = "";
       clearTimeout(cap);
       film?.removeEventListener("ended", leave);
+      film?.removeEventListener("playing", takeOver);
       window.removeEventListener("pointerdown", leave);
       window.removeEventListener("keydown", leave);
-      show.revert();
+      for (const part of parts) part.revert();
     };
   }, [seen]);
 
@@ -150,8 +175,8 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
       aria-hidden
       className="fixed inset-0 z-200 flex flex-col items-center justify-center gap-8 bg-brand-deep"
     >
-      {/* The clip plays over the mark, so there is something to look at
-          while it buffers — and something left if it never plays at all. */}
+      {/* The clip is the screen once it plays; the mark holds the frame while
+          it buffers, and is what is left if it never plays at all. */}
       <video
         ref={clip}
         src="/loader/opening.mp4"
