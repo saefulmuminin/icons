@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-cream: #f7f6f1;
+  --color-paper: #ffffff;
+  --color-sage: #edf2ee;
+
+  /* Ink */
+  --color-ink: #0b1f17;
+  --color-body: #2a382f;
+  --color-muted: #5a6a60;
+  --color-faint: #8a9990;
+  --color-pale: #bfcfc4;
+  --color-nav: #3e4f45;
+
+  /* Brand greens */
+  --color-brand: #1e7a45;
+  --color-brand-dark: #0e4c29;
+  --color-brand-deep: #0b2e1f;
+  --color-brand-mid: #11402c;
+  --color-brand-shade: #0e3524;
+  --color-brand-bright: #3aa85f;
+
+  /* Mints (on dark) */
+  --color-mint: #7fd3a2;
+  --color-mint-soft: #a8e3c1;
+  --color-mint-pale: #bfe6ce;
+  --color-mint-dim: #8fcfac;
+
+  /* Motion */
+  --animate-marquee: marquee 46s linear infinite;
+  --animate-blob: blob 16s ease-in-out infinite;
+
+  /* Type */
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), system-ui, sans-serif;
+}
+
+/*
+ * Height of the sticky site bar. The home hero pulls itself up by the same
+ * amount so its video runs edge to edge behind a transparent bar.
+ */
+:root {
+  --header-h: 3.75rem;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --header-h: 4.5rem;
+  }
+}
+
+/*
+ * Animated pieces start hidden and are handed to their entrance animation.
+ * Anyone without one — reduced motion, or no scripting at all — sees them in
+ * their finished state instead.
+ */
+[data-hero],
+[data-reveal] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  [data-hero],
+  [data-reveal] {
+    opacity: 1;
+  }
+}
+
+/* An organic shape that never quite settles. */
+@keyframes blob {
+  0%,
+  100% {
+    border-radius: 46% 54% 38% 62% / 38% 44% 56% 62%;
+  }
+  50% {
+    border-radius: 58% 42% 56% 44% / 52% 38% 62% 48%;
+  }
+}
+
+/* The supporter belt: one full list-width per cycle, so the seam never shows. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Already seen this session: the splash never gets a chance to paint. */
+[data-splash="seen"] [data-splash-screen] {
+  display: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /*
+   * Cream, lit by three soft blooms — green at the top, gold on the right,
+   * mint low on the left. Fixed to the viewport so the wash stays even the
+   * whole way down instead of banding section by section.
+   */
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(
+      60rem 40rem at 6% 10%,
+      rgba(30, 122, 69, 0.09),
+      transparent 62%
+    ),
+    radial-gradient(
+      54rem 38rem at 98% 44%,
+      rgba(214, 178, 58, 0.13),
+      transparent 64%
+    ),
+    radial-gradient(
+      48rem 34rem at 16% 92%,
+      rgba(127, 211, 162, 0.13),
+      transparent 62%
+    );
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-mint-pale);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
