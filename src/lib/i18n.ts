@@ -5,7 +5,6 @@ export const LANGS: Lang[] = ["en", "id"];
 const en = {
   navHome: "Home",
   navConference: "Conference",
-  navCfp: "Call for Paper",
   navSubmission: "Submission",
   navPrevious: "Previous ICONZ",
   navProceedings: "Proceedings",
@@ -27,7 +26,7 @@ const en = {
   calendarCta: "Add to Google Calendar",
   mapCta: "Open in Google Maps",
   themeLabel: "Theme",
-  countdownLabel: "Counting down to day one",
+  countdownLabel: "Counting Down to ICONZ 10",
   cdD: "Days",
   cdH: "Hours",
   cdM: "Min",
@@ -80,7 +79,18 @@ const en = {
   bg3: "The theme “From Local Impact to Global Solidarity: The Future of Zakat and Philanthropy” is chosen to emphasize the need to transform the role of zakat and philanthropy from locally impactful instruments into a collaborative force on a global scale. This transformation demands the integration of management innovation, robust governance, and the alignment of humanitarian values across countries. Without a framework for global solidarity, the impact of zakat and philanthropy will remain fragmented and suboptimal in addressing shared challenges.",
   bg4: "This theme also reflects the urgent need to strengthen collaboration among zakat institutions, philanthropic organizations, governments, academics, and the private sector at the international level. Through structured cooperation, zakat and philanthropy can contribute to human development, inequality reduction, and the creation of a more sustainable shared prosperity. Ultimately, the future of zakat and philanthropy will not only be determined by local success, but by its capacity to build global solidarity rooted in the values of justice and humanity.",
 
+  jumpLabel: "On this page",
+  jumpBackground: "Background",
+  jumpObjectives: "Objectives",
+  jumpSpeakers: "Invited Speakers",
+  jumpDates: "Key Dates",
+  jumpOrganizers: "Organizers & Supporters",
+
   objTitle: "Objectives of the 10th ICONZ",
+  objLabel: "Objective",
+  objOf: "of",
+  objPrev: "Previous objective",
+  objNext: "Next objective",
   objIntro:
     "Formulated to address the need to strengthen the role of zakat and philanthropy within an increasingly complex and interconnected global context.",
 
@@ -103,6 +113,31 @@ const en = {
   regText: "Registration is handled through the official conference form.",
   regCta: "Open registration form",
 
+  submitTitle: "Submit to the 10th ICONZ",
+  submitIntro:
+    "Two ways to take part: a paper for the conference proceedings, or a chapter for the international edited book. Both close in November 2026.",
+  pickPapers: "Call for Papers",
+  pickPapersNote:
+    "Present a paper at the conference and publish it in the proceedings.",
+  pickBook: "Call for International Book Chapter",
+  pickBookNote:
+    "Contribute a chapter to an edited volume on zakat and well-being.",
+
+  bookTitle: "Call for International Book Chapter",
+  bookLead:
+    "Are you exploring the role of zakat in improving human well-being? We invite scholars, researchers, practitioners, policymakers and students to contribute a book chapter for the 10th International Conference on Zakat.",
+  bookBody:
+    "This edited volume aims to advance discussions on how zakat can promote holistic well-being through economic resilience, social inclusion, human development and spiritual prosperity. We welcome innovative ideas, empirical research and policy perspectives that strengthen the role of zakat in creating sustainable well-being.",
+  bookThemeLabel: "Theme",
+  bookEditorsLabel: "Book editors",
+  bookDatesLabel: "Important dates",
+  bookFree: "Submission is free of charge",
+  bookCta1: "Submit a chapter",
+  bookCta2: "Author guidelines",
+  bookCta3: "Download template",
+  bookPublishers:
+    "Selected chapters will be considered for publication in an edited book from a reputable international publisher:",
+
   cfpTitle: "Call for Paper: scientific journal presentation",
   cfpIntro:
     "Papers are invited across ten sub-themes. Accepted and selected papers will be presented during the conference and considered for publication.",
@@ -114,14 +149,6 @@ const en = {
   pubIntro:
     "Accepted and selected papers will have the opportunity to be published in the following journals:",
 
-  subTitle: "Submission",
-  loginTitle: "Submission login",
-  loginText:
-    "Submissions and reviews are managed on the ICONZ proceedings site.",
-  loginCta: "Go to submission site",
-  guideTitle: "Author guidelines",
-  guideText: "Prepare your manuscript using the official ICONZ paper template.",
-  guideCta: "Open template",
 
   prevTitle: "Previous ICONZ",
   prevIntro:
@@ -132,6 +159,8 @@ const en = {
   procText:
     "Proceedings of the International Conference on Zakat are published and archived on the ICONZ proceedings site.",
   procCta: "Browse proceedings archive",
+  procOpen: "View proceedings",
+  procSoon: "Not yet linked",
 
   footOrg:
     "Organized by BAZNAS RI, IPB University and the Ministry of Religious Affairs",
@@ -142,8 +171,7 @@ export type Dict = { [K in keyof typeof en]: string };
 const id: Dict = {
   navHome: "Beranda",
   navConference: "Konferensi",
-  navCfp: "Call for Paper",
-  navSubmission: "Submisi",
+  navSubmission: "Submission",
   navPrevious: "ICONZ Sebelumnya",
   navProceedings: "Prosiding",
   register: "Daftar",
@@ -164,7 +192,7 @@ const id: Dict = {
   calendarCta: "Tambah ke Google Calendar",
   mapCta: "Buka di Google Maps",
   themeLabel: "Tema",
-  countdownLabel: "Hitung mundur menuju hari pertama",
+  countdownLabel: "Hitung mundur menuju ICONZ 10",
   cdD: "Hari",
   cdH: "Jam",
   cdM: "Menit",
@@ -217,7 +245,18 @@ const id: Dict = {
   bg3: "Tema “From Local Impact to Global Solidarity: The Future of Zakat and Philanthropy” dipilih untuk menegaskan perlunya transformasi peran zakat dan filantropi dari instrumen berdampak lokal menjadi kekuatan kolaboratif berskala global. Transformasi ini menuntut integrasi inovasi pengelolaan, tata kelola yang kuat, dan penyelarasan nilai kemanusiaan antarnegara. Tanpa kerangka solidaritas global, dampak zakat dan filantropi akan tetap terfragmentasi dan belum optimal dalam menjawab tantangan bersama.",
   bg4: "Tema ini juga mencerminkan kebutuhan mendesak untuk memperkuat kolaborasi antara lembaga zakat, organisasi filantropi, pemerintah, akademisi, dan sektor swasta di tingkat internasional. Melalui kerja sama yang terstruktur, zakat dan filantropi dapat berkontribusi pada pembangunan manusia, pengurangan ketimpangan, dan terciptanya kesejahteraan bersama yang lebih berkelanjutan. Pada akhirnya, masa depan zakat dan filantropi tidak hanya ditentukan oleh keberhasilan lokal, tetapi oleh kapasitasnya membangun solidaritas global yang berakar pada nilai keadilan dan kemanusiaan.",
 
+  jumpLabel: "Di halaman ini",
+  jumpBackground: "Latar Belakang",
+  jumpObjectives: "Tujuan",
+  jumpSpeakers: "Pembicara Undangan",
+  jumpDates: "Tanggal Penting",
+  jumpOrganizers: "Penyelenggara & Pendukung",
+
   objTitle: "Tujuan ICONZ ke-10",
+  objLabel: "Tujuan",
+  objOf: "dari",
+  objPrev: "Tujuan sebelumnya",
+  objNext: "Tujuan berikutnya",
   objIntro:
     "Dirumuskan untuk menjawab kebutuhan penguatan peran zakat dan filantropi dalam konteks global yang semakin kompleks dan saling terhubung.",
 
@@ -239,6 +278,31 @@ const id: Dict = {
   regText: "Pendaftaran dilakukan melalui formulir resmi konferensi.",
   regCta: "Buka formulir pendaftaran",
 
+  submitTitle: "Kirim karya ke ICONZ ke-10",
+  submitIntro:
+    "Dua jalur untuk ikut serta: makalah untuk prosiding konferensi, atau bab untuk buku suntingan internasional. Keduanya ditutup November 2026.",
+  pickPapers: "Call for Papers",
+  pickPapersNote:
+    "Presentasikan makalah di konferensi dan terbitkan dalam prosiding.",
+  pickBook: "Call for International Book Chapter",
+  pickBookNote:
+    "Sumbangkan satu bab untuk buku suntingan bertema zakat dan kesejahteraan.",
+
+  bookTitle: "Call for International Book Chapter",
+  bookLead:
+    "Sedang menelaah peran zakat dalam meningkatkan kesejahteraan manusia? Kami mengundang akademisi, peneliti, praktisi, pengambil kebijakan dan mahasiswa untuk menyumbang satu bab buku bagi International Conference on Zakat ke-10.",
+  bookBody:
+    "Buku suntingan ini bertujuan memperluas pembahasan tentang bagaimana zakat mendorong kesejahteraan yang menyeluruh melalui ketahanan ekonomi, inklusi sosial, pembangunan manusia dan kemakmuran spiritual. Kami menerima gagasan baru, riset empiris dan perspektif kebijakan yang memperkuat peran zakat dalam menciptakan kesejahteraan berkelanjutan.",
+  bookThemeLabel: "Tema",
+  bookEditorsLabel: "Editor buku",
+  bookDatesLabel: "Tanggal penting",
+  bookFree: "Pengiriman tidak dipungut biaya",
+  bookCta1: "Kirim bab",
+  bookCta2: "Panduan penulis",
+  bookCta3: "Unduh templat",
+  bookPublishers:
+    "Bab terpilih akan dipertimbangkan untuk terbit dalam buku suntingan oleh penerbit internasional bereputasi:",
+
   cfpTitle: "Call for Paper: presentasi jurnal ilmiah",
   cfpIntro:
     "Makalah diundang untuk sepuluh sub-tema. Makalah yang diterima dan terpilih akan dipresentasikan pada konferensi serta dipertimbangkan untuk publikasi.",
@@ -250,14 +314,6 @@ const id: Dict = {
   pubIntro:
     "Makalah yang diterima dan terpilih akan memiliki kesempatan untuk dipublikasikan di jurnal-jurnal berikut:",
 
-  subTitle: "Submisi",
-  loginTitle: "Login submisi",
-  loginText:
-    "Pengiriman dan penelaahan makalah dikelola di situs prosiding ICONZ.",
-  loginCta: "Buka situs submisi",
-  guideTitle: "Panduan penulis",
-  guideText: "Susun naskah Anda menggunakan templat makalah resmi ICONZ.",
-  guideCta: "Buka templat",
 
   prevTitle: "ICONZ Sebelumnya",
   prevIntro:
@@ -268,6 +324,8 @@ const id: Dict = {
   procText:
     "Prosiding International Conference on Zakat diterbitkan dan diarsipkan di situs prosiding ICONZ.",
   procCta: "Lihat arsip prosiding",
+  procOpen: "Lihat prosiding",
+  procSoon: "Belum ditautkan",
 
   footOrg:
     "Diselenggarakan oleh BAZNAS RI, IPB University dan Kementerian Agama",

@@ -34,13 +34,17 @@ export function BackgroundStory({
           {intro}
         </p>
 
+        {/* The frame follows the picture: the plate here used to be the
+            upright ICONZ 9 poster, and a landscape group photograph dropped
+            into a tall box would have been cropped down to three of the
+            thirteen people standing in it. */}
         <PlateViewer
-          src="/image/bglatarbelakang.png"
-          ratio="723 / 1284"
+          src="/image12.png"
+          ratio="1280 / 853"
           sizes="(min-width: 1024px) 40vw, 100vw"
           zoomLabel={zoomLabel}
           closeLabel={closeLabel}
-          className="mt-8 min-h-[22rem] w-full flex-1 rounded-xl ring-1 ring-ink/8"
+          className="mt-8 aspect-[1280/853] w-full rounded-xl ring-1 ring-ink/8"
         />
       </div>
 

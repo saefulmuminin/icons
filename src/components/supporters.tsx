@@ -40,23 +40,23 @@ function Belt({
       {items.map((item) => (
         <li
           key={item.name}
-          className="flex flex-none items-center gap-3 border-l border-ink/8 px-6"
+          className="flex flex-none items-center gap-4 border-l border-ink/8 px-8"
         >
           {item.logo ? (
             <Image
               src={item.logo}
               alt=""
-              width={96}
-              height={96}
-              className="h-9 w-9 flex-none object-contain"
+              width={160}
+              height={160}
+              className="h-12 w-12 flex-none object-contain"
             />
           ) : (
             // No mark on file yet — the initials stand in for it.
-            <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-brand/10 font-display text-[0.625rem] font-bold text-brand">
+            <span className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-brand/10 font-display text-[0.75rem] font-bold text-brand">
               {initials(item.name)}
             </span>
           )}
-          <span className="font-sans text-sm leading-none font-medium whitespace-nowrap text-body">
+          <span className="font-sans text-[0.9375rem] leading-none font-medium whitespace-nowrap text-body">
             {item.name}
           </span>
         </li>

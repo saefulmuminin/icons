@@ -5,7 +5,6 @@ export type NavItem = { path: string; key: keyof Dict };
 export const NAV_ITEMS: NavItem[] = [
   { path: "", key: "navHome" },
   { path: "/conference", key: "navConference" },
-  { path: "/call-for-paper", key: "navCfp" },
   { path: "/submission", key: "navSubmission" },
   { path: "/previous", key: "navPrevious" },
   { path: "/proceedings", key: "navProceedings" },

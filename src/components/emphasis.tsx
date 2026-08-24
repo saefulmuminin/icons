@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 
 /**
- * Draws the given phrases out of a paragraph with a marker stroke — a soft
- * mint band sitting under the words rather than boxing them in, so the line
- * still reads as running text. Anything not matched is left untouched.
+ * Draws the given phrases out of a paragraph by weight alone. A marker band
+ * used to sit under them; on a page already carrying photographs, video and a
+ * moving belt of logos it was one voice too many. Anything not matched is left
+ * untouched.
  */
 export function Emphasis({
   text,
@@ -21,7 +22,7 @@ export function Emphasis({
     present.includes(piece) ? (
       <span
         key={i}
-        className="font-medium text-ink [background:linear-gradient(to_top,rgba(127,211,162,0.5)_0,rgba(127,211,162,0.5)_0.42em,transparent_0.42em)] [box-decoration-break:clone]"
+        className="font-semibold text-ink"
       >
         {piece}
       </span>

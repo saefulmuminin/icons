@@ -190,7 +190,7 @@ export default async function ConferencePage({
 
       {/* 02 — Sub-events */}
       <section className="relative mt-16 overflow-hidden sm:mt-22">
-        <ParallaxPlate src="/image/bg.png" />
+        <ParallaxPlate src="/image12.png" />
         {/* Black, heavily drawn down: the photograph is atmosphere here, not
             something to be read. */}
         <div

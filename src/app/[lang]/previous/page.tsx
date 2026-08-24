@@ -60,14 +60,13 @@ export default async function PreviousPage({
         </Container>
       </section>
 
-      {/* The archive */}
-      <Container className="pt-16 pb-20 sm:pt-22 sm:pb-24">
+      {/* The archive, starting straight under the masthead. Its own top
+          padding used to be stacked on top of the masthead's bottom padding,
+          which put well over a hundred pixels of empty cream between the two
+          and read as a band rather than a margin. */}
+      <Container className="pb-20 sm:pb-24">
         <Reveal>
-          <EditionVideos
-            editions={editions}
-            noArchiveLabel={t.noArchive}
-            closeLabel={t.videoClose}
-          />
+          <EditionVideos editions={editions} noArchiveLabel={t.noArchive} />
         </Reveal>
       </Container>
     </>

@@ -7,7 +7,17 @@ const nextConfig: NextConfig = {
   experimental: { globalNotFound: true },
 
   async redirects() {
-    return [{ source: "/", destination: "/en", permanent: false }];
+    return [
+      { source: "/", destination: "/en", permanent: false },
+      // The call for papers grew a second call and became "Submission". The
+      // old address is on posters and in search results, so it is kept alive
+      // rather than left to 404.
+      {
+        source: "/:lang/call-for-paper",
+        destination: "/:lang/submission",
+        permanent: true,
+      },
+    ];
   },
 };
 

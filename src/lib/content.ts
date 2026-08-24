@@ -53,9 +53,13 @@ export const LINKS = {
    */
   registerEmbed:
     "https://docs.google.com/forms/d/e/1FAIpQLSdb9CrQAVJvuuGU9Xbwcyj0qu6EnqzNFGSWlTXQPM7nx4suiQ/viewform?embedded=true",
+  /** Where an author actually files a paper. */
   submission:
+    "https://iconzbaznas.com/submission/index.php/proceedings/about/submissions",
+  /** The back issues, which is a different door to the one above. */
+  archive:
     "https://iconzbaznas.com/submission/index.php/proceedings/issue/archive",
-  template: "https://bazn.as/TemplateCallForPaper",
+  template: "https://bazn.as/TemplateCallForPaperICONZ",
 } as const;
 
 export const FACTS = [
@@ -140,6 +144,52 @@ const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
   ],
 };
 
+/**
+ * The second call: a chapter for the edited volume, which runs alongside the
+ * call for papers rather than instead of it.
+ */
+export const BOOK_CHAPTER = {
+  theme: "Zakat and Well-being",
+  editors: [
+    {
+      name: "Prof. Dr. Abdul Ghafar Ismail",
+      at: "Universiti Kebangsaan Malaysia (UKM)",
+    },
+    {
+      name: "Dr. Muhammad Hasbi Zaenal",
+      at: "Badan Amil Zakat Nasional · UIN Syarif Hidayatullah Jakarta",
+    },
+    { name: "Prof. Dr. Irfan Syauqi Beik", at: "IPB University, Indonesia" },
+    {
+      name: "Assoc. Prof. Dr. Salman Ahmed Shaikh",
+      at: "International Islamic University of Malaysia (IIUM)",
+    },
+  ],
+  publishers: ["Springer", "Palgrave Macmillan", "Emerald"],
+  links: {
+    submission: "https://bazn.as/ICONZ10CFBSubmission",
+    guidelines: "https://bazn.as/AuthorGuidelinesCFBICONZ10",
+    template: "https://bazn.as/TemplateCallforBookChapter",
+  },
+} as const;
+
+const BOOK_DATES: Record<Lang, [label: string, date: string][]> = {
+  en: [
+    ["Full book chapter submission", "1 November 2026"],
+    ["Notification of acceptance", "17 November 2026"],
+    ["Conference & chapter presentation", "24–26 November 2026"],
+  ],
+  id: [
+    ["Pengiriman bab lengkap", "1 November 2026"],
+    ["Pemberitahuan penerimaan", "17 November 2026"],
+    ["Konferensi & presentasi bab", "24–26 November 2026"],
+  ],
+};
+
+export function getBookDates(lang: Lang) {
+  return BOOK_DATES[lang].map(([label, date]) => ({ label, date }));
+}
+
 export const SUBTHEMES: string[] = [
   "From Local Zakat Programs to Global Solidarity Pathways of Cross Country Collaboration",
   "Zakat and Philanthropy for Global Poverty Reduction and Shared Prosperity",
@@ -211,6 +261,12 @@ export type Edition = {
   year: string;
   title: string;
   links: { label: string; href: string }[];
+  /**
+   * That year's proceedings on the OJS site. Fill one in and the proceedings
+   * page links straight to it; leave it out and the page says so plainly
+   * rather than sending the reader to the wrong issue.
+   */
+  proceedings?: string;
 };
 
 export const EDITIONS: Edition[] = [
@@ -221,16 +277,22 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2018",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/8",
     title: "The 2nd International Conference of Zakat",
     links: [],
   },
   {
     year: "2019",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/9",
     title: "The 3rd International Conference of Zakat",
     links: [],
   },
   {
     year: "2020",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/11",
     title: "The 4th International Conference of Zakat",
     links: [
       { label: "YouTube", href: "https://www.youtube.com/live/OGgR2azEfxQ" },
@@ -238,6 +300,8 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2021",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/12",
     title: "The 5th International Conference of Zakat",
     links: [
       { label: "YouTube", href: "https://www.youtube.com/live/spgDc-EDkxI" },
@@ -245,6 +309,8 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2022",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/13",
     title: "The 6th International Conference of Zakat",
     links: [
       { label: "YouTube", href: "https://www.youtube.com/live/GyOHcvnKy20" },
@@ -252,6 +318,8 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2023",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/14",
     title: "The 7th International Conference of Zakat",
     links: [
       { label: "Day 1", href: "https://www.youtube.com/live/KUnqHPzooKc" },
@@ -260,6 +328,8 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2024",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/16",
     title: "The 8th International Conference of Zakat",
     links: [
       { label: "Day 1", href: "https://www.youtube.com/live/TInhck4A_68" },
@@ -268,6 +338,8 @@ export const EDITIONS: Edition[] = [
   },
   {
     year: "2025",
+    proceedings:
+      "https://iconzbaznas.com/submission/index.php/proceedings/issue/view/17",
     title: "The 9th International Conference of Zakat",
     links: [
       { label: "Opening", href: "https://www.youtube.com/live/qqb54M6cuDs" },

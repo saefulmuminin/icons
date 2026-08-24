@@ -89,12 +89,23 @@ export function RouteLoader({ label }: { label: string }) {
       start();
     };
 
+    // Back and forward, but not a jump to a fragment: landing on `#key-dates`
+    // traverses history without changing the page, and the browser reports it
+    // here the same way it reports a real move. Starting on one of those puts
+    // the screen up over a page that was never going anywhere, and nothing
+    // below can take it down again — the pathname it is waiting on never
+    // changes. So the address is asked where it actually went.
+    const onPop = () => {
+      if (window.location.pathname === pathname) return;
+      start();
+    };
+
     document.addEventListener("click", onClick, { capture: true });
-    window.addEventListener("popstate", start);
+    window.addEventListener("popstate", onPop);
 
     return () => {
       document.removeEventListener("click", onClick, { capture: true });
-      window.removeEventListener("popstate", start);
+      window.removeEventListener("popstate", onPop);
     };
   }, [pathname]);
 

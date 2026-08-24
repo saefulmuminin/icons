@@ -15,15 +15,16 @@ type ObjectivesProps = {
   title: string;
   intro: string;
   objectives: Objective[];
+  /** The carousel's own words, handed in so they follow the page's language. */
+  labels: { label: string; of: string; prev: string; next: string };
 };
 
-const DOC_PHOTOS = [
-  "/documentasi/image.png",
-  "/documentasi/image%20copy.png",
-  "/documentasi/image%20copy%202.png",
-  "/documentasi/image%20copy%203.png",
-  "/documentasi/image%20copy%204.png",
-];
+/**
+ * The plates the carousel turns through. One for now — the earlier five were
+ * of the previous leadership. Add more current photographs here and the
+ * carousel goes back to changing picture with each objective.
+ */
+const DOC_PHOTOS = ["/image12.png"];
 
 // Clean White Base Cards with subtle BAZNAS Ambient Accents (Hijau, Kuning/Gold BAZNAS, Ungu)
 const CARD_THEMES = [
@@ -89,7 +90,12 @@ const CARD_THEMES = [
   },
 ];
 
-export function Objectives({ title, intro, objectives }: ObjectivesProps) {
+export function Objectives({
+  title,
+  intro,
+  objectives,
+  labels,
+}: ObjectivesProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const photoRef = useRef<HTMLDivElement>(null);
@@ -266,14 +272,15 @@ export function Objectives({ title, intro, objectives }: ObjectivesProps) {
               {/* Bottom Carousel Controls (← → buttons on the right under the cards) */}
               <div className="mt-4 flex items-center justify-between border-t border-ink/10 pt-4">
                 <div className="font-sans text-xs font-semibold tracking-wider text-muted uppercase">
-                  Tujuan {activeIndex + 1} dari {objectives.length}
+                  {labels.label} {activeIndex + 1} {labels.of}{" "}
+                  {objectives.length}
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={handlePrev}
-                    aria-label="Tujuan Sebelumnya"
+                    aria-label={labels.prev}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-white text-ink shadow-sm hover:border-brand hover:bg-brand hover:text-white transition-all cursor-pointer"
                   >
                     ←
@@ -281,7 +288,7 @@ export function Objectives({ title, intro, objectives }: ObjectivesProps) {
                   <button
                     type="button"
                     onClick={handleNext}
-                    aria-label="Tujuan Selanjutnya"
+                    aria-label={labels.next}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-white text-ink shadow-sm hover:border-brand hover:bg-brand hover:text-white transition-all cursor-pointer"
                   >
                     →

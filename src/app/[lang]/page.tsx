@@ -6,6 +6,8 @@ import { Hero } from "@/components/hero";
 import { KeyDates } from "@/components/key-dates";
 import { CornerMotif } from "@/components/corner-motif";
 import { StarLattice } from "@/components/pattern";
+import { Reveal } from "@/components/reveal";
+import { SectionJump } from "@/components/section-jump";
 import { SpeakerGrid } from "@/components/speaker-grid";
 import { SupporterMarquee } from "@/components/supporters";
 import Image from "next/image";
@@ -123,8 +125,12 @@ export default async function HomePage({
         </Container>
       </section>
 
-      {/* 01 — Background */}
-      <section className="relative overflow-hidden">
+      {/* 01 — Background. `scroll-mt` on each landing spot keeps the sticky
+          bar from parking on top of the heading it just jumped to. */}
+      <section
+        id="background"
+        className="relative scroll-mt-[var(--header-h)] overflow-hidden"
+      >
         <div className="relative">
           <BackgroundStory
             title={t.bgTitle}
@@ -137,14 +143,25 @@ export default async function HomePage({
       </section>
 
       {/* 02 — Objectives */}
-      <Objectives
-        title={t.objTitle}
-        intro={t.objIntro}
-        objectives={objectives}
-      />
+      <div id="objectives" className="scroll-mt-[var(--header-h)]">
+        <Objectives
+          title={t.objTitle}
+          intro={t.objIntro}
+          objectives={objectives}
+          labels={{
+            label: t.objLabel,
+            of: t.objOf,
+            prev: t.objPrev,
+            next: t.objNext,
+          }}
+        />
+      </div>
 
       {/* 03 — Speakers */}
-      <section className="relative overflow-hidden">
+      <section
+        id="speakers"
+        className="relative scroll-mt-[var(--header-h)] overflow-hidden"
+      >
         <CornerMotif />
 
         <Container className="relative pt-16 sm:pt-22">
@@ -176,7 +193,10 @@ export default async function HomePage({
       </section>
 
       {/* 04 — Key dates */}
-      <section className="relative mt-16 overflow-hidden border-y border-ink/10 bg-sage sm:mt-22">
+      <section
+        id="key-dates"
+        className="relative mt-16 scroll-mt-[var(--header-h)] overflow-hidden border-y border-ink/10 bg-sage sm:mt-22"
+      >
         <StarLattice id="dates-lattice" className="text-brand opacity-[0.06]" />
 
         <Container className="relative py-16 sm:py-20">
@@ -186,47 +206,68 @@ export default async function HomePage({
         </Container>
       </section>
 
-      {/* 05 — Organizers & supporters */}
-      <section className="bg-paper/60">
-        <Container className="grid gap-10 pt-16 sm:pt-22 lg:grid-cols-[minmax(0,0.32fr)_minmax(0,0.68fr)] lg:gap-14">
-          <div>
-            <Eyebrow>05</Eyebrow>
-            <SectionTitle>{t.orgTitle}</SectionTitle>
-          </div>
+      {/* 05 — Organizers & supporters. The institutions behind the conference
+          are its standing, so this is given the room a closing section earns:
+          the heading centred over the page rather than pushed into a column,
+          and each organiser on a plate of its own. */}
+      <section
+        id="organizers"
+        className="relative scroll-mt-[var(--header-h)] overflow-hidden border-t border-ink/10 bg-paper"
+      >
+        <StarLattice id="org-lattice" className="text-brand opacity-[0.05]" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(48rem_28rem_at_50%_-6%,rgba(30,122,69,0.09),transparent_66%)]"
+        />
 
-          <div>
-            <div className="mb-3.5 font-sans text-xs font-semibold tracking-[0.14em] uppercase text-muted">
-              {t.orgLabel}
+        <Container className="relative py-20 sm:py-28">
+          <Reveal>
+            <div data-reveal className="mx-auto max-w-[46rem] text-center">
+              <Eyebrow>05</Eyebrow>
+              <SectionTitle className="text-ink">{t.orgTitle}</SectionTitle>
             </div>
 
-            {/* One card holding all three, split by a hairline. */}
-            <ul className="grid divide-y divide-ink/10 overflow-hidden rounded-xl border border-ink/10 bg-paper sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-              {organizers.map((organizer) => (
-                <li
-                  key={organizer.name}
-                  className="flex items-center gap-3.5 px-5 py-5"
-                >
-                  <OrganizerMark badge={organizer} />
-                  <span className="font-display text-[0.9375rem] leading-[1.35] font-semibold text-pretty">
-                    {organizer.name}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Container>
+            <div className="mt-14 sm:mt-16">
+              <Rule label={t.orgLabel} />
 
-        <Container className="pt-10 pb-20 sm:pt-12 sm:pb-24">
-          <div className="mb-4 font-sans text-xs font-semibold tracking-[0.14em] uppercase text-muted">
-            {t.supLabel}
-          </div>
+              <ul className="mt-9 grid gap-5 sm:grid-cols-3">
+                {organizers.map((organizer) => (
+                  <li
+                    key={organizer.name}
+                    data-reveal
+                    className="group flex flex-col items-center gap-6 rounded-2xl border border-ink/10 bg-paper px-6 py-10 text-center shadow-[0_18px_44px_-32px_rgba(4,20,13,0.5)] transition-[transform,border-color,box-shadow] duration-500 hover:-translate-y-1.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(4,20,13,0.4)]"
+                  >
+                    <OrganizerMark badge={organizer} />
+                    <span className="font-display text-[1.0625rem] leading-[1.35] font-bold text-pretty text-ink">
+                      {organizer.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* One white card wrapping the whole belt. */}
-          <div className="overflow-hidden rounded-xl border border-ink/10 bg-paper py-5">
-            <SupporterMarquee items={supporters} />
-          </div>
+            <div data-reveal className="mt-16 sm:mt-20">
+              <Rule label={t.supLabel} />
+
+              {/* One white card wrapping the whole belt. */}
+              <div className="mt-9 overflow-hidden rounded-2xl border border-ink/10 bg-paper py-7 shadow-[0_18px_44px_-34px_rgba(4,20,13,0.5)]">
+                <SupporterMarquee items={supporters} />
+              </div>
+            </div>
+          </Reveal>
         </Container>
       </section>
+
+      <SectionJump
+        label={t.jumpLabel}
+        items={[
+          { href: "#background", label: t.jumpBackground },
+          { href: "#objectives", label: t.jumpObjectives },
+          { href: "#speakers", label: t.jumpSpeakers },
+          { href: "#key-dates", label: t.jumpDates },
+          { href: "#organizers", label: t.jumpOrganizers },
+        ]}
+      />
     </>
   );
 }
@@ -286,6 +327,19 @@ function matchFiles(folder: string, names: string[]) {
 }
 
 /** An organizer's mark, or their initials while no file is on hand. */
+/** A label set into a rule, so each half of the section opens on its own. */
+function Rule({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-5">
+      <span aria-hidden className="h-px flex-1 bg-ink/12" />
+      <span className="font-sans text-xs font-semibold tracking-[0.16em] text-muted uppercase">
+        {label}
+      </span>
+      <span aria-hidden className="h-px flex-1 bg-ink/12" />
+    </div>
+  );
+}
+
 function OrganizerMark({
   badge,
 }: {
@@ -296,15 +350,15 @@ function OrganizerMark({
       <Image
         src={badge.logo}
         alt=""
-        width={96}
-        height={96}
-        className="h-10 w-10 flex-none object-contain"
+        width={160}
+        height={160}
+        className="h-20 w-20 flex-none object-contain transition-transform duration-500 group-hover:scale-105"
       />
     );
   }
 
   return (
-    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-brand/10 font-display text-xs font-bold text-brand">
+    <span className="flex h-20 w-20 flex-none items-center justify-center rounded-2xl bg-brand/10 font-display text-lg font-bold text-brand transition-transform duration-500 group-hover:scale-105">
       {badge.name
         .split(/\s+/)
         .filter((word) => /^[A-Z]/.test(word))
