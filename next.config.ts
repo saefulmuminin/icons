@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Bundles the server and only the files it actually needs into
-  // `.next/standalone`, so the runtime image carries no build tooling and no
-  // node_modules tree. Without this the container is an order of magnitude
-  // larger for no gain.
-  output: "standalone",
+  // Standalone only when building the container: it bundles the server and
+  // just the files it needs into `.next/standalone`, so the image carries no
+  // build tooling and no node_modules tree.
+  //
+  // It must stay off everywhere else. Vercel traces the build its own way and
+  // looks for `next-server.js.nft.json`, which standalone does not write — the
+  // deploy then fails at the very last step, after a build that reported
+  // success.
+  output: process.env.DOCKER_BUILD ? "standalone" : undefined,
 
   // Every route lives under `[lang]`, so an address that matches no language
   // has no layout to render a 404 inside. This hands those to

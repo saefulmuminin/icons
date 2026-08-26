@@ -18,6 +18,8 @@ COPY . .
 ARG NEXT_PUBLIC_SITE_URL=https://iconzbaznas.com
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
+# Switches next.config.ts to standalone output — see the note there.
+ENV DOCKER_BUILD=1
 RUN npm run build
 
 # ── runtime ──────────────────────────────────────────────────────────────────
