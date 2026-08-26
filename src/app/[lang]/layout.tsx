@@ -3,7 +3,7 @@ import { Instrument_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { RouteLoader } from "@/components/route-loader";
-import { SPLASH_GUARD, Splash } from "@/components/splash";
+import { Splash } from "@/components/splash";
 import { SiteHeader } from "@/components/site-header";
 import { ToTop } from "@/components/to-top";
 import { CONFERENCE } from "@/lib/content";
@@ -11,16 +11,17 @@ import { getDictionary, isLang, LANGS } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
 
+// No `weight`: Google serves both of these as variable fonts, so one file per
+// family carries every weight the site uses. Listing weights fetches one file
+// each — four preloads competing with the largest paint for no gain.
 const instrument = Instrument_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
+  subsets: ["latin"],
   variable: "--font-instrument",
   display: "swap",
 });
 
 const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
+  subsets: ["latin"],
   variable: "--font-jakarta",
   display: "swap",
 });
@@ -98,7 +99,16 @@ export default async function RootLayout({
       className={`${instrument.variable} ${jakarta.variable}`}
     >
       <body>
-        <script dangerouslySetInnerHTML={{ __html: SPLASH_GUARD }} />
+        {/* Loaded from a file rather than written inline: it has to have run
+            before the first paint, and both of the in-tree ways of doing that
+            are either warned against by React or deferred by Next. A plain
+            script tag with a source, placed ahead of the splash markup, blocks
+            parsing exactly long enough to stamp the root element. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts --
+            the rule guards against sync scripts because they block parsing.
+            Blocking is the point: three lines that must land before the first
+            paint. Deferred or queued, the splash flashes and vanishes. */}
+        <script src="/splash-guard.js" />
         <Splash skipLabel={t.splashSkip} />
         <RouteLoader label={t.loading} />
 

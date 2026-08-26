@@ -61,6 +61,17 @@ export function HeroVideo({
   const frame = useRef<HTMLIFrameElement>(null);
   const length = useRef(0);
   const [ready, setReady] = useState(false);
+  /**
+   * Whether the player is allowed to exist yet.
+   *
+   * The embed costs the better part of a megabyte and half a second of main
+   * thread before it shows a single frame — spent, on a first visit, entirely
+   * behind the splash screen. Held back until the browser is idle it lands
+   * after the page has painted rather than in front of it, and the wash below
+   * carries the hero in the meantime, exactly as it already does while the
+   * player boots.
+   */
+  const [booted, setBooted] = useState(false);
   const [sound, setSound] = useState(false);
   const [outro, setOutro] = useState(false);
 
@@ -72,6 +83,22 @@ export function HeroVideo({
 
   // The player reports its position once asked to; that is what tells the
   // closing logo card when the reel is about to run out.
+  useEffect(() => {
+    if (still) return;
+
+    // Safari has no requestIdleCallback; a beat after paint is close enough.
+    const lazy = "requestIdleCallback" in window;
+
+    const handle = lazy
+      ? window.requestIdleCallback(() => setBooted(true), { timeout: 3000 })
+      : window.setTimeout(() => setBooted(true), 1200);
+
+    return () => {
+      if (lazy) window.cancelIdleCallback(handle);
+      else window.clearTimeout(handle);
+    };
+  }, [still]);
+
   useEffect(() => {
     if (still) return;
 
@@ -146,10 +173,10 @@ export function HeroVideo({
         <div data-hero-media className="absolute inset-x-0 -inset-y-[12%]">
           {/* Base wash — the poster while the player boots, and the whole
               backdrop for readers who keep motion switched off. */}
-          <div className="absolute inset-0 bg-[linear-gradient(178deg,#0b2e1f_0%,#11402c_58%,#0e3524_100%)]" />
-          <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(circle_at_18%_22%,#7fd3a2_0,transparent_42%),radial-gradient(circle_at_82%_78%,#3aa85f_0,transparent_45%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(178deg,var(--color-brand-deep)_0%,var(--color-brand-mid)_58%,var(--color-brand-shade)_100%)]" />
+          <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(circle_at_18%_22%,var(--color-mint)_0,transparent_42%),radial-gradient(circle_at_82%_78%,var(--color-brand-bright)_0,transparent_45%)]" />
 
-          {!still && (
+          {!still && booted && (
             // Size containment lets the 16:9 frame cover the box exactly.
             <div className="absolute inset-0 [container-type:size]">
               <iframe

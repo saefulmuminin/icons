@@ -28,6 +28,55 @@
   --color-mint-pale: #bfe6ce;
   --color-mint-dim: #8fcfac;
 
+  /* Milestone accents — one per step in a run of dates or sub-events. */
+  --color-step-amber: #b45309;
+  --color-step-teal: #0e7490;
+  --color-step-olive: #4d7c0f;
+
+  /* The quieter set the conference sub-events are told apart by. */
+  --color-quiet-sage: #6f9c86;
+  --color-quiet-sand: #a08a5e;
+  --color-quiet-slate: #7b8fa6;
+  --color-quiet-moss: #84956b;
+
+  /* Deeper than brand-deep: the two ends of the footer's fall. */
+  --color-brand-night: #08291c;
+  --color-brand-ink: #04160e;
+
+  /* Warm accents */
+  --color-gold: #f4d861;
+  --color-mint-mid: #8fd6a8;
+
+  /* A plate with no picture in it yet. */
+  --color-plate-from: #e6ece7;
+  --color-plate-to: #cfdcd4;
+
+  /* The panel's one warning voice: a demo notice, an unsaved file. */
+  --color-warn-bg: #fdf6e0;
+  --color-warn-line: #e0c46a;
+  --color-warn-bar: #d0a83a;
+  --color-warn-ink: #6b5410;
+  --color-warn-strong: #8a6d16;
+
+  /* The six objective plates, each a gradient of three. */
+  --color-obj1-from: #0b3d26;
+  --color-obj1-via: #125c3a;
+  --color-obj2-from: #4a3608;
+  --color-obj2-via: #6d510e;
+  --color-obj2-to: #362705;
+  --color-obj3-from: #2a134a;
+  --color-obj3-via: #432073;
+  --color-obj3-to: #1d0c35;
+  --color-obj4-from: #0d422a;
+  --color-obj4-via: #156641;
+  --color-obj4-to: #092d1c;
+  --color-obj5-from: #3d2c07;
+  --color-obj5-via: #5c430c;
+  --color-obj5-to: #2b1f04;
+  --color-obj6-from: #0a331f;
+  --color-obj6-via: #134e30;
+  --color-obj6-to: #072415;
+
   /* Motion */
   --animate-marquee: marquee 58s linear infinite;
   --animate-blob: blob 16s ease-in-out infinite;

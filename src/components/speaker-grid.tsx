@@ -147,7 +147,7 @@ function SpeakerCard({
           />
         ) : (
           // No portrait on file yet — a quiet plate, never a broken frame.
-          <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(160deg,#e6ece7_0%,#cfdcd4_100%)]">
+          <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(160deg,var(--color-plate-from)_0%,var(--color-plate-to)_100%)]">
             <svg
               viewBox="0 0 24 24"
               fill="none"

@@ -16,6 +16,7 @@ export function PlateViewer({
   zoomLabel,
   closeLabel,
   className = "",
+  style,
 }: {
   src: string;
   ratio: string;
@@ -23,6 +24,8 @@ export function PlateViewer({
   zoomLabel: string;
   closeLabel: string;
   className?: string;
+  /** For a frame whose shape is only known once the picture is measured. */
+  style?: React.CSSProperties;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -32,6 +35,7 @@ export function PlateViewer({
         type="button"
         onClick={() => setOpen(true)}
         aria-label={zoomLabel}
+        style={style}
         className={`group relative block cursor-zoom-in overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${className}`}
       >
         <Image

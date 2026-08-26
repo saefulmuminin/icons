@@ -1,7 +1,7 @@
 import { Emphasis } from "./emphasis";
 import { PlateViewer } from "./plate-viewer";
 import { Reveal } from "./reveal";
-import { Container, Eyebrow, SectionTitle } from "./ui";
+import { Container, SectionTitle } from "./ui";
 
 export type Passage = {
   n: string;
@@ -28,23 +28,20 @@ export function BackgroundStory({
     <Container className="grid gap-10 pt-16 sm:pt-22 lg:grid-cols-[minmax(0,0.38fr)_minmax(0,0.62fr)] lg:gap-14">
       {/* Left Column: Section Header */}
       <div className="flex flex-col">
-        <Eyebrow>01</Eyebrow>
         <SectionTitle>{title}</SectionTitle>
         <p className="mt-5 max-w-[34ch] font-sans text-[0.9375rem] leading-[1.65] text-muted text-pretty">
           {intro}
         </p>
 
-        {/* The frame follows the picture: the plate here used to be the
-            upright ICONZ 9 poster, and a landscape group photograph dropped
-            into a tall box would have been cropped down to three of the
-            thirteen people standing in it. */}
+        {/* The frame takes the picture's own ratio rather than a fixed box, so
+            a photograph filed at a different shape is not cropped to fit. */}
         <PlateViewer
-          src="/image12.png"
-          ratio="1280 / 853"
+          src="/image/latar-belakang.jpg"
+          ratio="2000 / 1500"
           sizes="(min-width: 1024px) 40vw, 100vw"
           zoomLabel={zoomLabel}
           closeLabel={closeLabel}
-          className="mt-8 aspect-[1280/853] w-full rounded-xl ring-1 ring-ink/8"
+          className="mt-8 aspect-[2000/1500] w-full rounded-xl ring-1 ring-ink/8"
         />
       </div>
 

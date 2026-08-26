@@ -10,6 +10,7 @@ import { localizedHref, NAV_ITEMS } from "@/lib/nav";
 import { Flag } from "./flag";
 import { Container, Cta } from "./ui";
 import logo from "@/../public/iconz10-logo.png";
+import baznas from "@/../public/baznas-logo.png";
 
 export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
   const pathname = usePathname();
@@ -161,20 +162,44 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
       }`}
     >
       <Container className="flex h-[var(--header-h)] items-center gap-4 lg:gap-7">
-        <Link
-          href={localizedHref(lang, "")}
-          className="flex flex-none items-center"
-          aria-label={t.navHome}
-        >
+        {/* The two marks read as one lockup: the conference's own, then the
+            board that convenes it, parted by a hairline. Only the conference
+            mark links home — a logo bar where every mark is clickable leaves
+            nobody sure what they just pressed. */}
+        <div className="flex flex-none items-center gap-2.5 sm:gap-3.5">
+          <Link
+            href={localizedHref(lang, "")}
+            className="flex items-center"
+            aria-label={t.navHome}
+          >
+            <Image
+              src={logo}
+              alt="The 10th ICONZ"
+              priority
+              className={`h-8 w-auto transition sm:h-11 ${
+                overlay ? "brightness-0 invert" : ""
+              }`}
+            />
+          </Link>
+
+          <span
+            aria-hidden
+            className={`h-7 w-px transition-colors sm:h-9 ${
+              overlay ? "bg-white/25" : "bg-ink/15"
+            }`}
+          />
+
+          {/* Set shorter than the wordmark beside it: an emblem given the same
+              box always reads as the larger of the two. */}
           <Image
-            src={logo}
-            alt="The 10th ICONZ"
+            src={baznas}
+            alt="The National Board of Zakat"
             priority
-            className={`h-8 w-auto transition sm:h-11 ${
+            className={`h-7 w-auto transition sm:h-9 ${
               overlay ? "brightness-0 invert" : ""
             }`}
           />
-        </Link>
+        </div>
 
         <nav className="ml-auto hidden flex-wrap items-center gap-0.5 lg:flex">
           {NAV_ITEMS.map((item) => {
@@ -227,7 +252,10 @@ export function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
                 : "border-ink/18 text-ink hover:border-brand hover:text-brand"
             }`}
           >
-            <Flag lang={otherLang} className="h-3 w-[1.125rem] sm:h-3.5 sm:w-5" />
+            <Flag
+              lang={otherLang}
+              className="h-3 w-[1.125rem] sm:h-3.5 sm:w-5"
+            />
             {t.langSwitch}
           </Link>
 

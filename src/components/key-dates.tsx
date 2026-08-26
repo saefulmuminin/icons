@@ -1,13 +1,19 @@
 "use client";
 
 import { createTimeline, onScroll, stagger, utils } from "animejs";
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-export type KeyDate = { date: string; label: string; image: string | null };
+export type KeyDate = { date: string; label: string };
 
 /** One hue per step, warm to cool, so the row reads as five distinct beats. */
-const ACCENTS = ["#b45309", "#1e7a45", "#0e7490", "#4d7c0f", "#7fd3a2"];
+/** One tone per milestone, read from the theme rather than spelled here. */
+const ACCENTS = [
+  "var(--color-step-amber)",
+  "var(--color-brand)",
+  "var(--color-step-teal)",
+  "var(--color-step-olive)",
+  "var(--color-mint)",
+];
 
 /** Mixes an accent into white — computed rather than hand-picked, so the wash
  *  and the hairline always trail the same hue as the step. */
@@ -44,10 +50,6 @@ export function KeyDates({ entries }: { entries: KeyDate[] }) {
     const down = node.querySelector<HTMLElement>("[data-rail-down]");
     const dots = node.querySelectorAll<HTMLElement>("[data-dot]");
     const cards = node.querySelectorAll<HTMLElement>("[data-card]");
-    const spots = node.querySelectorAll<HTMLElement>(
-      "[data-spot], [data-disc]",
-    );
-
     const entrance = createTimeline({
       defaults: { ease: "outExpo" },
       autoplay: onScroll({
@@ -95,19 +97,6 @@ export function KeyDates({ entries }: { entries: KeyDate[] }) {
           delay: stagger(120),
         },
         300,
-      )
-      // The spot lands a beat after its card, rising into the corner.
-      .add(
-        spots,
-        {
-          opacity: [0, 1],
-          y: [12, 0],
-          scale: [0.88, 1],
-          duration: 700,
-          ease: "outBack",
-          delay: stagger(120),
-        },
-        520,
       );
 
     return () => {
@@ -136,7 +125,6 @@ export function KeyDates({ entries }: { entries: KeyDate[] }) {
 
       {entries.map((entry, i) => {
         const arrival = i === entries.length - 1;
-        const step = `0${i + 1}`;
         const accent = ACCENTS[i % ACCENTS.length];
 
         return (
@@ -161,18 +149,11 @@ export function KeyDates({ entries }: { entries: KeyDate[] }) {
               data-reveal
               data-card
               style={{ boxShadow: `inset 0 0 0 1px ${wash(accent, 0.28)}` }}
-              className="relative flex-1 overflow-hidden rounded-xl bg-paper p-4 pb-28 sm:p-[1.125rem] sm:pb-28"
+              className="relative flex-1 overflow-hidden rounded-xl bg-paper p-4 sm:p-[1.125rem]"
             >
               <div
                 style={{ color: accent }}
-                className="font-sans text-[0.625rem] font-semibold tracking-[0.16em] uppercase"
-              >
-                {step}
-              </div>
-
-              <div
-                style={{ color: accent }}
-                className="mt-2 font-display text-[1rem] leading-[1.25] font-bold"
+                className="font-display text-[1rem] leading-[1.25] font-bold"
               >
                 {entry.date}
               </div>
@@ -180,39 +161,6 @@ export function KeyDates({ entries }: { entries: KeyDate[] }) {
               <p className="mt-1.5 font-sans text-[0.8125rem] leading-[1.55] text-pretty text-body">
                 {entry.label}
               </p>
-
-              {/* A disc of the step's colour bleeds off the corner, and the
-                  artwork sits on it. */}
-              <span
-                aria-hidden
-                data-reveal
-                data-disc
-                style={{ backgroundColor: wash(accent, 0.2) }}
-                className="pointer-events-none absolute -right-4 -bottom-4 block h-[8.5rem] w-[8.5rem] rounded-full"
-              />
-
-              <div
-                data-reveal
-                data-spot
-                className="pointer-events-none absolute right-1 bottom-1 h-[7.25rem] w-[7.25rem] origin-bottom-right"
-              >
-                {entry.image ? (
-                  <Image
-                    src={entry.image}
-                    alt=""
-                    fill
-                    sizes="150px"
-                    className="object-contain object-right-bottom"
-                  />
-                ) : (
-                  <span
-                    style={{ color: wash(accent, 0.45) }}
-                    className="absolute right-4 bottom-2 font-display text-[2.5rem] leading-none font-bold"
-                  >
-                    {step}
-                  </span>
-                )}
-              </div>
             </div>
           </li>
         );

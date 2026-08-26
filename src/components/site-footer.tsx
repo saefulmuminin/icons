@@ -2,22 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { CONFERENCE, ORGANIZERS } from "@/lib/content";
 import type { Dict, Lang } from "@/lib/i18n";
+import { markFor } from "@/lib/marks";
 import { localizedHref, NAV_ITEMS } from "@/lib/nav";
 import { ConferenceName, Container, Cta } from "./ui";
-
-/** Organizer marks, in the order they appear in ORGANIZERS. */
-const ORGANIZER_MARKS = [
-  "/logo/National Board of Zakat Indonesia (BAZNAS RI).png",
-  "/logo/IPB University.png",
-  "/logo/Ministry of Religious Affairs.png",
-];
 
 /** The edition's own year, rather than a number that quietly goes stale. */
 const YEAR = new Date(CONFERENCE.startsAt).getFullYear();
 
 export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
   return (
-    <footer className="relative mt-auto overflow-hidden border-t border-white/15 bg-gradient-to-b from-[#08291c] via-brand-deep to-[#04160e] text-white/80">
+    <footer className="relative mt-auto overflow-hidden border-t border-white/15 bg-gradient-to-b from-brand-night via-brand-deep to-brand-ink text-white/80">
       <div
         aria-hidden
         className="pointer-events-none absolute top-0 left-1/2 h-64 w-[600px] -translate-x-1/2 rounded-full bg-mint/10 blur-3xl"
@@ -97,21 +91,31 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
           </h2>
 
           <ul className="mt-4 grid grid-cols-3 divide-x divide-ink/10 overflow-hidden rounded-xl bg-white">
-            {ORGANIZERS.map((organizer, i) => (
-              <li
-                key={organizer}
-                title={organizer}
-                className="flex items-center justify-center px-3 py-5"
-              >
-                <Image
-                  src={encodeURI(ORGANIZER_MARKS[i])}
-                  alt={organizer}
-                  width={120}
-                  height={120}
-                  className="h-11 w-auto object-contain"
-                />
-              </li>
-            ))}
+            {ORGANIZERS.map((organizer) => {
+              const mark = markFor(organizer);
+
+              return (
+                <li
+                  key={organizer}
+                  title={organizer}
+                  className="flex items-center justify-center px-3 py-5"
+                >
+                  {mark ? (
+                    <Image
+                      src={mark}
+                      alt={organizer}
+                      width={120}
+                      height={120}
+                      className="h-11 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="text-center font-sans text-[0.6875rem] leading-tight font-semibold text-ink">
+                      {organizer}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </Container>

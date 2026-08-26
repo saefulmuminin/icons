@@ -6,6 +6,7 @@ import { EditionVideos } from "@/components/edition-videos";
 import { Reveal } from "@/components/reveal";
 import { Container, Eyebrow, PageTitle } from "@/components/ui";
 import { EDITIONS } from "@/lib/content";
+import { readPlates } from "@/lib/plates";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
@@ -40,6 +41,7 @@ export default async function PreviousPage({
     ...edition,
     ordinal: edition.title.match(/\b(\d+(?:st|nd|rd|th))\b/)?.[1] ?? "",
     mark: editionMark(edition.year),
+    posters: readPlates(editionPosters(edition.year)),
   }));
 
   return (
@@ -66,11 +68,36 @@ export default async function PreviousPage({
           and read as a band rather than a margin. */}
       <Container className="pb-20 sm:pb-24">
         <Reveal>
-          <EditionVideos editions={editions} noArchiveLabel={t.noArchive} />
+          <EditionVideos
+            editions={editions}
+            noArchiveLabel={t.noArchive}
+            filmsLabel={t.archiveFilms}
+            postersLabel={t.archivePosters}
+            zoomLabel={t.imageZoom}
+            closeLabel={t.imageClose}
+          />
         </Reveal>
       </Container>
     </>
   );
+}
+
+/**
+ * That year's posters. An edition often had more than one — the announcement
+ * with its line-up, and the call for papers — and both are all that survives
+ * of the years nobody filmed, so both are shown rather than whichever the
+ * filesystem happened to list first.
+ */
+function editionPosters(year: string) {
+  const dir = join(process.cwd(), "public", "poster");
+  if (!existsSync(dir)) return [];
+
+  return readdirSync(dir)
+    .filter(
+      (name) => /\.(png|webp|avif|jpe?g)$/i.test(name) && name.includes(year),
+    )
+    .sort()
+    .map((name) => encodeURI(`/poster/${name}`));
 }
 
 /**

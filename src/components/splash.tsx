@@ -3,9 +3,8 @@
 import { animate } from "animejs";
 import Image from "next/image";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { SPLASH_SEEN as SEEN } from "@/lib/splash-key";
 import logo from "@/../public/iconz10-logo.png";
-
-const SEEN = "iconz-splash";
 
 /**
  * Longest anyone waits at the door. Set just past the opening clip so it can
@@ -226,6 +225,3 @@ export function Splash({ skipLabel }: { skipLabel: string }) {
     </div>
   );
 }
-
-/** Runs before paint, so a repeat visit never flashes the screen. */
-export const SPLASH_GUARD = `try{if(sessionStorage.getItem('${SEEN}'))document.documentElement.dataset.splash='seen'}catch(e){}`;

@@ -22,22 +22,22 @@ import { pageMetadata } from "@/lib/seo";
 import { readPlates } from "@/lib/plates";
 
 /**
- * Posters from the editions before this one, cycling beside the masthead.
- * Their shapes differ — 9:16 through to square — and the frame takes each
- * one's own ratio rather than cropping them to a common box.
+ * This edition's own posters, cycling beside the masthead. The frame takes
+ * each one's own ratio rather than cropping them to a common box, so a poster
+ * cut to a different shape can be added without touching anything here.
  */
-const PLATES = [
-  "/image/bglatarbelakang.png",
-  "/image/iconz-9-2025.png",
-  "/image/road-to-iconz-9-2025.png",
-  "/image/iconz-7-2023.png",
-];
+const PLATES = ["/image16.png", "/image5.png"];
 
 /**
  * A muted tone per sub-event — enough to tell the cards apart, quiet enough
  * that four of them side by side still read as one set.
  */
-const ACCENTS = ["#6f9c86", "#a08a5e", "#7b8fa6", "#84956b"];
+const ACCENTS = [
+  "var(--color-quiet-sage)",
+  "var(--color-quiet-sand)",
+  "var(--color-quiet-slate)",
+  "var(--color-quiet-moss)",
+];
 
 export async function generateMetadata({
   params,
@@ -161,7 +161,6 @@ export default async function ConferencePage({
       {/* 01 — Participants */}
       <Container className="grid gap-10 pt-16 sm:pt-22 lg:grid-cols-[minmax(0,0.36fr)_minmax(0,0.64fr)] lg:gap-14">
         <div className="lg:sticky lg:top-[calc(var(--header-h)+2rem)] lg:self-start">
-          <Eyebrow>01</Eyebrow>
           <SectionTitle>{t.partTitle}</SectionTitle>
           <p className="mt-5 max-w-[34ch] font-sans text-[0.9375rem] leading-[1.65] text-pretty text-muted">
             {t.partIntro}
@@ -190,7 +189,7 @@ export default async function ConferencePage({
 
       {/* 02 — Sub-events */}
       <section className="relative mt-16 overflow-hidden sm:mt-22">
-        <ParallaxPlate src="/image12.png" />
+        <ParallaxPlate src="/image/bg.jpg" />
         {/* Black, heavily drawn down: the photograph is atmosphere here, not
             something to be read. */}
         <div
@@ -200,7 +199,6 @@ export default async function ConferencePage({
 
         <Container className="relative py-18 text-white sm:py-24">
           <div className="mx-auto max-w-[46rem] text-center">
-            <Eyebrow tone="mint">02</Eyebrow>
             <SectionTitle>{t.eventsTitle}</SectionTitle>
             <p className="mx-auto mt-5 max-w-[54ch] font-sans text-[0.9375rem] leading-[1.7] text-pretty text-white/75">
               {t.eventsIntro}
@@ -208,7 +206,10 @@ export default async function ConferencePage({
           </div>
 
           <Reveal className="mt-12 sm:mt-14">
-            <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+            {/* Three across from md up, and three columns for three cards:
+                the grid asked for four, so the row stood a card short and hung
+                off to the left of its own section. */}
+            <ol className="mx-auto grid max-w-[62rem] gap-4 md:grid-cols-3 lg:gap-5">
               {SUB_EVENTS.map((event, i) => {
                 const accent = ACCENTS[i % ACCENTS.length];
 
@@ -216,7 +217,7 @@ export default async function ConferencePage({
                   <li
                     key={event}
                     data-reveal
-                    className="group rounded-2xl bg-white p-6 shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-transform duration-500 hover:-translate-y-1"
+                    className="group flex flex-col items-center rounded-2xl bg-white p-6 text-center shadow-[0_18px_40px_-24px_rgba(0,0,0,0.7)] transition-transform duration-500 hover:-translate-y-1"
                   >
                     <div
                       style={{ color: accent }}
@@ -248,11 +249,10 @@ export default async function ConferencePage({
       <section className="bg-paper/60">
         <Container className="grid gap-10 pt-16 pb-20 sm:pt-22 sm:pb-24 lg:grid-cols-[minmax(0,0.36fr)_minmax(0,0.64fr)] lg:gap-14">
           <div>
-            <Eyebrow>03</Eyebrow>
             <SectionTitle>{t.regTitle}</SectionTitle>
           </div>
 
-          <div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#11402c,#0b2e1f)] p-7 text-white sm:p-9">
+          <div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(160deg,var(--color-brand-mid),var(--color-brand-deep))] p-7 text-white sm:p-9">
             <p className="max-w-[46ch] font-display text-[clamp(1.125rem,1.8vw,1.375rem)] leading-[1.45] font-medium text-pretty text-mint-pale">
               {t.regText}
             </p>

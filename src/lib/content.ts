@@ -54,8 +54,7 @@ export const LINKS = {
   registerEmbed:
     "https://docs.google.com/forms/d/e/1FAIpQLSdb9CrQAVJvuuGU9Xbwcyj0qu6EnqzNFGSWlTXQPM7nx4suiQ/viewform?embedded=true",
   /** Where an author actually files a paper. */
-  submission:
-    "https://iconzbaznas.com/submission/index.php/proceedings/about/submissions",
+  submission: "https://bazn.as/ICONZ10FullPaperSubmission",
   /** The back issues, which is a different door to the one above. */
   archive:
     "https://iconzbaznas.com/submission/index.php/proceedings/issue/archive",
@@ -121,10 +120,16 @@ const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
       "Prof. Dr. Ir. Rachmat Pambudy, M.S.",
     ],
     ["Chair of DPR Commission VIII", "H. Marwan Dasopang, M.Si."],
-    ["Speaker of the MPR", "Ahmad Muzani"],
-    ["Speaker of the DPR", "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H."],
     [
-      "Secretary General, World Zakat Forum",
+      "Speaker of the People's Consultative Assembly of the Republic of Indonesia",
+      "Ahmad Muzani",
+    ],
+    [
+      "Deputy Speaker of the House of Representatives of the Republic of Indonesia",
+      "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H.",
+    ],
+    [
+      "General Secretary of the World Zakat and Waqf Forum (WZWF)",
       "H.E. Datuk Dr. Mohd Ghazali Md. Noor",
     ],
   ],
@@ -138,9 +143,15 @@ const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
     ],
     ["Menteri Bappenas", "Prof. Dr. Ir. Rachmat Pambudy, M.S."],
     ["Ketua Komisi VIII DPR", "H. Marwan Dasopang, M.Si."],
-    ["Ketua MPR", "Ahmad Muzani"],
-    ["Ketua DPR", "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H."],
-    ["Sekjen World Zakat Forum", "H.E. Datuk Dr. Mohd Ghazali Md. Noor"],
+    ["Ketua Majelis Permusyawaratan Rakyat RI", "Ahmad Muzani"],
+    [
+      "Wakil Ketua Dewan Perwakilan Rakyat RI",
+      "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H.",
+    ],
+    [
+      "Sekretaris Jenderal World Zakat and Waqf Forum (WZWF)",
+      "H.E. Datuk Dr. Mohd Ghazali Md. Noor",
+    ],
   ],
 };
 
@@ -154,15 +165,22 @@ export const BOOK_CHAPTER = {
     {
       name: "Prof. Dr. Abdul Ghafar Ismail",
       at: "Universiti Kebangsaan Malaysia (UKM)",
+      scopus: "https://www.scopus.com/authid/detail.uri?authorId=36987804600",
     },
     {
       name: "Dr. Muhammad Hasbi Zaenal",
       at: "Badan Amil Zakat Nasional · UIN Syarif Hidayatullah Jakarta",
+      scopus: "https://www.scopus.com/authid/detail.uri?authorId=57896475700",
     },
-    { name: "Prof. Dr. Irfan Syauqi Beik", at: "IPB University, Indonesia" },
+    {
+      name: "Prof. Dr. Irfan Syauqi Beik",
+      at: "IPB University, Indonesia",
+      scopus: "https://www.scopus.com/authid/detail.uri?authorId=57191277172",
+    },
     {
       name: "Assoc. Prof. Dr. Salman Ahmed Shaikh",
       at: "International Islamic University of Malaysia (IIUM)",
+      scopus: "https://www.scopus.com/authid/detail.uri?authorId=57193154814",
     },
   ],
   publishers: ["Springer", "Palgrave Macmillan", "Emerald"],
@@ -215,10 +233,14 @@ export const JOURNALS: string[] = [
   "International Proceedings of the 10th ICONZ BAZNAS 2025 (Google Scholar etc)",
 ];
 
+/**
+ * The order is the order the marks stand in: the ministry on the left, IPB in
+ * the middle, BAZNAS on the right, as markom asks.
+ */
 export const ORGANIZERS: string[] = [
-  "National Board of Zakat Indonesia (BAZNAS RI)",
-  "IPB University",
   "Ministry of Religious Affairs",
+  "IPB University",
+  "The National Board of Zakat",
 ];
 
 export const SUPPORTERS: string[] = [
@@ -237,9 +259,8 @@ export const SUPPORTERS: string[] = [
 
 export const SUB_EVENTS: string[] = [
   "International Conference",
-  "Paper Presentation",
+  "Paper and Book Chapter Presentation",
   "Book Launching",
-  "International Workshop",
 ];
 
 const CFP_DATES: Record<Lang, [label: string, date: string][]> = {
@@ -260,6 +281,8 @@ const CFP_DATES: Record<Lang, [label: string, date: string][]> = {
 export type Edition = {
   year: string;
   title: string;
+  /** Only where an edition's theme is on record. */
+  theme?: string;
   links: { label: string; href: string }[];
   /**
    * That year's proceedings on the OJS site. Fill one in and the proceedings
@@ -271,8 +294,9 @@ export type Edition = {
 
 export const EDITIONS: Edition[] = [
   {
-    year: "2017",
-    title: "The 1st International Conference of Zakat",
+    year: "2016",
+    title: "National Seminar on Zakat 2016",
+    theme: "Reflection of National Zakat Management",
     links: [],
   },
   {

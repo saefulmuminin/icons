@@ -4,14 +4,14 @@ import { join } from "node:path";
 import { BackgroundStory } from "@/components/background-story";
 import { Hero } from "@/components/hero";
 import { KeyDates } from "@/components/key-dates";
-import { CornerMotif } from "@/components/corner-motif";
 import { StarLattice } from "@/components/pattern";
 import { Reveal } from "@/components/reveal";
+import { CountUp } from "@/components/count-up";
 import { SectionJump } from "@/components/section-jump";
 import { SpeakerGrid } from "@/components/speaker-grid";
 import { SupporterMarquee } from "@/components/supporters";
 import Image from "next/image";
-import { Container, Eyebrow, SectionTitle } from "@/components/ui";
+import { Container, SectionTitle } from "@/components/ui";
 import {
   CONFERENCE,
   FACTS,
@@ -22,6 +22,7 @@ import {
   ORGANIZERS,
   SUPPORTERS,
 } from "@/lib/content";
+import { portraitsIn } from "@/lib/marks";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { eventJsonLd, pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
@@ -55,7 +56,7 @@ export default async function HomePage({
   const t = getDictionary(lang);
   const objectives = getObjectives(lang);
   const roster = getSpeakers(lang);
-  const portraits = matchFiles(
+  const portraits = portraitsIn(
     "pembicara",
     roster.map((one) => one.name),
   );
@@ -63,16 +64,11 @@ export default async function HomePage({
 
   // The step illustrations are filed under their Indonesian labels whichever
   // language the page is being read in.
-  const milestones = getKeyDates(lang);
-  const plates = matchFiles(
-    "ilutasi",
-    getKeyDates("id").map((one) => one.label),
-  );
-  const keyDates = milestones.map((one, i) => ({ ...one, image: plates[i] }));
+  const keyDates = getKeyDates(lang);
 
-  const orgMarks = matchFiles("logo", [...ORGANIZERS]);
+  const orgMarks = portraitsIn("logo", [...ORGANIZERS]);
   const organizers = ORGANIZERS.map((name, i) => ({ name, logo: orgMarks[i] }));
-  const supMarks = matchFiles("logo", [...SUPPORTERS]);
+  const supMarks = portraitsIn("logo", [...SUPPORTERS]);
   const supporters = SUPPORTERS.map((name, i) => ({ name, logo: supMarks[i] }));
 
   // Four movements of the background story, each with the thread it carries
@@ -115,7 +111,7 @@ export default async function HomePage({
               ].join(" ")}
             >
               <div className="font-display text-[2rem] leading-none font-bold text-brand">
-                {fact.value}
+                <CountUp value={fact.value} />
               </div>
               <div className="mt-2 font-sans text-xs font-medium tracking-[0.1em] uppercase text-muted">
                 {t[fact.key]}
@@ -162,12 +158,9 @@ export default async function HomePage({
         id="speakers"
         className="relative scroll-mt-[var(--header-h)] overflow-hidden"
       >
-        <CornerMotif />
-
         <Container className="relative pt-16 sm:pt-22">
           <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
             <div>
-              <Eyebrow>03</Eyebrow>
               <SectionTitle>{t.speakersTitle}</SectionTitle>
             </div>
             <p className="max-w-[38ch] font-sans text-[0.9375rem] leading-[1.65] text-muted text-pretty">
@@ -200,7 +193,6 @@ export default async function HomePage({
         <StarLattice id="dates-lattice" className="text-brand opacity-[0.06]" />
 
         <Container className="relative py-16 sm:py-20">
-          <Eyebrow>04</Eyebrow>
           <SectionTitle>{t.datesTitle}</SectionTitle>
           <KeyDates entries={keyDates} />
         </Container>
@@ -223,7 +215,6 @@ export default async function HomePage({
         <Container className="relative py-20 sm:py-28">
           <Reveal>
             <div data-reveal className="mx-auto max-w-[46rem] text-center">
-              <Eyebrow>05</Eyebrow>
               <SectionTitle className="text-ink">{t.orgTitle}</SectionTitle>
             </div>
 
@@ -283,47 +274,6 @@ function passageImage(n: number) {
     candidates.find((src) => existsSync(join(process.cwd(), "public", src))) ??
     null
   );
-}
-
-const ART = /\.(jpe?g|png|webp|avif)$/i;
-
-/** Only letters and digits, so punctuation and spacing drift never matter. */
-const loose = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-/**
- * Pairs a list of names with the files in a public folder, matching loosely so
- * a file renamed with different punctuation, spacing or extension still finds
- * its way home. A name with nothing to match returns null, and the page falls
- * back to a plain plate rather than a broken frame.
- */
-function matchFiles(folder: string, names: string[]) {
-  const dir = join(process.cwd(), "public", folder);
-
-  const files = existsSync(dir)
-    ? readdirSync(dir)
-        .filter((file) => ART.test(file))
-        .map((file) => ({ file, key: loose(file.replace(/\.[^.]+$/, "")) }))
-    : [];
-
-  return names.map((name) => {
-    const target = loose(name);
-    const match = files
-      .filter(
-        ({ key }) =>
-          key.length > 3 && (target.includes(key) || key.includes(target)),
-      )
-      // An exact name wins outright; otherwise the closest length wins, so
-      // "presentasi paper" cannot be swallowed by "technical meeting
-      // presentasi paper".
-      .sort(
-        (a, b) =>
-          Number(a.key !== target) - Number(b.key !== target) ||
-          Math.abs(a.key.length - target.length) -
-            Math.abs(b.key.length - target.length),
-      )[0];
-
-    return match ? encodeURI(`/${folder}/${match.file}`) : null;
-  });
 }
 
 /** An organizer's mark, or their initials while no file is on hand. */

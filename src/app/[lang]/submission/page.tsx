@@ -26,7 +26,12 @@ import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
 /** A muted tone per milestone, matching the run-up cards on the home page. */
-const ACCENTS = ["#b45309", "#1e7a45", "#0e7490", "#4d7c0f"];
+const ACCENTS = [
+  "var(--color-step-amber)",
+  "var(--color-brand)",
+  "var(--color-step-teal)",
+  "var(--color-step-olive)",
+];
 
 export async function generateMetadata({
   params,
@@ -76,7 +81,11 @@ export default async function SubmissionPage({
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(52rem_34rem_at_6%_-4%,rgba(30,122,69,0.1),transparent_62%),radial-gradient(44rem_30rem_at_98%_92%,rgba(214,178,58,0.16),transparent_64%)]"
         />
 
-        <Container className="relative grid items-end gap-10 pt-12 pb-12 sm:pt-16 sm:pb-14 lg:grid-cols-[minmax(0,0.58fr)_minmax(0,0.42fr)] lg:gap-12">
+        {/* Two columns of near-equal weight, both centred against each other.
+            A 58/42 split left the figures crowded into a narrow strip while
+            the text ran wide, and bottom-alignment gathered every pixel of
+            slack into one gap above them. */}
+        <Container className="relative grid items-center gap-10 pt-10 pb-10 sm:pt-12 sm:pb-12 lg:grid-cols-[minmax(0,0.54fr)_minmax(0,0.46fr)] lg:gap-14">
           <div>
             <Eyebrow>{t.navSubmission}</Eyebrow>
             <PageTitle className="max-w-[20ch]">{t.submitTitle}</PageTitle>
@@ -89,7 +98,7 @@ export default async function SubmissionPage({
                 anyone arriving here has to make. Plain anchors down the page
                 rather than two routes — both are short enough to read whole,
                 and a reader who wants the other one is a thumb away from it. */}
-            <div className="mt-9 grid gap-3 sm:grid-cols-2">
+            <div className="mt-9 grid items-stretch gap-3 sm:grid-cols-2">
               <Pick
                 n="01"
                 href="#call-for-papers"
@@ -105,20 +114,25 @@ export default async function SubmissionPage({
             </div>
           </div>
 
-          {/* One shape for the cut-out to stand on, sized off the artwork
-              rather than a fixed box. */}
-          <div className="relative">
+          {/* A cut-out, not a photograph: it has no ground of its own, so a
+              disc is given to it to stand on. Framed in a box instead, the
+              transparency around the figures reads as an empty panel.
+
+              The disc is kept wholly inside the column — the section clips
+              anything that leaves it, and a circle cut off by an invisible
+              edge reads as a mistake rather than as a shape. */}
+          <div className="relative mx-auto w-full max-w-[30rem]">
             <span
               aria-hidden
-              className="absolute inset-x-[10%] bottom-0 aspect-square rounded-full bg-brand"
+              className="absolute inset-x-[16%] bottom-0 aspect-square rounded-full bg-brand/10"
             />
 
             <Image
-              src="/image/image1.png"
+              src="/image/submission.png"
               alt=""
               priority
-              width={541}
-              height={461}
+              width={1063}
+              height={712}
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="relative h-auto w-full"
             />
@@ -147,6 +161,12 @@ export default async function SubmissionPage({
                 {t.cfpCta2}
               </Cta>
             </div>
+
+            <p className="mt-5">
+              <span className="inline-block rounded-full border border-brand/30 bg-brand/8 px-4 py-2 font-sans text-[0.8125rem] font-semibold text-brand-dark">
+                {t.cfpFree}
+              </span>
+            </p>
           </div>
 
           {/* The poster carries the same call in one picture — topics, dates
@@ -207,7 +227,7 @@ export default async function SubmissionPage({
 
       {/* Timeline */}
       <section className="relative overflow-hidden">
-        <ParallaxPlate src="/image12.png" />
+        <ParallaxPlate src="/image/bg.jpg" />
         <div
           aria-hidden
           className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.7)_45%,rgba(0,0,0,0.86)_100%)]"
@@ -231,13 +251,7 @@ export default async function SubmissionPage({
                   >
                     <div
                       style={{ color: accent }}
-                      className="font-display text-[0.6875rem] font-semibold tracking-[0.16em] uppercase"
-                    >
-                      {`0${i + 1}`}
-                    </div>
-                    <div
-                      style={{ color: accent }}
-                      className="mt-2 font-display text-[1rem] leading-[1.25] font-bold"
+                      className="font-display text-[1rem] leading-[1.25] font-bold"
                     >
                       {entry.date}
                     </div>
@@ -301,7 +315,6 @@ export default async function SubmissionPage({
       >
         <Container className="relative grid items-start gap-10 py-18 text-white sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:gap-14">
           <div>
-            <Eyebrow tone="mint">02</Eyebrow>
             <SectionTitle className="max-w-[22ch]">{t.bookTitle}</SectionTitle>
 
             <p className="mt-6 inline-flex flex-wrap items-baseline gap-x-2.5 rounded-full border border-mint/30 bg-white/8 px-4 py-2">
@@ -412,6 +425,16 @@ export default async function SubmissionPage({
                     >
                       {editor.at}
                     </span>
+
+                    <a
+                      href={editor.scopus}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2.5 inline-flex items-center gap-1.5 font-sans text-[0.75rem] font-semibold text-brand no-underline hover:underline"
+                    >
+                      Scopus
+                      <span aria-hidden>↗</span>
+                    </a>
                   </span>
                 </li>
               ))}
@@ -560,7 +583,7 @@ function Pick({
   return (
     <a
       href={href}
-      className="group flex items-start gap-3.5 rounded-2xl border border-ink/12 bg-paper p-5 no-underline shadow-[0_14px_34px_-28px_rgba(4,20,13,0.5)] transition-colors duration-300 hover:border-brand/35"
+      className="group flex h-full items-start gap-3.5 rounded-2xl border border-ink/12 bg-paper p-5 no-underline shadow-[0_14px_34px_-28px_rgba(4,20,13,0.5)] transition-colors duration-300 hover:border-brand/35"
     >
       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-brand/10 font-display text-[0.75rem] font-bold text-brand">
         {n}

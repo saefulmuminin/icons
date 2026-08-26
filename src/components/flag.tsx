@@ -15,6 +15,9 @@ export function Flag({
   lang: Lang;
   className?: string;
 }) {
+  // The hex below is not ours to move to a theme token: these are two national
+  // flags, and their colours are set by the states that fly them.
+  //
   // Two of these can sit on one page, and a clip path answers to its id alone.
   const clip = useId();
   const box = `shrink-0 rounded-[2px] ring-1 ring-inset ring-black/15 ${className}`;

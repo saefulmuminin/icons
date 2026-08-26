@@ -3,7 +3,7 @@
 import { animate } from "animejs";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Container, Eyebrow, SectionTitle } from "@/components/ui";
+import { Container, SectionTitle } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
 
 type Objective = {
@@ -24,14 +24,14 @@ type ObjectivesProps = {
  * of the previous leadership. Add more current photographs here and the
  * carousel goes back to changing picture with each objective.
  */
-const DOC_PHOTOS = ["/image12.png"];
+const DOC_PHOTOS = ["/image/tujuan.jpg"];
 
 // Clean White Base Cards with subtle BAZNAS Ambient Accents (Hijau, Kuning/Gold BAZNAS, Ungu)
 const CARD_THEMES = [
   {
     // 01: Hijau BAZNAS (Emerald Green)
     active:
-      "bg-gradient-to-br from-[#0b3d26] via-[#125c3a] to-brand-deep text-white shadow-xl ring-2 ring-emerald-500/40",
+      "bg-gradient-to-br from-obj1-from via-obj1-via to-brand-deep text-white shadow-xl ring-2 ring-emerald-500/40",
     inactive:
       "bg-white text-ink border-emerald-500/20 hover:border-emerald-500/50 hover:bg-emerald-500/[0.04]",
     glow: "bg-emerald-400/25",
@@ -41,7 +41,7 @@ const CARD_THEMES = [
   {
     // 02: Kuning / Emas BAZNAS (BAZNAS Amber Gold)
     active:
-      "bg-gradient-to-br from-[#4a3608] via-[#6d510e] to-[#362705] text-white shadow-xl ring-2 ring-amber-400/40",
+      "bg-gradient-to-br from-obj2-from via-obj2-via to-obj2-to text-white shadow-xl ring-2 ring-amber-400/40",
     inactive:
       "bg-white text-ink border-amber-500/20 hover:border-amber-500/50 hover:bg-amber-500/[0.04]",
     glow: "bg-amber-400/25",
@@ -51,7 +51,7 @@ const CARD_THEMES = [
   {
     // 03: Ungu Soft (Soft Purple)
     active:
-      "bg-gradient-to-br from-[#2a134a] via-[#432073] to-[#1d0c35] text-white shadow-xl ring-2 ring-purple-400/40",
+      "bg-gradient-to-br from-obj3-from via-obj3-via to-obj3-to text-white shadow-xl ring-2 ring-purple-400/40",
     inactive:
       "bg-white text-ink border-purple-500/20 hover:border-purple-500/50 hover:bg-purple-500/[0.04]",
     glow: "bg-purple-400/20",
@@ -61,7 +61,7 @@ const CARD_THEMES = [
   {
     // 04: Hijau Mint BAZNAS (Mint / Lime Green)
     active:
-      "bg-gradient-to-br from-[#0d422a] via-[#156641] to-[#092d1c] text-white shadow-xl ring-2 ring-mint/40",
+      "bg-gradient-to-br from-obj4-from via-obj4-via to-obj4-to text-white shadow-xl ring-2 ring-mint/40",
     inactive:
       "bg-white text-ink border-emerald-400/20 hover:border-emerald-400/50 hover:bg-emerald-400/[0.04]",
     glow: "bg-mint/30",
@@ -71,7 +71,7 @@ const CARD_THEMES = [
   {
     // 05: Kuning Terang BAZNAS (Warm Yellow Gold)
     active:
-      "bg-gradient-to-br from-[#3d2c07] via-[#5c430c] to-[#2b1f04] text-white shadow-xl ring-2 ring-yellow-400/40",
+      "bg-gradient-to-br from-obj5-from via-obj5-via to-obj5-to text-white shadow-xl ring-2 ring-yellow-400/40",
     inactive:
       "bg-white text-ink border-yellow-500/20 hover:border-yellow-500/50 hover:bg-yellow-500/[0.04]",
     glow: "bg-yellow-400/25",
@@ -81,7 +81,7 @@ const CARD_THEMES = [
   {
     // 06: Hijau Pekat BAZNAS (Forest Green)
     active:
-      "bg-gradient-to-br from-[#0a331f] via-[#134e30] to-[#072415] text-white shadow-xl ring-2 ring-emerald-400/40",
+      "bg-gradient-to-br from-obj6-from via-obj6-via to-obj6-to text-white shadow-xl ring-2 ring-emerald-400/40",
     inactive:
       "bg-white text-ink border-emerald-600/20 hover:border-emerald-600/50 hover:bg-emerald-600/[0.04]",
     glow: "bg-emerald-500/25",
@@ -162,18 +162,6 @@ export function Objectives({
         {/* Top Header: Title on Left, Description on Right */}
         <div className="grid gap-6 lg:grid-cols-12 lg:items-end mb-12 sm:mb-16">
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-3 mb-2.5">
-              <Eyebrow tone="brand">02</Eyebrow>
-              <div className="inline-flex items-center rounded-lg bg-white px-3 py-1 shadow-sm border border-ink/10">
-                <Image
-                  src="/iconz10-logo.png"
-                  alt="ICONZ 10 Logo"
-                  width={100}
-                  height={32}
-                  className="h-6 w-auto object-contain"
-                />
-              </div>
-            </div>
             <SectionTitle className="text-ink">{title}</SectionTitle>
           </div>
 

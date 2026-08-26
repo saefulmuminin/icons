@@ -67,21 +67,17 @@ export default async function RegisterPage({
             ))}
           </dl>
 
-          {/* The cut-out has no ground of its own, so it is given one: a
-              rounded shape sized off the artwork rather than a fixed box. */}
+          {/* A photograph, so it brings its own ground — the tinted shape the
+              cut-out used to stand on would only show at the corners. */}
           <div className="relative mt-8">
-            <span
-              aria-hidden
-              className="absolute inset-x-5 top-[18%] bottom-3 rounded-[2.5rem] bg-[linear-gradient(150deg,#f4d861_0%,#8fd6a8_52%,#1e7a45_100%)]"
-            />
             <Image
-              src="/image/register.png"
+              src="/image/pendaftaran.jpg"
               alt=""
               priority
-              width={1230}
-              height={1278}
+              width={1600}
+              height={1069}
               sizes="(min-width: 1024px) 38vw, 100vw"
-              className="relative h-auto w-full"
+              className="h-auto w-full rounded-2xl ring-1 ring-ink/10"
             />
           </div>
         </div>

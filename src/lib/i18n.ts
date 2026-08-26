@@ -5,7 +5,7 @@ export const LANGS: Lang[] = ["en", "id"];
 const en = {
   navHome: "Home",
   navConference: "Conference",
-  navSubmission: "Submission",
+  navSubmission: "Paper Submission",
   navPrevious: "Previous ICONZ",
   navProceedings: "Proceedings",
   register: "Register",
@@ -95,8 +95,7 @@ const en = {
     "Formulated to address the need to strengthen the role of zakat and philanthropy within an increasingly complex and interconnected global context.",
 
   speakersTitle: "Invited speakers",
-  speakersNote:
-    "Confirmed and invited figures listed in the conference term of reference.",
+  speakersNote: "Figures listed in the conference term of reference.",
 
   datesTitle: "Key dates",
   orgTitle: "Organizers & supporters",
@@ -115,10 +114,10 @@ const en = {
 
   submitTitle: "Submit to the 10th ICONZ",
   submitIntro:
-    "Two ways to take part: a paper for the conference proceedings, or a chapter for the international edited book. Both close in November 2026.",
+    "Two ways to take part: submit a paper for the conference proceedings or a chapter for the international edited book. Both deadlines are in November 2026.",
   pickPapers: "Call for Papers",
   pickPapersNote:
-    "Present a paper at the conference and publish it in the proceedings.",
+    "Present a paper at the conference and publish it in IJAZ, selected journals, or proceedings.",
   pickBook: "Call for International Book Chapter",
   pickBookNote:
     "Contribute a chapter to an edited volume on zakat and well-being.",
@@ -143,17 +142,19 @@ const en = {
     "Papers are invited across ten sub-themes. Accepted and selected papers will be presented during the conference and considered for publication.",
   cfpCta1: "Paper submission",
   cfpCta2: "Download paper template",
+  cfpFree: "Submission is free of charge",
   subthemesTitle: "Sub-themes",
   timelineTitle: "Timeline",
   pubTitle: "Publication opportunity",
   pubIntro:
     "Accepted and selected papers will have the opportunity to be published in the following journals:",
 
-
   prevTitle: "Previous ICONZ",
   prevIntro:
     "Documentation and recordings from the first nine editions of the International Conference on Zakat.",
   noArchive: "No archive available",
+  archiveFilms: "recordings",
+  archivePosters: "posters",
 
   procTitle: "Conference Proceedings",
   procText:
@@ -163,7 +164,7 @@ const en = {
   procSoon: "Not yet linked",
 
   footOrg:
-    "Organized by BAZNAS RI, IPB University and the Ministry of Religious Affairs",
+    "10th ICONZ Organized by BAZNAS RI, IPB University and the Ministry of Religious Affairs",
 } as const;
 
 export type Dict = { [K in keyof typeof en]: string };
@@ -171,7 +172,7 @@ export type Dict = { [K in keyof typeof en]: string };
 const id: Dict = {
   navHome: "Beranda",
   navConference: "Konferensi",
-  navSubmission: "Submission",
+  navSubmission: "Paper Submission",
   navPrevious: "ICONZ Sebelumnya",
   navProceedings: "Prosiding",
   register: "Daftar",
@@ -283,7 +284,7 @@ const id: Dict = {
     "Dua jalur untuk ikut serta: makalah untuk prosiding konferensi, atau bab untuk buku suntingan internasional. Keduanya ditutup November 2026.",
   pickPapers: "Call for Papers",
   pickPapersNote:
-    "Presentasikan makalah di konferensi dan terbitkan dalam prosiding.",
+    "Presentasikan makalah di konferensi dan terbitkan di IJAZ, jurnal terpilih, atau prosiding.",
   pickBook: "Call for International Book Chapter",
   pickBookNote:
     "Sumbangkan satu bab untuk buku suntingan bertema zakat dan kesejahteraan.",
@@ -308,17 +309,19 @@ const id: Dict = {
     "Makalah diundang untuk sepuluh sub-tema. Makalah yang diterima dan terpilih akan dipresentasikan pada konferensi serta dipertimbangkan untuk publikasi.",
   cfpCta1: "Pengiriman makalah",
   cfpCta2: "Unduh templat makalah",
+  cfpFree: "Pengiriman tidak dipungut biaya",
   subthemesTitle: "Sub-tema",
   timelineTitle: "Jadwal",
   pubTitle: "Peluang publikasi",
   pubIntro:
     "Makalah yang diterima dan terpilih akan memiliki kesempatan untuk dipublikasikan di jurnal-jurnal berikut:",
 
-
   prevTitle: "ICONZ Sebelumnya",
   prevIntro:
     "Dokumentasi dan rekaman sembilan penyelenggaraan International Conference on Zakat sebelumnya.",
   noArchive: "Tidak ada arsip",
+  archiveFilms: "rekaman",
+  archivePosters: "poster",
 
   procTitle: "Prosiding Konferensi",
   procText:
@@ -328,7 +331,7 @@ const id: Dict = {
   procSoon: "Belum ditautkan",
 
   footOrg:
-    "Diselenggarakan oleh BAZNAS RI, IPB University dan Kementerian Agama",
+    "10th ICONZ Organized by BAZNAS RI, IPB University and the Ministry of Religious Affairs",
 };
 
 export const dictionaries: Record<Lang, Dict> = { en, id };

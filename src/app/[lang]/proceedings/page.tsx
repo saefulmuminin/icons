@@ -130,6 +130,15 @@ export default async function ProceedingsPage({
                   >
                     {edition.title}
                   </h2>
+
+                  {edition.theme ? (
+                    <p
+                      lang="en"
+                      className="mt-2 font-display text-[0.875rem] leading-[1.45] font-normal text-pretty text-muted"
+                    >
+                      “{edition.theme}”
+                    </p>
+                  ) : null}
                 </div>
 
                 {edition.proceedings ? (
