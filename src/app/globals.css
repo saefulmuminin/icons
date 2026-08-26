@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-cream: #f7f6f1;
+  --color-paper: #ffffff;
+  --color-sage: #edf2ee;
+
+  /* Ink */
+  --color-ink: #0b1f17;
+  --color-body: #2a382f;
+  --color-muted: #5a6a60;
+  --color-faint: #8a9990;
+  --color-pale: #bfcfc4;
+  --color-nav: #3e4f45;
+
+  /* Brand greens */
+  --color-brand: #1e7a45;
+  --color-brand-dark: #0e4c29;
+  --color-brand-deep: #0b2e1f;
+  --color-brand-mid: #11402c;
+  --color-brand-shade: #0e3524;
+  --color-brand-bright: #3aa85f;
+
+  /* Mints (on dark) */
+  --color-mint: #7fd3a2;
+  --color-mint-soft: #a8e3c1;
+  --color-mint-pale: #bfe6ce;
+  --color-mint-dim: #8fcfac;
+
+  /* Milestone accents — one per step in a run of dates or sub-events. */
+  --color-step-amber: #b45309;
+  --color-step-teal: #0e7490;
+  --color-step-olive: #4d7c0f;
+
+  /* The quieter set the conference sub-events are told apart by. */
+  --color-quiet-sage: #6f9c86;
+  --color-quiet-sand: #a08a5e;
+  --color-quiet-slate: #7b8fa6;
+  --color-quiet-moss: #84956b;
+
+  /* Deeper than brand-deep: the two ends of the footer's fall. */
+  --color-brand-night: #08291c;
+  --color-brand-ink: #04160e;
+
+  /* Warm accents */
+  --color-gold: #f4d861;
+  --color-mint-mid: #8fd6a8;
+
+  /* A plate with no picture in it yet. */
+  --color-plate-from: #e6ece7;
+  --color-plate-to: #cfdcd4;
+
+  /* The panel's one warning voice: a demo notice, an unsaved file. */
+  --color-warn-bg: #fdf6e0;
+  --color-warn-line: #e0c46a;
+  --color-warn-bar: #d0a83a;
+  --color-warn-ink: #6b5410;
+  --color-warn-strong: #8a6d16;
+
+  /* The six objective plates, each a gradient of three. */
+  --color-obj1-from: #0b3d26;
+  --color-obj1-via: #125c3a;
+  --color-obj2-from: #4a3608;
+  --color-obj2-via: #6d510e;
+  --color-obj2-to: #362705;
+  --color-obj3-from: #2a134a;
+  --color-obj3-via: #432073;
+  --color-obj3-to: #1d0c35;
+  --color-obj4-from: #0d422a;
+  --color-obj4-via: #156641;
+  --color-obj4-to: #092d1c;
+  --color-obj5-from: #3d2c07;
+  --color-obj5-via: #5c430c;
+  --color-obj5-to: #2b1f04;
+  --color-obj6-from: #0a331f;
+  --color-obj6-via: #134e30;
+  --color-obj6-to: #072415;
+
+  /* Motion */
+  --animate-marquee: marquee 58s linear infinite;
+  --animate-blob: blob 16s ease-in-out infinite;
+  --animate-sweep: sweep 1.1s ease-in-out infinite;
+
+  /* Type */
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), system-ui, sans-serif;
+}
+
+/*
+ * Height of the sticky site bar. The home hero pulls itself up by the same
+ * amount so its video runs edge to edge behind a transparent bar.
+ */
+:root {
+  --header-h: 3.75rem;
+}
+
+@media (min-width: 40rem) {
+  :root {
+    --header-h: 4.5rem;
+  }
+}
+
+/*
+ * Animated pieces start hidden and are handed to their entrance animation.
+ * Anyone without one — reduced motion, or no scripting at all — sees them in
+ * their finished state instead.
+ */
+[data-hero],
+[data-reveal] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  [data-hero],
+  [data-reveal] {
+    opacity: 1;
+  }
+}
+
+/* An organic shape that never quite settles. */
+@keyframes blob {
+  0%,
+  100% {
+    border-radius: 46% 54% 38% 62% / 38% 44% 56% 62%;
+  }
+  50% {
+    border-radius: 58% 42% 56% 44% / 52% 38% 62% 48%;
+  }
+}
+
+/* The supporter belt: one full list-width per cycle, so the seam never shows. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* A loader bar: a third of the track, run from one end clean off the other. */
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+/* Already seen this session: the splash never gets a chance to paint. */
+[data-splash="seen"] [data-splash-screen] {
+  display: none;
+}
+
+/* No scripting at all: nothing would ever take the screen away again, so it
+   is never put up in the first place. */
+@media (scripting: none) {
+  [data-splash-screen] {
+    display: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /*
+   * Cream, lit by three soft blooms — green at the top, gold on the right,
+   * mint low on the left. Fixed to the viewport so the wash stays even the
+   * whole way down instead of banding section by section.
+   */
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(
+      60rem 40rem at 6% 10%,
+      rgba(30, 122, 69, 0.09),
+      transparent 62%
+    ),
+    radial-gradient(
+      54rem 38rem at 98% 44%,
+      rgba(214, 178, 58, 0.13),
+      transparent 64%
+    ),
+    radial-gradient(
+      48rem 34rem at 16% 92%,
+      rgba(127, 211, 162, 0.13),
+      transparent 62%
+    );
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-mint-pale);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
