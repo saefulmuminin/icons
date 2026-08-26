@@ -5,6 +5,9 @@ import {
   BOOK_CHAPTER,
   CONFERENCE,
   EDITIONS,
+  FACTS,
+  JOURNALS,
+  SUB_EVENTS,
   getSpeakers,
   LINKS,
   ORGANIZERS,
@@ -136,5 +139,39 @@ describe("every speaker", () => {
   it("gets a portrait of their own", () => {
     const found = portraitsIn("pembicara", speakers);
     expect(new Set(found).size).toBe(speakers.length);
+  });
+});
+
+describe("the figures under the hero", () => {
+  const of = (key: string) => FACTS.find((f) => f.key === key)?.value;
+
+  /**
+   * These went stale once already: a sub-event was dropped and the band kept
+   * announcing four. Counted from the lists themselves they cannot drift, and
+   * this holds them to it.
+   */
+  it("counts the sub-events actually listed", () => {
+    expect(of("factSubevents")).toBe(String(SUB_EVENTS.length));
+  });
+
+  it("counts the publication outlets actually listed", () => {
+    expect(of("factJournals")).toBe(String(JOURNALS.length));
+  });
+
+  it("counts the days the conference actually runs", () => {
+    const days =
+      Math.round(
+        (new Date(CONFERENCE.endsAt).setHours(0, 0, 0, 0) -
+          new Date(CONFERENCE.startsAt).setHours(0, 0, 0, 0)) /
+          86_400_000,
+      ) + 1;
+
+    expect(of("factDays")).toBe(String(days));
+  });
+
+  it("states each figure as a number", () => {
+    for (const fact of FACTS) {
+      expect(fact.value).toMatch(/^\d+$/);
+    }
   });
 });

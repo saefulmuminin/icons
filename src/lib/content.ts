@@ -15,6 +15,14 @@ export const CONFERENCE = {
     "Fakultas Ekonomi dan Manajemen IPB University, Jalan Agatis, Dramaga, Bogor",
 } as const;
 
+/** How many days the conference runs, counted from its own two dates. */
+const CONFERENCE_DAYS =
+  Math.round(
+    (new Date(CONFERENCE.endsAt).setHours(0, 0, 0, 0) -
+      new Date(CONFERENCE.startsAt).setHours(0, 0, 0, 0)) /
+      86_400_000,
+  ) + 1;
+
 /** Google's compact UTC stamp, e.g. 20261124T010000Z. */
 const stamp = (iso: string) =>
   new Date(iso).toISOString().replace(/[-:]|\.\d{3}/g, "");
@@ -60,13 +68,6 @@ export const LINKS = {
     "https://iconzbaznas.com/submission/index.php/proceedings/issue/archive",
   template: "https://bazn.as/TemplateCallForPaperICONZ",
 } as const;
-
-export const FACTS = [
-  { value: "300", key: "factParticipants" },
-  { value: "4", key: "factSubevents" },
-  { value: "3", key: "factDays" },
-  { value: "9", key: "factJournals" },
-] as const;
 
 const OBJECTIVES: Record<Lang, string[]> = {
   en: [
@@ -262,6 +263,21 @@ export const SUB_EVENTS: string[] = [
   "Paper and Book Chapter Presentation",
   "Book Launching",
 ];
+
+/**
+ * The four figures under the hero.
+ *
+ * Two of them are counted rather than typed. A sub-event was dropped and the
+ * band went on announcing four of them, because the number lived nowhere near
+ * the list it was describing — the only way that stays true is for it to be
+ * the same fact stated once.
+ */
+export const FACTS = [
+  { value: "300", key: "factParticipants" },
+  { value: String(SUB_EVENTS.length), key: "factSubevents" },
+  { value: String(CONFERENCE_DAYS), key: "factDays" },
+  { value: String(JOURNALS.length), key: "factJournals" },
+] as const;
 
 const CFP_DATES: Record<Lang, [label: string, date: string][]> = {
   en: [
