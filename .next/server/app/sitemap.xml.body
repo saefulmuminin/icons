@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<url>
+<loc>https://iconzbaznas.com/en</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id" />
+<changefreq>monthly</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/en/conference</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/conference" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/conference" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/en/submission</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/submission" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/submission" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/en/previous</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/previous" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/previous" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/en/proceedings</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/proceedings" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/proceedings" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/en/register</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/register" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/register" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id" />
+<changefreq>monthly</changefreq>
+<priority>1</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id/conference</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/conference" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/conference" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id/submission</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/submission" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/submission" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id/previous</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/previous" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/previous" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id/proceedings</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/proceedings" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/proceedings" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://iconzbaznas.com/id/register</loc>
+<xhtml:link rel="alternate" hreflang="en" href="https://iconzbaznas.com/en/register" />
+<xhtml:link rel="alternate" hreflang="id" href="https://iconzbaznas.com/id/register" />
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+</urlset>
