@@ -1,3 +1,0 @@
-module.exports=[4051,a=>{"use strict";a.s(["default",()=>b]);let b=(0,a.i(11857).registerClientReference)(function(){throw Error("Attempted to call the default export of [project]/src/app/[lang]/not-found.tsx from the server, but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/src/app/[lang]/not-found.tsx","default")},66602,a=>{"use strict";var b=a.i(4051);a.n(b)},29086,function(a){a.n(a.i(66602))}];
-
-//# sourceMappingURL=src_app_%5Blang%5D_not-found_tsx_1_y7kpg._.js.map
