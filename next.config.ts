@@ -14,7 +14,25 @@ const nextConfig: NextConfig = {
   // Every route lives under `[lang]`, so an address that matches no language
   // has no layout to render a 404 inside. This hands those to
   // `app/global-not-found.tsx`, which builds its own document.
-  experimental: { globalNotFound: true },
+  experimental: {
+    globalNotFound: true,
+
+    // Turbopack keeps a filesystem cache for builds under `.next/cache`, on by
+    // default since 16.3.0. That is the one directory Vercel restores between
+    // deploys, and the cache is a self-referencing database: a build compacts
+    // it, renumbering its .sst segments and rewriting the manifest that names
+    // them. Restore a manifest from one generation beside segments from
+    // another and the build does not fall back to a cold compile — it dies
+    // reading a segment that no longer exists:
+    //
+    //   Unable to open static sorted file referenced from 00000011.meta
+    //   failed to open .../00000006.sst: No such file or directory
+    //
+    // A cold build here takes under thirty seconds, so the cache was buying
+    // very little and costing every deploy. Off until the upstream cache
+    // learns to rebuild itself instead of crashing.
+    turbopackFileSystemCacheForBuild: false,
+  },
 
   async redirects() {
     return [
