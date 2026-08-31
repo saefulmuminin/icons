@@ -3,13 +3,13 @@
 import { animate, createTimeline, onScroll, stagger, utils } from "animejs";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ProfileGroup, ProfileGroupKey } from "@/lib/content";
+import type { ProfileGroupKey, SpeakerProfile } from "@/lib/content";
 
 export type Speaker = {
   role: string;
   name: string;
   photo: string | null;
-  profile: ProfileGroup[] | null;
+  profile: SpeakerProfile | null;
 };
 
 export type ProfileLabels = Record<ProfileGroupKey, string> & {
@@ -390,7 +390,16 @@ function SpeakerDetail({
             {speaker.name}
           </h3>
 
-          {speaker.profile?.map((group) => (
+          {speaker.profile?.bio && (
+            <p
+              data-row
+              className="mt-5 font-sans text-[0.9375rem] leading-[1.7] text-pretty text-body"
+            >
+              {speaker.profile.bio}
+            </p>
+          )}
+
+          {speaker.profile?.groups.map((group) => (
             <section key={group.key} className="mt-7">
               <h4
                 data-row

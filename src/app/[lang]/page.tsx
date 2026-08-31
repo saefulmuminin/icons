@@ -173,6 +173,8 @@ export default async function HomePage({
             labels={{
               open: t.speakerProfile,
               close: t.imageClose,
+              expertise: t.profileExpertise,
+              highlights: t.profileHighlights,
               education: t.profileEducation,
               work: t.profileWork,
               entrepreneur: t.profileEntrepreneur,

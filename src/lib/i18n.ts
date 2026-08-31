@@ -66,6 +66,8 @@ const en = {
   errorHome: "Back to home",
   errorRef: "Reference",
   speakerProfile: "View profile",
+  profileExpertise: "Areas of expertise",
+  profileHighlights: "Professional highlights",
   profileEducation: "Education",
   profileWork: "Professional experience",
   profileEntrepreneur: "Entrepreneurship",
@@ -94,7 +96,8 @@ const en = {
     "Formulated to address the need to strengthen the role of zakat and philanthropy within an increasingly complex and interconnected global context.",
 
   speakersTitle: "Invited speakers",
-  speakersNote: "Figures listed in the conference term of reference.",
+  speakersNote:
+    "These speakers have been invited and are currently subject to confirmation. The programme allows for up to 26 across the keynote and the panel sessions.",
 
   datesTitle: "Key dates",
   orgTitle: "Organizers & supporters",
@@ -271,6 +274,8 @@ const id: Dict = {
   errorHome: "Kembali ke beranda",
   errorRef: "Kode rujukan",
   speakerProfile: "Lihat profil",
+  profileExpertise: "Bidang keahlian",
+  profileHighlights: "Rekam jejak profesional",
   profileEducation: "Pendidikan",
   profileWork: "Pengalaman kerja",
   profileEntrepreneur: "Pengalaman entrepreneur",
@@ -299,7 +304,8 @@ const id: Dict = {
     "Dirumuskan untuk menjawab kebutuhan penguatan peran zakat dan filantropi dalam konteks global yang semakin kompleks dan saling terhubung.",
 
   speakersTitle: "Pembicara yang diundang",
-  speakersNote: "Tokoh yang tercantum dalam kerangka acuan konferensi.",
+  speakersNote:
+    "Para pembicara berikut telah diundang dan saat ini masih menunggu konfirmasi. Program menyediakan tempat hingga 26 pembicara, mencakup keynote dan sesi panel.",
 
   datesTitle: "Tanggal penting",
   orgTitle: "Penyelenggara & pendukung",

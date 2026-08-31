@@ -1,6 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { LANGS } from "@/lib/i18n";
 import {
   BOOK_CHAPTER,
   CONFERENCE,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/content";
 
 import { markFor, portraitsIn } from "@/lib/marks";
+import { INVITED_SPEAKERS } from "@/lib/speakers";
 
 /** The same loose match the pages use to pair a name with a picture. */
 const loose = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -160,6 +162,50 @@ describe("every book editor", () => {
     for (const editor of BOOK_CHAPTER.editors) {
       expect(editor.scopus).toMatch(/^https:\/\/www\.scopus\.com\//);
     }
+  });
+});
+
+describe("every invited speaker", () => {
+  it("arrives with a biography and both lists filled", () => {
+    for (const speaker of INVITED_SPEAKERS) {
+      expect(speaker.name.trim()).not.toBe("");
+      expect(speaker.bio.trim().length).toBeGreaterThan(80);
+      expect(speaker.expertise.length).toBeGreaterThan(0);
+      expect(speaker.highlights.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("is introduced in both languages", () => {
+    for (const speaker of INVITED_SPEAKERS) {
+      expect(speaker.role.en.trim()).not.toBe("");
+      expect(speaker.role.id.trim()).not.toBe("");
+    }
+  });
+
+  it("appears once and once only", () => {
+    const names = INVITED_SPEAKERS.map((one) => one.name);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  /**
+   * Three of these people were already on the older, thinner list and were
+   * taken off it by hand. Nothing at runtime reconciles two spellings of one
+   * name, so nothing at runtime would notice them drifting back — this would.
+   */
+  it("is not also carried by the older roster", () => {
+    for (const lang of LANGS) {
+      const roster = getSpeakers(lang).map((one) => one.name);
+      expect(new Set(roster).size).toBe(roster.length);
+    }
+  });
+
+  /** The one thing a reader sees before they open anything. */
+  it("has a portrait of their own", () => {
+    const names = INVITED_SPEAKERS.map((one) => one.name);
+    const found = portraitsIn("pembicara", names);
+
+    expect(names.filter((_, i) => !found[i])).toEqual([]);
+    expect(new Set(found).size).toBe(names.length);
   });
 });
 

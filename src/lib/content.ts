@@ -1,4 +1,5 @@
 import type { Lang } from "./i18n";
+import { INVITED_SPEAKERS } from "./speakers";
 
 export const CONFERENCE = {
   startsAt: "2026-11-24T08:00:00+07:00",
@@ -128,8 +129,6 @@ const PARTICIPANTS: Record<Lang, string[]> = {
 
 const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
   en: [
-    ["Chairman of BAZNAS", "Dr. Ir. H. Sodik Mudjahid, M.Sc."],
-    ["Minister of Religious Affairs", "Prof. Dr. KH. Nasaruddin Umar, M.A."],
     ["Head of Danantara", "Rosan Perkasa Roeslani"],
     [
       "Coordinating Minister for Community Empowerment",
@@ -148,14 +147,8 @@ const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
       "Deputy Speaker of the House of Representatives of the Republic of Indonesia",
       "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H.",
     ],
-    [
-      "General Secretary of the World Zakat and Waqf Forum (WZWF)",
-      "H.E. Datuk Dr. Mohd Ghazali Md. Noor",
-    ],
   ],
   id: [
-    ["Ketua BAZNAS", "Dr. Ir. H. Sodik Mudjahid, M.Sc."],
-    ["Menteri Agama", "Prof. Dr. KH. Nasaruddin Umar, M.A."],
     ["Kepala Danantara", "Rosan Perkasa Roeslani"],
     [
       "Menteri Koordinator Pemberdayaan Masyarakat",
@@ -167,10 +160,6 @@ const SPEAKERS: Record<Lang, [role: string, name: string][]> = {
     [
       "Wakil Ketua Dewan Perwakilan Rakyat RI",
       "Prof. Dr. Ir. H. Sufmi Dasco Ahmad, S.H., M.H.",
-    ],
-    [
-      "Sekretaris Jenderal World Zakat and Waqf Forum (WZWF)",
-      "H.E. Datuk Dr. Mohd Ghazali Md. Noor",
     ],
   ],
 };
@@ -423,6 +412,8 @@ export function getParticipants(lang: Lang) {
  * proper nouns and stay as written.
  */
 export type ProfileGroupKey =
+  | "expertise"
+  | "highlights"
   | "education"
   | "work"
   | "entrepreneur"
@@ -433,6 +424,9 @@ export type ProfileGroupKey =
 
 export type ProfileEntry = { label: string; note?: string };
 export type ProfileGroup = { key: ProfileGroupKey; entries: ProfileEntry[] };
+
+/** A speaker's panel: a paragraph about them, then the grouped lists. */
+export type SpeakerProfile = { bio: string | null; groups: ProfileGroup[] };
 
 const PROFILES: Record<string, ProfileGroup[]> = {
   "Prof. Dr. KH. Nasaruddin Umar, M.A.": [
@@ -878,12 +872,44 @@ export function getBackgroundMarks(lang: Lang) {
   return BACKGROUND_MARKS[lang];
 }
 
+/**
+ * Everyone speaking, invited roster first.
+ *
+ * The two lists are kept apart because they are known to different depths:
+ * the invited speakers arrived with a biography each, while the rest are so
+ * far a name and a title. Anyone appearing in both was removed from the older
+ * list rather than reconciled here — matching two spellings of the same
+ * person at runtime is the kind of cleverness that quietly shows someone
+ * twice.
+ */
 export function getSpeakers(lang: Lang) {
-  return SPEAKERS[lang].map(([role, name]) => ({
+  const invited = INVITED_SPEAKERS.map((speaker) => ({
+    role: speaker.role[lang],
+    name: speaker.name,
+    profile: {
+      bio: speaker.bio,
+      groups: [
+        {
+          key: "expertise" as const,
+          entries: speaker.expertise.map((label) => ({ label })),
+        },
+        {
+          key: "highlights" as const,
+          entries: speaker.highlights.map((label) => ({ label })),
+        },
+      ],
+    } satisfies SpeakerProfile,
+  }));
+
+  const rest = SPEAKERS[lang].map(([role, name]) => ({
     role,
     name,
-    profile: PROFILES[name] ?? null,
+    profile: PROFILES[name]
+      ? ({ bio: null, groups: PROFILES[name] } satisfies SpeakerProfile)
+      : null,
   }));
+
+  return [...invited, ...rest];
 }
 
 export function getSubthemes() {
