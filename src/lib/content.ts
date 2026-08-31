@@ -53,14 +53,33 @@ export const HERO_VIDEO = {
   title: "International Conference on Zakat 2025 — ICONZ 9 recap",
 } as const;
 
+/**
+ * The committee's own line, for the questions a form cannot answer.
+ *
+ * `wa` is the number again with everything but the digits stripped, which is
+ * the only shape wa.me accepts.
+ */
+export const CONTACT = {
+  name: "Adibah",
+  phone: "+62 818-0652-9744",
+  wa: "https://wa.me/6281806529744",
+  photo: "/image/dibah.png",
+} as const;
+
+/**
+ * Photographs from the previous conference, shown as a carousel beside the
+ * registration form. Dimensions are carried with each one so the frame is
+ * reserved before the picture lands and the column does not jump.
+ */
+export const GALLERY = [
+  { src: "/documentasi/image.png", width: 2000, height: 1333 },
+  { src: "/documentasi/image%20copy.png", width: 1200, height: 800 },
+  { src: "/documentasi/image%20copy%202.png", width: 750, height: 500 },
+  { src: "/documentasi/image%20copy%203.png", width: 1600, height: 1200 },
+  { src: "/documentasi/image%20copy%204.png", width: 1600, height: 1200 },
+] as const;
+
 export const LINKS = {
-  register: "https://forms.gle/Wappt9TYU2sqnyJk9",
-  /**
-   * The same form, ready for an iframe. Keep it pointed at whatever
-   * `register` resolves to — a short link cannot be embedded directly.
-   */
-  registerEmbed:
-    "https://docs.google.com/forms/d/e/1FAIpQLSdb9CrQAVJvuuGU9Xbwcyj0qu6EnqzNFGSWlTXQPM7nx4suiQ/viewform?embedded=true",
   /** Where an author actually files a paper. */
   submission: "https://bazn.as/ICONZ10FullPaperSubmission",
   /** The back issues, which is a different door to the one above. */

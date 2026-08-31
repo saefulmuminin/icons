@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CONFERENCE, LINKS, ORGANIZERS } from "./content";
+import { CONFERENCE, ORGANIZERS } from "./content";
 import type { Lang } from "./i18n";
 import { LANGS } from "./i18n";
 import { SITE_URL } from "./site";
@@ -96,7 +96,9 @@ export function eventJsonLd(lang: Lang) {
     organizer: ORGANIZERS.map((name) => ({ "@type": "Organization", name })),
     offers: {
       "@type": "Offer",
-      url: LINKS.register,
+      // Registration is taken on the site itself now, so this points readers
+      // at the page that holds the form rather than off to a third party.
+      url: `${SITE_URL}/${lang}/register`,
       availability: "https://schema.org/InStock",
     },
   };

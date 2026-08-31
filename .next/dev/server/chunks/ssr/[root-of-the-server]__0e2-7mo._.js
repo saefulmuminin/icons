@@ -343,7 +343,9 @@ function eventJsonLd(lang) {
             })),
         offers: {
             "@type": "Offer",
-            url: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$content$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["LINKS"].register,
+            // Registration is taken on the site itself now, so this points readers
+            // at the page that holds the form rather than off to a third party.
+            url: `${__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$site$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["SITE_URL"]}/${lang}/register`,
             availability: "https://schema.org/InStock"
         }
     };

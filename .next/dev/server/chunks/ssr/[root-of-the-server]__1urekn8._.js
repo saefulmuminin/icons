@@ -790,6 +790,8 @@ __turbopack_context__.s([
     ()=>CONFERENCE,
     "CONFERENCE_LINKS",
     ()=>CONFERENCE_LINKS,
+    "CONTACT",
+    ()=>CONTACT,
     "EDITIONS",
     ()=>EDITIONS,
     "FACTS",
@@ -836,6 +838,7 @@ const CONFERENCE = {
     theme: "From Local Impact to Global Solidarity: The Future of Zakat and Philanthropy",
     /** The search string that lands Google Maps on the venue. */ mapQuery: "Fakultas Ekonomi dan Manajemen IPB University, Jalan Agatis, Dramaga, Bogor"
 };
+/** How many days the conference runs, counted from its own two dates. */ const CONFERENCE_DAYS = Math.round((new Date(CONFERENCE.endsAt).setHours(0, 0, 0, 0) - new Date(CONFERENCE.startsAt).setHours(0, 0, 0, 0)) / 86_400_000) + 1;
 /** Google's compact UTC stamp, e.g. 20261124T010000Z. */ const stamp = (iso)=>new Date(iso).toISOString().replace(/[-:]|\.\d{3}/g, "");
 const CONFERENCE_LINKS = {
     calendar: `https://calendar.google.com/calendar/render?${new URLSearchParams({
@@ -858,34 +861,17 @@ const HERO_VIDEO = {
     id: "ZOGw2F9v_lU",
     title: "International Conference on Zakat 2025 — ICONZ 9 recap"
 };
+const CONTACT = {
+    name: "Adibah",
+    phone: "+62 818-0652-9744",
+    wa: "https://wa.me/6281806529744",
+    photo: "/image/dibah.png"
+};
 const LINKS = {
-    register: "https://forms.gle/Wappt9TYU2sqnyJk9",
-    /**
-   * The same form, ready for an iframe. Keep it pointed at whatever
-   * `register` resolves to — a short link cannot be embedded directly.
-   */ registerEmbed: "https://docs.google.com/forms/d/e/1FAIpQLSdb9CrQAVJvuuGU9Xbwcyj0qu6EnqzNFGSWlTXQPM7nx4suiQ/viewform?embedded=true",
     /** Where an author actually files a paper. */ submission: "https://bazn.as/ICONZ10FullPaperSubmission",
     /** The back issues, which is a different door to the one above. */ archive: "https://iconzbaznas.com/submission/index.php/proceedings/issue/archive",
     template: "https://bazn.as/TemplateCallForPaperICONZ"
 };
-const FACTS = [
-    {
-        value: "300",
-        key: "factParticipants"
-    },
-    {
-        value: "4",
-        key: "factSubevents"
-    },
-    {
-        value: "3",
-        key: "factDays"
-    },
-    {
-        value: "9",
-        key: "factJournals"
-    }
-];
 const OBJECTIVES = {
     en: [
         "To serve as an international forum discussing the transformation of zakat and philanthropy's role from local impact toward global solidarity in responding to transnational poverty, inequality, and humanitarian crises.",
@@ -1116,6 +1102,24 @@ const SUB_EVENTS = [
     "International Conference",
     "Paper and Book Chapter Presentation",
     "Book Launching"
+];
+const FACTS = [
+    {
+        value: "300",
+        key: "factParticipants"
+    },
+    {
+        value: String(SUB_EVENTS.length),
+        key: "factSubevents"
+    },
+    {
+        value: String(CONFERENCE_DAYS),
+        key: "factDays"
+    },
+    {
+        value: String(JOURNALS.length),
+        key: "factJournals"
+    }
 ];
 const CFP_DATES = {
     en: [
@@ -1962,7 +1966,6 @@ const en = {
     imageClose: "Close the picture",
     videoClose: "Close the video",
     registerClose: "Close the registration form",
-    registerNewTab: "Open in a new tab",
     splashSkip: "Skip",
     loading: "Loading",
     notFoundCode: "Error 404",
@@ -2012,8 +2015,40 @@ const en = {
     eventsTitle: "Conference events",
     eventsIntro: "The conference will feature various sub-events, including:",
     regTitle: "Event registration",
-    regText: "Registration is handled through the official conference form.",
+    regText: "Fill in the form below and your place at the conference is booked. It takes about two minutes.",
     regCta: "Open registration form",
+    regFormTitle: "Registration form",
+    regFormNote: "Every question is required.",
+    regEmail: "Email",
+    regPrefix: "Prefix",
+    regFullName: "Full name",
+    regSex: "Sex",
+    regWhatsapp: "WhatsApp number",
+    regWhatsappHelp: "With your country code, so the committee can reach you.",
+    regInstitution: "Name of institution",
+    regContinent: "Origin/residency",
+    regCountry: "Country of origin/residency",
+    regProvince: "Province of origin/residency",
+    regCity: "Current city of residency",
+    regProfession: "Profession",
+    regProfessionOther: "Please say which",
+    regPaper: "Did you submit to the Call for Papers or the International Book Chapter?",
+    regDays: "Which days of the international seminar will you attend?",
+    regDaysHelp: "Choose one or both.",
+    regChoose: "Choose one",
+    regContinentFirst: "Choose a continent first",
+    regSubmit: "Send registration",
+    regSubmitting: "Sending…",
+    regDoneTitle: "Registration received",
+    regDoneText: "Thank you for registering. The committee will write to the address you gave with the details you need before the conference.",
+    regDoneAgain: "Register someone else",
+    regErrRequired: "This one is needed.",
+    regErrEmail: "That does not look like an email address.",
+    regErrWhatsapp: "Write a number the committee can reach, country code and all.",
+    regErrLong: "That is longer than the form takes.",
+    regErrForm: "A few answers still need attention.",
+    regErrSend: "The registration could not be sent. Please try once more.",
+    regContact: "Contact person",
     submitTitle: "Submit to the 10th ICONZ",
     submitIntro: "Two ways to take part: submit a paper for the conference proceedings or a chapter for the international edited book. Both deadlines are in November 2026.",
     pickPapers: "Call for Papers",
@@ -2094,7 +2129,6 @@ const id = {
     imageClose: "Tutup gambar",
     videoClose: "Tutup video",
     registerClose: "Tutup formulir pendaftaran",
-    registerNewTab: "Buka di tab baru",
     splashSkip: "Lewati",
     loading: "Memuat",
     notFoundCode: "Eror 404",
@@ -2144,8 +2178,40 @@ const id = {
     eventsTitle: "Rangkaian acara",
     eventsIntro: "Konferensi akan menghadirkan berbagai sub-acara, meliputi:",
     regTitle: "Pendaftaran acara",
-    regText: "Pendaftaran dilakukan melalui formulir resmi konferensi.",
+    regText: "Isi formulir di bawah ini dan tempat Anda di konferensi langsung tercatat. Kira-kira dua menit saja.",
     regCta: "Buka formulir pendaftaran",
+    regFormTitle: "Formulir pendaftaran",
+    regFormNote: "Semua pertanyaan wajib diisi.",
+    regEmail: "Email",
+    regPrefix: "Sapaan",
+    regFullName: "Nama lengkap",
+    regSex: "Jenis kelamin",
+    regWhatsapp: "Nomor WhatsApp",
+    regWhatsappHelp: "Sertakan kode negara agar panitia dapat menghubungi Anda.",
+    regInstitution: "Nama institusi",
+    regContinent: "Asal benua",
+    regCountry: "Asal negara",
+    regProvince: "Asal provinsi",
+    regCity: "Kota/kabupaten domisili saat ini",
+    regProfession: "Profesi/pekerjaan",
+    regProfessionOther: "Mohon sebutkan",
+    regPaper: "Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?",
+    regDays: "Hari seminar internasional mana yang akan Anda hadiri?",
+    regDaysHelp: "Pilih salah satu atau keduanya.",
+    regChoose: "Pilih salah satu",
+    regContinentFirst: "Pilih benua dulu",
+    regSubmit: "Kirim pendaftaran",
+    regSubmitting: "Mengirim…",
+    regDoneTitle: "Pendaftaran diterima",
+    regDoneText: "Terima kasih telah mendaftar. Panitia akan mengirim keterangan yang Anda perlukan menjelang konferensi ke alamat email tersebut.",
+    regDoneAgain: "Daftarkan orang lain",
+    regErrRequired: "Bagian ini wajib diisi.",
+    regErrEmail: "Sepertinya ini bukan alamat email.",
+    regErrWhatsapp: "Tulis nomor yang bisa dihubungi, lengkap dengan kode negara.",
+    regErrLong: "Isian ini melebihi batas panjang formulir.",
+    regErrForm: "Masih ada beberapa jawaban yang perlu diperiksa.",
+    regErrSend: "Pendaftaran belum dapat dikirim. Silakan coba sekali lagi.",
+    regContact: "Narahubung",
     submitTitle: "Kirim karya ke ICONZ ke-10",
     submitIntro: "Dua jalur untuk ikut serta: makalah untuk prosiding konferensi, atau bab untuk buku suntingan internasional. Keduanya ditutup November 2026.",
     pickPapers: "Call for Papers",

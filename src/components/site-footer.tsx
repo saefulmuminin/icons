@@ -1,3 +1,4 @@
+import { CalendarGlyph, PinGlyph } from "./glyphs";
 import Image from "next/image";
 import Link from "next/link";
 import { CONFERENCE, ORGANIZERS } from "@/lib/content";
@@ -35,14 +36,14 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
           <dl className="mt-5 space-y-3 font-sans text-[0.9375rem] leading-[1.6]">
             <div className="flex items-start gap-2.5">
               <dt className="sr-only">{t.dateOnly}</dt>
-              <CalendarGlyph />
+              <CalendarGlyph className="mt-[0.1875rem] h-4 w-4 text-mint" />
               <dd className="font-medium text-mint-soft">
                 {CONFERENCE.dateRange}
               </dd>
             </div>
             <div className="flex items-start gap-2.5">
               <dt className="sr-only">{t.venueLabel}</dt>
-              <PinGlyph />
+              <PinGlyph className="mt-[0.1875rem] h-4 w-4 text-mint" />
               <dd className="max-w-[46ch] text-white/75">{CONFERENCE.venue}</dd>
             </div>
           </dl>
@@ -127,51 +128,5 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
         </Container>
       </div>
     </footer>
-  );
-}
-
-function CalendarGlyph() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden
-      className="mt-[0.1875rem] h-4 w-4 flex-none text-mint"
-    >
-      <rect
-        x="2"
-        y="3"
-        width="12"
-        height="11"
-        rx="1.8"
-        stroke="currentColor"
-        strokeWidth="1.3"
-      />
-      <path
-        d="M2 6.6h12M5.2 1.6v2.4M10.8 1.6v2.4"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function PinGlyph() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden
-      className="mt-[0.1875rem] h-4 w-4 flex-none text-mint"
-    >
-      <path
-        d="M8 14.4s5-4.5 5-8a5 5 0 1 0-10 0c0 3.5 5 8 5 8Z"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinejoin="round"
-      />
-      <circle cx="8" cy="6.2" r="1.7" stroke="currentColor" strokeWidth="1.3" />
-    </svg>
   );
 }

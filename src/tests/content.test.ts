@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   BOOK_CHAPTER,
   CONFERENCE,
+  CONTACT,
+  GALLERY,
   EDITIONS,
   FACTS,
   JOURNALS,
@@ -64,6 +66,46 @@ describe("every outward link", () => {
   it("parses as a URL", () => {
     for (const href of links) {
       expect(() => new URL(href)).not.toThrow();
+    }
+  });
+});
+
+/**
+ * A portrait that moved or was renamed leaves a broken image beside the one
+ * number a stuck registrant has, and nothing else in the build says a word.
+ */
+describe("the contact person", () => {
+  it("has their portrait filed under public", () => {
+    expect(existsSync(join(process.cwd(), "public", CONTACT.photo))).toBe(true);
+  });
+
+  it("is reachable on WhatsApp at the number shown", () => {
+    expect(CONTACT.wa).toBe(
+      `https://wa.me/${CONTACT.phone.replace(/\D/g, "")}`,
+    );
+  });
+});
+
+/**
+ * These filenames carry spaces, so they are written percent-encoded and a
+ * plain existsSync on the string would look for a file called "image%20copy".
+ * Decoding first is the whole point of the check: it is exactly the mismatch
+ * that would ship a carousel of five broken frames.
+ */
+describe("every photograph in the gallery", () => {
+  it("is filed under public where the carousel looks for it", () => {
+    const missing = GALLERY.filter(
+      (photo) =>
+        !existsSync(join(process.cwd(), "public", decodeURI(photo.src))),
+    ).map((photo) => photo.src);
+
+    expect(missing).toEqual([]);
+  });
+
+  it("carries the dimensions that reserve its frame", () => {
+    for (const photo of GALLERY) {
+      expect(photo.width).toBeGreaterThan(0);
+      expect(photo.height).toBeGreaterThan(0);
     }
   });
 });
