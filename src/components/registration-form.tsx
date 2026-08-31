@@ -2,6 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
+import { SuccessDialog } from "@/components/success-dialog";
 import type { Dict, Lang } from "@/lib/i18n";
 import type {
   Choice,
@@ -113,7 +114,7 @@ function Row({
           {help}
         </span>
       ) : null}
-      <span className="mt-2 block">{children}</span>
+      <span className="mt-auto block pt-2">{children}</span>
       {code ? (
         <span
           id={`${ctl.idOf(field)}-error`}
@@ -130,7 +131,7 @@ function Row({
       <div
         role="group"
         aria-labelledby={labelId}
-        className={`block ${className}`}
+        className={`flex h-full flex-col ${className}`}
       >
         {head}
       </div>
@@ -138,7 +139,10 @@ function Row({
   }
 
   return (
-    <label htmlFor={ctl.idOf(field)} className={`block ${className}`}>
+    <label
+      htmlFor={ctl.idOf(field)}
+      className={`flex h-full flex-col ${className}`}
+    >
       {head}
     </label>
   );
@@ -349,70 +353,74 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
     }
   }
 
-  if (status === "done") {
-    return (
-      <div
-        role="status"
-        className="rounded-2xl border border-brand/25 bg-sage px-6 py-10 text-center sm:px-10"
-      >
-        <div
-          aria-hidden
-          className="mx-auto grid size-12 place-items-center rounded-full bg-brand text-2xl text-white"
-        >
-          ✓
-        </div>
-        <h2 className="mt-5 font-display text-[1.375rem] leading-tight font-bold">
-          {t.regDoneTitle}
-        </h2>
-        <p className="mx-auto mt-3 max-w-[42ch] font-sans text-[0.9375rem] leading-[1.65] text-pretty text-muted">
-          {t.regDoneText}
-        </p>
-        <button
-          type="button"
-          onClick={() => {
+  const other = values.profession === PROFESSION_OTHER;
+
+  return (
+    <>
+      {/* The panel sits over the form rather than replacing it, so the page
+          keeps its height and nothing jumps behind the backdrop. Closing it
+          hands back an empty form. */}
+      {status === "done" && (
+        <SuccessDialog
+          title={t.regDoneTitle}
+          text={t.regDoneText}
+          actionLabel={t.regDoneAgain}
+          closeLabel={t.regDoneClose}
+          onClose={() => {
             setValues(blank());
             setErrors({});
             setTried(false);
             setStatus("idle");
           }}
-          className="mt-7 rounded-full border border-ink/20 px-[1.375rem] py-[0.8125rem] font-display text-sm font-bold text-ink transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-        >
-          {t.regDoneAgain}
-        </button>
-      </div>
-    );
-  }
+        />
+      )}
 
-  const other = values.profession === PROFESSION_OTHER;
+      <form
+        noValidate
+        onSubmit={submit}
+        // One grid for the whole form, not a grid per pair. Each row used to
+        // set its own columns, so a narrow prefix here and equal halves there
+        // left the fields stepping in and out by a few pixels down the page.
+        // Everything now lands on the same two columns, and what needs the
+        // full width says so.
+        className="grid gap-x-5 gap-y-5 sm:grid-cols-2"
+      >
+        <p className="font-sans text-[0.8125rem] text-muted sm:col-span-2">
+          {t.regFormNote}
+        </p>
 
-  return (
-    <form noValidate onSubmit={submit} className="grid gap-5">
-      <p className="font-sans text-[0.8125rem] text-muted">{t.regFormNote}</p>
-
-      <Row ctl={ctl} field="email" label={t.regEmail}>
-        <Text
+        <Row
           ctl={ctl}
           field="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-        />
-      </Row>
+          label={t.regEmail}
+          className="sm:col-span-2"
+        >
+          <Text
+            ctl={ctl}
+            field="email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+          />
+        </Row>
 
-      <div className="grid gap-5 sm:grid-cols-[minmax(0,8rem)_minmax(0,1fr)]">
         <Row ctl={ctl} field="prefix" label={t.regPrefix}>
           <Select ctl={ctl} field="prefix" choices={PREFIXES} />
         </Row>
         <Row ctl={ctl} field="fullName" label={t.regFullName}>
           <Text ctl={ctl} field="fullName" autoComplete="name" />
         </Row>
-      </div>
 
-      <Row ctl={ctl} field="sex" label={t.regSex} group>
-        <Pills ctl={ctl} field="sex" choices={SEXES} />
-      </Row>
+        <Row
+          ctl={ctl}
+          field="sex"
+          label={t.regSex}
+          group
+          className="sm:col-span-2"
+        >
+          <Pills ctl={ctl} field="sex" choices={SEXES} />
+        </Row>
 
-      <div className="grid gap-5 sm:grid-cols-2">
         <Row
           ctl={ctl}
           field="whatsapp"
@@ -437,9 +445,7 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
         <Row ctl={ctl} field="institution" label={t.regInstitution}>
           <Text ctl={ctl} field="institution" autoComplete="organization" />
         </Row>
-      </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
         <Row ctl={ctl} field="continent" label={t.regContinent}>
           <Select ctl={ctl} field="continent" choices={CONTINENTS} />
         </Row>
@@ -454,78 +460,92 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
             disabled={!values.continent}
           />
         </Row>
-      </div>
 
-      {/* Indonesian questions, asked only where they have an answer. For
-          everyone else the province files itself as International Participant
-          and the city is never asked, which is what the old form spelled out
-          in two lines of small print under each field. */}
-      {values.country === INDONESIA ? (
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Row ctl={ctl} field="province" label={t.regProvince}>
-            <Select ctl={ctl} field="province" choices={PROVINCES} />
-          </Row>
-          <Row ctl={ctl} field="city" label={t.regCity}>
-            <Text ctl={ctl} field="city" autoComplete="address-level2" />
-          </Row>
-        </div>
-      ) : null}
+        {/* Indonesian questions, asked only where they have an answer. For
+            everyone else the province files itself as International Participant
+            and the city is never asked, which is what the old form spelled out
+            in two lines of small print under each field. */}
+        {values.country === INDONESIA && (
+          <>
+            <Row ctl={ctl} field="province" label={t.regProvince}>
+              <Select ctl={ctl} field="province" choices={PROVINCES} />
+            </Row>
+            <Row ctl={ctl} field="city" label={t.regCity}>
+              <Text ctl={ctl} field="city" autoComplete="address-level2" />
+            </Row>
+          </>
+        )}
 
-      <div className={`grid gap-5 ${other ? "sm:grid-cols-2" : ""}`}>
         <Row ctl={ctl} field="profession" label={t.regProfession}>
           <Select ctl={ctl} field="profession" choices={PROFESSIONS} />
         </Row>
-        {other ? (
+        {other && (
           <Row ctl={ctl} field="professionOther" label={t.regProfessionOther}>
             <Text ctl={ctl} field="professionOther" />
           </Row>
-        ) : null}
-      </div>
+        )}
 
-      <Row ctl={ctl} field="submittedPaper" label={t.regPaper} group>
-        <Pills ctl={ctl} field="submittedPaper" choices={PAPER_ANSWERS} />
-      </Row>
-
-      <Row
-        ctl={ctl}
-        field="seminarDays"
-        label={t.regDays}
-        help={t.regDaysHelp}
-        group
-      >
-        <Pills ctl={ctl} field="seminarDays" choices={SEMINAR_DAYS} multiple />
-      </Row>
-
-      {/* Left uncontrolled for a script to find and fill, and read straight off
-          the node on the way out. No person ever sees it. */}
-      <input
-        ref={trap}
-        type="text"
-        name="website"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden
-        defaultValue=""
-        className="sr-only"
-      />
-
-      <div className="mt-1 flex flex-wrap items-center gap-4">
-        <button
-          type="submit"
-          disabled={status === "sending"}
-          className="rounded-full bg-brand px-[1.625rem] py-[0.9375rem] font-display text-[0.9375rem] font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+        <Row
+          ctl={ctl}
+          field="submittedPaper"
+          label={t.regPaper}
+          group
+          className="sm:col-span-2"
         >
-          {status === "sending" ? t.regSubmitting : t.regSubmit}
-        </button>
+          <Pills ctl={ctl} field="submittedPaper" choices={PAPER_ANSWERS} />
+        </Row>
 
-        <p role="alert" className="font-sans text-[0.8125rem] text-step-amber">
-          {status === "failed"
-            ? t.regErrSend
-            : tried && Object.keys(errors).length
-              ? t.regErrForm
-              : ""}
-        </p>
-      </div>
-    </form>
+        <Row
+          ctl={ctl}
+          field="seminarDays"
+          label={t.regDays}
+          help={t.regDaysHelp}
+          group
+          className="sm:col-span-2"
+        >
+          <Pills
+            ctl={ctl}
+            field="seminarDays"
+            choices={SEMINAR_DAYS}
+            multiple
+          />
+        </Row>
+
+        {/* Left uncontrolled for a script to find and fill, and read straight
+            off the node on the way out. Absolutely positioned by sr-only, so it
+            takes no cell in the grid. No person ever sees it. */}
+        <input
+          ref={trap}
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden
+          defaultValue=""
+          className="sr-only"
+        />
+
+        <div className="mt-1 flex flex-wrap items-center gap-4 sm:col-span-2">
+          <button
+            type="submit"
+            disabled={status === "sending"}
+            className="rounded-full bg-brand px-[1.625rem] py-[0.9375rem] font-display text-[0.9375rem] font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {status === "sending" ? t.regSubmitting : t.regSubmit}
+          </button>
+
+          <p
+            role="alert"
+            className="font-sans text-[0.8125rem] text-step-amber"
+          >
+            {status === "failed"
+              ? t.regErrSend
+              : tried && Object.keys(errors).length
+                ? t.regErrForm
+                : ""}
+          </p>
+        </div>
+      </form>
+    </>
   );
 }

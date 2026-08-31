@@ -141,6 +141,7 @@ const en = {
   regDoneText:
     "Thank you for registering. The committee will write to the address you gave with the details you need before the conference.",
   regDoneAgain: "Register someone else",
+  regDoneClose: "Close",
   regErrRequired: "This one is needed.",
   regErrEmail: "That does not look like an email address.",
   regErrWhatsapp:
@@ -349,6 +350,7 @@ const id: Dict = {
   regDoneText:
     "Terima kasih telah mendaftar. Panitia akan mengirim keterangan yang Anda perlukan menjelang konferensi ke alamat email tersebut.",
   regDoneAgain: "Daftarkan orang lain",
+  regDoneClose: "Tutup",
   regErrRequired: "Bagian ini wajib diisi.",
   regErrEmail: "Sepertinya ini bukan alamat email.",
   regErrWhatsapp:
