@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CalendarGlyph, PinGlyph } from "@/components/glyphs";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { PlateViewer } from "@/components/plate-viewer";
 import { RegistrationForm } from "@/components/registration-form";
 import { Container, Eyebrow, PageTitle } from "@/components/ui";
-import { CONFERENCE, CONTACT, GALLERY } from "@/lib/content";
+import { CONFERENCE, GALLERY } from "@/lib/content";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
@@ -130,31 +129,6 @@ export default async function RegisterPage({
               </div>
             ))}
           </dl>
-
-          {/* The number the form used to carry in its own preamble, kept where
-              a reader stuck on a question can still find it — and a face to
-              put to it, so writing to a stranger feels less like one. */}
-          <div className="mt-3 rounded-xl border border-ink/8 bg-cream px-4 py-4">
-            <div className="font-sans text-[0.6875rem] font-semibold tracking-[0.16em] text-muted uppercase">
-              {t.regContact}
-            </div>
-            <div className="mt-3 flex items-center gap-3">
-              {/* The portrait is a cut-out on white, so the circle it sits in
-                  is white too rather than the card's cream. */}
-              <Image
-                src={CONTACT.photo}
-                alt=""
-                width={200}
-                height={200}
-                className="size-12 flex-none rounded-full bg-paper object-cover ring-1 ring-ink/10"
-              />
-              <div className="min-w-0">
-                <div className="font-display text-[0.9375rem] leading-tight font-semibold">
-                  {CONTACT.name}
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* The conference as it actually looked, which is a better argument
               for filling in the form than an illustration of one. */}

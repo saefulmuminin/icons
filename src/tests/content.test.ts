@@ -5,7 +5,6 @@ import { LANGS } from "@/lib/i18n";
 import {
   BOOK_CHAPTER,
   CONFERENCE,
-  CONTACT,
   GALLERY,
   EDITIONS,
   FACTS,
@@ -69,16 +68,6 @@ describe("every outward link", () => {
     for (const href of links) {
       expect(() => new URL(href)).not.toThrow();
     }
-  });
-});
-
-/**
- * A portrait that moved or was renamed leaves a broken image beside the one
- * number a stuck registrant has, and nothing else in the build says a word.
- */
-describe("the contact person", () => {
-  it("has their portrait filed under public", () => {
-    expect(existsSync(join(process.cwd(), "public", CONTACT.photo))).toBe(true);
   });
 });
 

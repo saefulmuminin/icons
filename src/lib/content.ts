@@ -55,17 +55,6 @@ export const HERO_VIDEO = {
 } as const;
 
 /**
- * Who to ask about a registration.
- *
- * Named, with a face, and no number: the committee took the direct line down.
- * Anything that reaches her goes through the form itself.
- */
-export const CONTACT = {
-  name: "Adibah",
-  photo: "/image/dibah.png",
-} as const;
-
-/**
  * Photographs from the previous conference, shown as a carousel beside the
  * registration form. Dimensions are carried with each one so the frame is
  * reserved before the picture lands and the column does not jump.
