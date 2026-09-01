@@ -9,6 +9,7 @@ import {
   PROFESSION_OTHER,
   PROVINCES,
   SEMINAR_DAYS,
+  fullPhone,
   SEXES,
 } from "./registration";
 
@@ -161,7 +162,7 @@ export function simbaBody(
     "nama",
     [label(PREFIXES, entry.prefix), entry.fullName].filter(Boolean).join(" "),
   );
-  put("hp", entry.whatsapp);
+  put("hp", fullPhone(entry.dialCode, entry.whatsapp));
   put("email", entry.email);
   put("jenis_kelamin", label(SEXES, entry.sex).toLowerCase());
 

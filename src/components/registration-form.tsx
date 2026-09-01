@@ -14,12 +14,12 @@ import type {
 } from "@/lib/registration";
 import {
   CONTINENTS,
+  DIAL_CODES,
   EMPTY,
   INDONESIA,
   PAPER_DAY,
   cascade,
   conferenceDate,
-  normalisePhone,
   countriesIn,
   MAX_FIELD,
   PAPER_ANSWERS,
@@ -513,27 +513,10 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
 
         <Row
           ctl={ctl}
-          field="whatsapp"
-          label={t.regWhatsapp}
-          help={t.regWhatsappHelp}
+          field="institution"
+          label={t.regInstitution}
+          className="sm:col-span-2"
         >
-          {/* Digits only, and the one leading plus that means "country code".
-              Anything else is dropped as it is typed or pasted, so the field
-              cannot hold a number that is not one.
-
-              Deliberately not type="number": that would offer spinners, drop
-              the plus, and eat the leading zero off 0818… */}
-          <Text
-            ctl={ctl}
-            field="whatsapp"
-            type="tel"
-            autoComplete="tel"
-            inputMode="tel"
-            placeholder={t.regWhatsappHint}
-            clean={normalisePhone}
-          />
-        </Row>
-        <Row ctl={ctl} field="institution" label={t.regInstitution}>
           <Text ctl={ctl} field="institution" autoComplete="organization" />
         </Row>
 
@@ -550,6 +533,48 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
             placeholder={values.continent ? t.regChoose : t.regContinentFirst}
             disabled={!values.continent}
           />
+        </Row>
+
+        {/* Two boxes for one question: the code, filled in from the country
+            above, and the number itself. Anyone whose phone is registered
+            somewhere other than where they live changes the first. */}
+        <Row
+          ctl={ctl}
+          field="whatsapp"
+          label={t.regWhatsapp}
+          className="sm:col-span-2"
+        >
+          <span className="flex gap-2">
+            <select
+              value={values.dialCode}
+              onChange={(event) => set("dialCode", event.target.value)}
+              aria-label={t.regDialCode}
+              className={`w-[7.5rem] flex-none rounded-xl border bg-paper px-3 py-3 font-sans text-[0.9375rem] tabular-nums text-ink transition-colors outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 ${
+                wrongAt(ctl, "whatsapp") ? WRONG : QUIET
+              }`}
+            >
+              <option value="">{t.regDialCode}</option>
+              {DIAL_CODES.map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+
+            {/* Digits only. The code beside it carries the plus, and a second
+                one typed in here would be nonsense. */}
+            <span className="flex-1">
+              <Text
+                ctl={ctl}
+                field="whatsapp"
+                type="tel"
+                autoComplete="tel-national"
+                inputMode="tel"
+                placeholder={t.regWhatsappHint}
+                clean={(raw) => raw.replace(/\D/g, "")}
+              />
+            </span>
+          </span>
         </Row>
 
         {/* Indonesian questions, asked only where they have an answer. For

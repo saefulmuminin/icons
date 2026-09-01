@@ -6,9 +6,11 @@ import {
   COUNTRIES,
   INDONESIA,
   INTERNATIONAL,
+  DIAL_CODES,
   cascade,
   countriesIn,
-  normalisePhone,
+  dialOf,
+  fullPhone,
   MAX_FIELD,
   PAPER_ANSWERS,
   PREFIXES,
@@ -36,7 +38,8 @@ const good: Registration = {
   prefix: "ms",
   fullName: "Siti Adibah",
   sex: "female",
-  whatsapp: "+62 818-0652-9744",
+  dialCode: "+62",
+  whatsapp: "8180652974",
   institution: "IPB University",
   continent: "asia",
   country: "ID",
@@ -283,47 +286,82 @@ describe("the email address", () => {
 });
 
 describe("the WhatsApp number", () => {
-  it("takes a number however it is punctuated", () => {
-    for (const whatsapp of [
-      "+62 818-0652-9744",
-      "081806529744",
-      "(62) 818 0652 9744",
-      "+6281806529744",
-    ]) {
+  it("takes the number however it is punctuated", () => {
+    for (const whatsapp of ["818-0652-9744", "818 0652 9744", "8180652974"]) {
       expect(accepts({ whatsapp })).toBe(true);
     }
   });
 
-  /** Three spellings of one number should not read as three numbers when the
+  /** Three spellings of one number should not read as three when the
    *  committee sorts the column. */
-  it("is filed in one shape however it was typed", () => {
-    for (const typed of ["+62 818-0652-9744", "+62(818)0652.9744"]) {
+  it("is filed as digits, whatever it was typed with", () => {
+    for (const typed of ["818-0652-9744", "(818) 0652.9744", "818 0652 9744"]) {
       const result = validateRegistration({ ...good, whatsapp: typed });
-      expect(result.ok && result.value.whatsapp).toBe("+6281806529744");
+      expect(result.ok && result.value.whatsapp).toBe("81806529744");
     }
-
-    const local = validateRegistration({ ...good, whatsapp: "0818 0652 9744" });
-    expect(local.ok && local.value.whatsapp).toBe("081806529744");
   });
 
   /** Tidying before checking would turn this into a plausible twelve digits. */
   it("is checked before it is tidied, so letters cannot slip through", () => {
-    expect(why({ whatsapp: "+62-818-callme-9744" }, "whatsapp")).toBe(
-      "whatsapp",
-    );
-  });
-
-  it("keeps the leading plus, and only the leading plus", () => {
-    expect(normalisePhone("+62 818 0652 9744")).toBe("+6281806529744");
-    expect(normalisePhone("(62) 818 0652 9744")).toBe("6281806529744");
-    expect(normalisePhone("")).toBe("");
-    expect(normalisePhone("++--")).toBe("");
+    expect(why({ whatsapp: "818-callme-9744" }, "whatsapp")).toBe("whatsapp");
   });
 
   it("turns away what nobody could call", () => {
-    for (const whatsapp of ["", "12345", "not a number", "+62-818-call-me"]) {
+    for (const whatsapp of ["", "1234", "not a number"]) {
       expect(why({ whatsapp }, "whatsapp")).toBeDefined();
     }
+  });
+
+  /** The code is half of the same question, so it complains in the same place
+   *  rather than opening a second one. */
+  it("needs a dialling code, and says so on the number", () => {
+    expect(why({ dialCode: "" }, "whatsapp")).toBe("required");
+    expect(why({ dialCode: "+999999" }, "whatsapp")).toBe("required");
+  });
+});
+
+describe("a dialling code and a local number", () => {
+  /**
+   * The leading zero is the domestic trunk prefix — the 0 in 0812 means
+   * "another number inside this country" — and +62 already says which country.
+   * Left on, it dials a number that does not exist.
+   */
+  it("are joined without the trunk zero", () => {
+    expect(fullPhone("+62", "081806529744")).toBe("+6281806529744");
+    expect(fullPhone("+62", "81806529744")).toBe("+6281806529744");
+    expect(fullPhone("+49", "030 12345678")).toBe("+493012345678");
+  });
+
+  it("come to nothing when there is no number", () => {
+    expect(fullPhone("+62", "")).toBe("");
+    expect(fullPhone("+62", "000")).toBe("");
+  });
+});
+
+describe("the dialling codes", () => {
+  it("offer each code once, in numeric order", () => {
+    expect(new Set(DIAL_CODES).size).toBe(DIAL_CODES.length);
+
+    const numbers = DIAL_CODES.map((code) => Number(code.slice(1)));
+    expect(numbers).toEqual([...numbers].sort((a, b) => a - b));
+  });
+
+  it("are all a plus and digits", () => {
+    for (const code of DIAL_CODES) expect(code).toMatch(/^\+\d{1,4}$/);
+  });
+
+  /** Every country has to be reachable, or somebody cannot register at all. */
+  it("cover every country the form offers", () => {
+    for (const country of COUNTRIES) {
+      expect(DIAL_CODES).toContain(country.dial);
+    }
+  });
+
+  it("know the ones the committee will look for first", () => {
+    expect(dialOf("ID")).toBe("+62");
+    expect(dialOf("MY")).toBe("+60");
+    expect(dialOf("SA")).toBe("+966");
+    expect(dialOf("nowhere")).toBe("");
   });
 });
 

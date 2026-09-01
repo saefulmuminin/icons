@@ -40,11 +40,40 @@ export const CONTINENTS: Choice[] = [
 ];
 
 /** A country, and the continent whose list it appears under. */
-export type Country = Choice & { continent: string };
+export type Country = Choice & { continent: string; dial: string };
 
 export const COUNTRIES: readonly Country[] = COUNTRY_ROWS.map(
-  ([value, continent, en, id]) => ({ value, continent, en, id }),
+  ([value, continent, en, id, dial]) => ({ value, continent, en, id, dial }),
 );
+
+/**
+ * The dialling codes on offer, each once, in numeric order.
+ *
+ * Countries share codes — +1 covers a dozen — so the list is of codes rather
+ * than of countries. It is filled in from whichever country the reader picks,
+ * and only opened by someone whose phone is registered somewhere other than
+ * where they live.
+ */
+export const DIAL_CODES: string[] = [
+  ...new Set(COUNTRIES.map((country) => country.dial)),
+].sort((a, b) => Number(a.slice(1)) - Number(b.slice(1)));
+
+/** The code that belongs to a country, or nothing if it is not one. */
+export const dialOf = (country: string) =>
+  COUNTRIES.find((one) => one.value === country)?.dial ?? "";
+
+/**
+ * A dialling code and a local number, joined the way the number is dialled
+ * from abroad.
+ *
+ * The leading zero goes. It is the domestic trunk prefix — the 0 in 0812 means
+ * "another number inside this country" — and +62 already says which country,
+ * so +620812… would be dialling a number that does not exist.
+ */
+export function fullPhone(dial: string, local: string) {
+  const digits = local.replace(/\D/g, "").replace(/^0+/, "");
+  return digits ? `${dial}${digits}` : "";
+}
 
 /** The one country the provinces below belong to. */
 export const INDONESIA = "ID";
@@ -182,6 +211,7 @@ export const PAPER_DAY = 1;
 
 export type Registration = {
   email: string;
+  dialCode: string;
   prefix: string;
   fullName: string;
   sex: string;
@@ -201,6 +231,7 @@ export type Field = keyof Registration;
 
 export const EMPTY: Registration = {
   email: "",
+  dialCode: "",
   prefix: "",
   fullName: "",
   sex: "",
@@ -235,20 +266,6 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** Digits with the punctuation people type between them; counted separately. */
 const PHONE_SHAPE = /^[+()\d\s.-]+$/;
-
-/**
- * One shape for every number, whatever it was typed with. "+62 818-0652-9744",
- * "(62) 818 0652 9744" and "+6281806529744" are one number written three ways,
- * and a committee sorting a spreadsheet by it should not see three.
- *
- * The leading plus is the one piece of punctuation that carries meaning, so it
- * is the one piece kept.
- */
-export function normalisePhone(raw: string) {
-  const digits = raw.replace(/\D/g, "");
-  if (!digits) return "";
-  return raw.trimStart().startsWith("+") ? `+${digits}` : digits;
-}
 
 const valueOf = (choices: Choice[]) => choices.map((choice) => choice.value);
 
@@ -285,9 +302,21 @@ function checkChoice(value: string, choices: Choice[]): ErrorCode | undefined {
  */
 export function cascade(value: Registration, changed: Field): Registration {
   if (changed === "continent") {
-    return { ...value, country: "", province: "", city: "" };
+    return { ...value, country: "", dialCode: "", province: "", city: "" };
   }
-  if (changed === "country") return { ...value, province: "", city: "" };
+
+  // The dialling code follows the country, which is why the number is asked
+  // after it: by the time the reader reaches that box the code is already
+  // right, and they only touch it if their phone is registered elsewhere.
+  if (changed === "country") {
+    return {
+      ...value,
+      dialCode: dialOf(value.country),
+      province: "",
+      city: "",
+    };
+  }
+
   return value;
 }
 
@@ -303,6 +332,7 @@ export function validateRegistration(
 
   const value: Registration = {
     email: text(input.email).toLowerCase(),
+    dialCode: text(input.dialCode),
     prefix: text(input.prefix),
     fullName: text(input.fullName),
     sex: text(input.sex),
@@ -356,23 +386,23 @@ export function validateRegistration(
   set("profession", checkChoice(value.profession, PROFESSIONS));
   set("submittedPaper", checkChoice(value.submittedPaper, PAPER_ANSWERS));
 
-  // Counted on the digits alone: "+62 818-0652-9744" and "6281806529744" are
-  // the same number written two ways, and only one of them is 13 characters.
-  //
-  // The shape is tested before the number is tidied, not after. Stripping
-  // first would turn "+62-818-call-me-9744" into a plausible twelve digits and
-  // wave it through.
+  // The code is part of the same question, so a missing one is reported on the
+  // number rather than on a box of its own — one question, one complaint.
   const digits = value.whatsapp.replace(/\D/g, "");
   const badPhone =
     !PHONE_SHAPE.test(value.whatsapp) ||
-    digits.length < 8 ||
-    digits.length > 16;
+    digits.length < 6 ||
+    digits.length > 14;
 
   set(
     "whatsapp",
-    checkText(value.whatsapp) ?? (badPhone ? "whatsapp" : undefined),
+    checkText(value.whatsapp) ??
+      (DIAL_CODES.includes(value.dialCode) ? undefined : "required") ??
+      (badPhone ? "whatsapp" : undefined),
   );
-  if (!badPhone) value.whatsapp = normalisePhone(value.whatsapp);
+
+  // Kept as the reader typed it; the code is joined on at the point of filing.
+  if (!badPhone) value.whatsapp = digits;
 
   // Only asked for when "Other" is the answer, and then it is the answer.
   if (value.profession === PROFESSION_OTHER) {

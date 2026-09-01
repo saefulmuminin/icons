@@ -119,9 +119,8 @@ const en = {
   regFullName: "Full name",
   regSex: "Sex",
   regWhatsapp: "WhatsApp number",
-  regWhatsappHelp:
-    "Start with your country code. An Indonesian 0812… is written +62 812…",
-  regWhatsappHint: "+62 812 3456 7890",
+  regDialCode: "Country code",
+  regWhatsappHint: "812 3456 7890",
   regInstitution: "Name of institution",
   regContinent: "Origin/residency",
   regCountry: "Country of origin/residency",
@@ -328,9 +327,8 @@ const id: Dict = {
   regFullName: "Nama lengkap",
   regSex: "Jenis kelamin",
   regWhatsapp: "Nomor WhatsApp",
-  regWhatsappHelp:
-    "Awali dengan kode negara. Nomor 0812… ditulis menjadi +62 812…",
-  regWhatsappHint: "+62 812 3456 7890",
+  regDialCode: "Kode negara",
+  regWhatsappHint: "812 3456 7890",
   regInstitution: "Nama institusi",
   regContinent: "Asal benua",
   regCountry: "Asal negara",
