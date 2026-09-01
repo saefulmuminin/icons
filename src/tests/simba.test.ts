@@ -9,8 +9,7 @@ const config: SimbaConfig = {
   org: "3171100",
   eventId: "128",
   spcId: "5",
-  jenis: "2",
-  institusi: "28",
+  jenis: "Institusi",
 };
 
 /** An Indonesian registrant, filled in as the form would leave it. */
@@ -39,19 +38,29 @@ const abroad: Registration = {
   city: "",
 };
 
-const read = (entry: Registration) => simbaBody(entry, config);
+/** The multipart body, read back as plain strings. */
+function read(entry: Registration) {
+  const out: Record<string, string> = {};
+  for (const [key, value] of simbaBody(entry, config)) {
+    out[key] = typeof value === "string" ? value : "";
+  }
+  return out;
+}
+
 const meta = (entry: Registration) =>
-  JSON.parse(read(entry).get("meta") ?? "[]") as {
-    meta: string;
-    value: string;
-  }[];
+  JSON.parse(read(entry).meta) as Record<string, string>;
 
 describe("the body SIMBA is sent", () => {
-  /** Every key from the committee's own example, and nothing invented. */
-  it("carries exactly the keys the endpoint expects", () => {
-    expect([...read(local).keys()].sort()).toEqual(
+  /**
+   * The exact set that was answered "Sukses". An extra key is not harmless
+   * here: this endpoint has already refused one perfectly reasonable-looking
+   * body for weeks.
+   */
+  it("carries exactly the keys the endpoint accepted", () => {
+    expect(Object.keys(read(local)).sort()).toEqual(
       [
         "email",
+        "foto",
         "hp",
         "id_event",
         "institusi",
@@ -62,8 +71,6 @@ describe("the body SIMBA is sent", () => {
         "meta",
         "nama",
         "org",
-        "payment",
-        "payment_attachment",
         "provinsi",
         "spc_id",
         "tanggal_bayar",
@@ -73,83 +80,90 @@ describe("the body SIMBA is sent", () => {
 
   it("passes the event's own settings through untouched", () => {
     const body = read(local);
-    expect(body.get("org")).toBe("3171100");
-    expect(body.get("id_event")).toBe("128");
-    expect(body.get("key")).toBe("a-key");
-    expect(body.get("spc_id")).toBe("5");
-    expect(body.get("jenis")).toBe("2");
-    expect(body.get("institusi")).toBe("28");
+    expect(body.org).toBe("3171100");
+    expect(body.id_event).toBe("128");
+    expect(body.key).toBe("a-key");
+    expect(body.spc_id).toBe("5");
+    expect(body.jenis).toBe("Institusi");
   });
 
-  it("leaves the payment fields empty, as the event takes none", () => {
-    for (const key of [
-      "tanggal_bayar",
-      "jumlah",
-      "payment_attachment",
-      "payment",
-    ]) {
-      expect(read(local).get(key)).toBe("");
-    }
+  /**
+   * Sent empty, the endpoint refuses the whole registration — which is what it
+   * did for weeks while these two were blank.
+   */
+  it("fills the payment fields even though the event is free", () => {
+    expect(read(local).tanggal_bayar).toBe("1970-01-01");
+    expect(read(local).jumlah).toBe("0");
+  });
+
+  /** Not a fixed id filing every registrant under one institution. */
+  it("sends the institution the registrant actually typed", () => {
+    expect(read(local).institusi).toBe("BAZNAS Kabupaten Bogor");
+    expect(read({ ...local, institution: "IPB University" }).institusi).toBe(
+      "IPB University",
+    );
   });
 
   it("keeps the honorific with the name", () => {
-    expect(read(local).get("nama")).toBe("Mrs. Saputri");
+    expect(read(local).nama).toBe("Mrs. Saputri");
   });
 
-  it("writes the sex the way the example does", () => {
-    expect(read(local).get("jenis_kelamin")).toBe("wanita");
-    expect(read({ ...local, sex: "male" }).get("jenis_kelamin")).toBe("pria");
+  it("writes the sex the way the endpoint does", () => {
+    expect(read(local).jenis_kelamin).toBe("wanita");
+    expect(read({ ...local, sex: "male" }).jenis_kelamin).toBe("pria");
   });
 
   it("sends the number as the registrant gave it", () => {
-    expect(read(local).get("hp")).toBe("+6282303948822");
+    expect(read(local).hp).toBe("+6282303948822");
   });
 });
 
 describe("the six custom fields", () => {
-  it("are sent under the exact names SIMBA holds them by", () => {
-    expect(meta(local).map((one) => one.meta)).toEqual([...META_FIELDS]);
+  /** An object keyed by name, not a list of {meta, value} pairs. */
+  it("are keyed by the exact names SIMBA holds them under", () => {
+    expect(Object.keys(meta(local))).toEqual([...META_FIELDS]);
   });
 
   it("answer in Indonesian whoever filled the form in", () => {
     const rows = meta(abroad);
-    expect(rows[1].value).toBe("Eropa");
-    expect(rows[2].value).toBe("Jerman");
-    expect(rows[4].value).toBe("Ya");
+    expect(rows[META_FIELDS[1]]).toBe("Eropa");
+    expect(rows[META_FIELDS[2]]).toBe("Jerman");
+    expect(rows[META_FIELDS[4]]).toBe("Ya");
   });
 
   it("carry the institution as written", () => {
-    expect(meta(local)[0].value).toBe("BAZNAS Kabupaten Bogor");
+    expect(meta(local)[META_FIELDS[0]]).toBe("BAZNAS Kabupaten Bogor");
   });
 
   it("name both seminar days when both were chosen", () => {
-    const value = meta(local)[5].value;
+    const value = meta(local)[META_FIELDS[5]];
     expect(value).toContain("Hari 2");
     expect(value).toContain("Hari 3");
 
-    expect(meta({ ...local, seminarDays: ["day-3"] })[5].value).not.toContain(
-      "Hari 2",
-    );
+    expect(
+      meta({ ...local, seminarDays: ["day-3"] })[META_FIELDS[5]],
+    ).not.toContain("Hari 2");
   });
 
   /** Otherwise every one of them files as the word "Lainnya". */
   it("send what Other actually meant", () => {
     expect(
-      meta({ ...local, profession: "other", professionOther: "Journalist" })[3]
-        .value,
+      meta({ ...local, profession: "other", professionOther: "Journalist" })[
+        META_FIELDS[3]
+      ],
     ).toBe("Journalist");
 
-    expect(meta(local)[3].value).toBe("Amil");
+    expect(meta(local)[META_FIELDS[3]]).toBe("Amil");
   });
 });
 
 describe("the province", () => {
   it("is the province itself for a registrant in Indonesia", () => {
-    expect(read(local).get("provinsi")).toBe("Jawa Barat");
+    expect(read(local).provinsi).toBe("Jawa Barat");
   });
 
   it("says so plainly for everyone else", () => {
-    expect(read(abroad).get("provinsi")).toBe("Peserta Internasional");
+    expect(read(abroad).provinsi).toBe("Peserta Internasional");
   });
 });
 
@@ -165,16 +179,14 @@ describe("the configuration", () => {
     expect(simbaConfig(full)).not.toBeNull();
 
     for (const missing of Object.keys(full)) {
-      const partial = { ...full, [missing]: "" };
-      expect(simbaConfig(partial)).toBeNull();
+      expect(simbaConfig({ ...full, [missing]: "" })).toBeNull();
     }
   });
 
-  it("falls back to the event settings from the committee's example", () => {
+  it("falls back to the settings SIMBA accepted", () => {
     const config = simbaConfig(full);
     expect(config?.spcId).toBe("5");
-    expect(config?.jenis).toBe("2");
-    expect(config?.institusi).toBe("28");
+    expect(config?.jenis).toBe("Institusi");
   });
 });
 
@@ -209,13 +221,14 @@ describe("reading what SIMBA answered", () => {
     }
   });
 
-  it("takes an explicit success", () => {
+  /** The one SIMBA actually answers on success — not 100, not 200. */
+  it("takes the success it really sends", () => {
+    expect(
+      simbaVerdict('{"status_code":"000","status":"Sukses"}').accepted,
+    ).toBe(true);
     expect(simbaVerdict('{"status_code":"100","status":"OK"}').accepted).toBe(
       true,
     );
-    expect(
-      simbaVerdict('{"status_code":"200","status":"Berhasil"}').accepted,
-    ).toBe(true);
   });
 
   /** An envelope this does not describe is not evidence of a refusal. */

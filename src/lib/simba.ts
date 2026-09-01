@@ -27,7 +27,6 @@ export type SimbaConfig = {
   eventId: string;
   spcId: string;
   jenis: string;
-  institusi: string;
 };
 
 /**
@@ -53,8 +52,7 @@ export function simbaConfig(
     org,
     eventId,
     spcId: env.SIMBA_SPC_ID ?? "5",
-    jenis: env.SIMBA_JENIS ?? "2",
-    institusi: env.SIMBA_INSTITUSI ?? "28",
+    jenis: env.SIMBA_JENIS ?? "Institusi",
   };
 }
 
@@ -83,66 +81,79 @@ export const META_FIELDS = [
 /**
  * One registration in the shape SIMBA's endpoint reads.
  *
+ * Sent as multipart, and every part of this was arrived at the hard way. The
+ * first worked example the committee supplied was refused by the very endpoint
+ * it came from; a second one, sent weeks later, turned out to describe a
+ * different shape entirely — free text where there had been ids, an object
+ * where there had been an array. What is written here is the shape that was
+ * answered `{"status_code":"000","status":"Sukses"}` and landed as participant
+ * 3877, and nothing else has ever been accepted.
+ *
  * Everything is answered in Indonesian whichever language the form was filled
  * in: the field names on the far side are Indonesian and a committee reading
  * one column should not find "Germany" under half the rows and "Jerman" under
  * the rest.
  */
-export function simbaBody(
-  entry: Registration,
-  config: SimbaConfig,
-): URLSearchParams {
+export function simbaBody(entry: Registration, config: SimbaConfig): FormData {
   const profession =
     entry.profession === PROFESSION_OTHER
       ? entry.professionOther
       : label(PROFESSIONS, entry.profession);
 
-  const meta = [
-    entry.institution,
-    label(CONTINENTS, entry.continent),
-    label(COUNTRIES, entry.country),
-    profession,
-    label(PAPER_ANSWERS, entry.submittedPaper),
-    entry.seminarDays
+  // Keyed by each field's own name, not a list of {meta, value} pairs. Both
+  // shapes have been handed to us; only this one is read.
+  const meta: Record<string, string> = {
+    [META_FIELDS[0]]: entry.institution,
+    [META_FIELDS[1]]: label(CONTINENTS, entry.continent),
+    [META_FIELDS[2]]: label(COUNTRIES, entry.country),
+    [META_FIELDS[3]]: profession,
+    [META_FIELDS[4]]: label(PAPER_ANSWERS, entry.submittedPaper),
+    [META_FIELDS[5]]: entry.seminarDays
       .map((day) => label(SEMINAR_DAYS, day))
       .filter(Boolean)
       .join(", "),
-  ].map((value, i) => ({ meta: META_FIELDS[i], value }));
+  };
 
-  return new URLSearchParams({
-    org: config.org,
-    key: config.key,
-    id_event: config.eventId,
+  const body = new FormData();
+  const put = (key: string, value: string) => body.append(key, value);
 
-    // The honorific has nowhere else to go, and dropping how someone asked to
-    // be addressed to save four characters is not a trade worth making.
-    nama: [label(PREFIXES, entry.prefix), entry.fullName]
-      .filter(Boolean)
-      .join(" "),
-    hp: entry.whatsapp,
-    email: entry.email,
-    jenis_kelamin: label(SEXES, entry.sex).toLowerCase(),
+  put("org", config.org);
+  put("key", config.key);
+  put("id_event", config.eventId);
 
-    spc_id: config.spcId,
-    institusi: config.institusi,
-    jenis: config.jenis,
+  // The honorific has nowhere else to go, and dropping how someone asked to
+  // be addressed to save four characters is not a trade worth making.
+  put(
+    "nama",
+    [label(PREFIXES, entry.prefix), entry.fullName].filter(Boolean).join(" "),
+  );
+  put("hp", entry.whatsapp);
+  put("email", entry.email);
+  put("jenis_kelamin", label(SEXES, entry.sex).toLowerCase());
 
-    // A province for anyone who gave one; for everyone else the same words the
-    // old form asked them to type by hand.
-    provinsi:
-      entry.country === INDONESIA
-        ? label(PROVINCES, entry.province)
-        : "Peserta Internasional",
+  // Free text, not an id: the registrant's own answer, rather than one fixed
+  // number filing all five hundred of them under a single institution.
+  put("institusi", entry.institution);
+  put("jenis", config.jenis);
+  put("spc_id", config.spcId);
 
-    meta: JSON.stringify(meta),
+  // The event takes no payment, but these are not allowed to be empty — sent
+  // blank, the endpoint refuses the registration outright.
+  put("tanggal_bayar", "1970-01-01");
+  put("jumlah", "0");
+  put("foto", "");
 
-    // Sent empty, as in the committee's own example: this event takes no
-    // payment, and SIMBA expects the keys to be present regardless.
-    tanggal_bayar: "",
-    jumlah: "",
-    payment_attachment: "",
-    payment: "",
-  });
+  // A province for anyone who gave one; for everyone else the same words the
+  // old form asked them to type out by hand.
+  put(
+    "provinsi",
+    entry.country === INDONESIA
+      ? label(PROVINCES, entry.province)
+      : "Peserta Internasional",
+  );
+
+  put("meta", JSON.stringify(meta));
+  return body;
 }
 
 /**
@@ -181,9 +192,10 @@ export function simbaVerdict(
   if (!code && !status) return { accepted: true };
 
   if (
+    code === "000" ||
     code === "100" ||
     code === "200" ||
-    /success|berhasil|^ok$/i.test(status)
+    /sukses|success|berhasil|^ok$/i.test(status)
   ) {
     return { accepted: true };
   }
@@ -214,8 +226,9 @@ export async function submitToSimba(
 ): Promise<void> {
   const response = await fetch(config.url, {
     method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: simbaBody(entry, config).toString(),
+    // No content-type of our own: fetch writes multipart's boundary into the
+    // header itself, and setting one by hand leaves it off.
+    body: simbaBody(entry, config),
     // Long enough for a slow upstream, short enough that the reader is not
     // left watching a spinner that will never resolve.
     signal: AbortSignal.timeout(15_000),
