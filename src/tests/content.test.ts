@@ -5,6 +5,7 @@ import { LANGS } from "@/lib/i18n";
 import {
   BOOK_CHAPTER,
   CONFERENCE,
+  CONTACT,
   GALLERY,
   EDITIONS,
   FACTS,
@@ -92,6 +93,24 @@ describe("every photograph in the gallery", () => {
       expect(photo.width).toBeGreaterThan(0);
       expect(photo.height).toBeGreaterThan(0);
     }
+  });
+});
+
+/**
+ * The handle and the link are two spellings of one account, and the page shows
+ * one while sending the reader to the other. Nothing but this notices when
+ * they stop agreeing.
+ */
+describe("where a question about the conference goes", () => {
+  it("names an address that could be one", () => {
+    expect(CONTACT.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/);
+  });
+
+  it("links to the very account it prints", () => {
+    expect(CONTACT.instagram.startsWith("@")).toBe(true);
+    expect(CONTACT.instagramUrl).toBe(
+      `https://www.instagram.com/${CONTACT.instagram.slice(1)}`,
+    );
   });
 });
 

@@ -67,6 +67,20 @@ export const GALLERY = [
   { src: "/documentasi/image%20copy%204.png", width: 1600, height: 1200 },
 ] as const;
 
+/**
+ * Where a question about the conference goes.
+ *
+ * Two doors the committee actually watches, rather than one person's phone:
+ * whoever is on the desk that week answers either. `instagram` is the handle
+ * as it is written and read; the URL is the same name without the @, which is
+ * the only shape the address bar takes.
+ */
+export const CONTACT = {
+  email: "iconz@baznas.go.id",
+  instagram: "@puskasbaznas",
+  instagramUrl: "https://www.instagram.com/puskasbaznas",
+} as const;
+
 export const LINKS = {
   /** Where an author actually files a paper. */
   submission: "https://bazn.as/ICONZ10FullPaperSubmission",

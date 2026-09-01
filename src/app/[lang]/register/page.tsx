@@ -5,7 +5,7 @@ import { PhotoCarousel } from "@/components/photo-carousel";
 import { PlateViewer } from "@/components/plate-viewer";
 import { RegistrationForm } from "@/components/registration-form";
 import { Container, Eyebrow, PageTitle } from "@/components/ui";
-import { CONFERENCE, GALLERY } from "@/lib/content";
+import { CONFERENCE, CONTACT, GALLERY } from "@/lib/content";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
@@ -24,6 +24,49 @@ export async function generateMetadata({
     title: t.regTitle,
     description: t.regText,
   });
+}
+
+/** An envelope, for the address the committee reads. */
+function MailGlyph({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
+      <rect
+        x="1.6"
+        y="3.2"
+        width="12.8"
+        height="9.6"
+        rx="1.8"
+        stroke="currentColor"
+        strokeWidth="1.3"
+      />
+      <path
+        d="m2.4 4.6 5.6 4 5.6-4"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** The Instagram mark: a rounded square, a lens and the corner light. */
+function InstagramGlyph({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden className={className}>
+      <rect
+        x="2"
+        y="2"
+        width="12"
+        height="12"
+        rx="3.6"
+        stroke="currentColor"
+        strokeWidth="1.3"
+      />
+      <circle cx="8" cy="8" r="2.9" stroke="currentColor" strokeWidth="1.3" />
+      <circle cx="11.5" cy="4.5" r="0.85" fill="currentColor" />
+    </svg>
+  );
 }
 
 export default async function RegisterPage({
@@ -129,6 +172,43 @@ export default async function RegisterPage({
               </div>
             ))}
           </dl>
+
+          {/* Two doors the committee watches, in place of the one person's
+              number this card used to carry. */}
+          <div className="mt-3 rounded-xl border border-ink/8 bg-cream px-4 py-4">
+            <div className="font-sans text-[0.6875rem] font-semibold tracking-[0.16em] text-muted uppercase">
+              {t.regMoreInfo}
+            </div>
+            <ul className="mt-3 grid gap-2">
+              {[
+                {
+                  href: `mailto:${CONTACT.email}`,
+                  label: CONTACT.email,
+                  Glyph: MailGlyph,
+                  external: false,
+                },
+                {
+                  href: CONTACT.instagramUrl,
+                  label: CONTACT.instagram,
+                  Glyph: InstagramGlyph,
+                  external: true,
+                },
+              ].map((line) => (
+                <li key={line.href}>
+                  <a
+                    href={line.href}
+                    {...(line.external
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="inline-flex items-center gap-2 font-sans text-[0.875rem] font-medium text-brand no-underline transition-colors hover:text-brand-dark"
+                  >
+                    <line.Glyph className="size-4 flex-none" />
+                    {line.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* The conference as it actually looked, which is a better argument
               for filling in the form than an illustration of one. */}
