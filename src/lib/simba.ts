@@ -54,6 +54,22 @@ export function simbaConfig(
   };
 }
 
+/**
+ * The typographic apostrophe, in place of the straight one.
+ *
+ * SIMBA refuses any value containing ' outright, and says only "Data exist or
+ * failed" — the sentence it uses for everything. Nothing else is rejected:
+ * quotes, backslashes, semicolons, angle brackets, backticks, percent signs
+ * and accented letters were all tried and all accepted, which points at a
+ * quote filter rather than an encoding problem.
+ *
+ * So the character is swapped rather than stripped. "Mu'minin" reaches the
+ * register as "Mu’minin", which is the same name correctly typeset — and a
+ * name that lands beats a byte-perfect one that is turned away.
+ */
+export const withoutApostrophes = (value: string) =>
+  value.replace(/'/g, "\u2019");
+
 /** The Indonesian label for a stored value, which is what SIMBA is read in. */
 function label(choices: readonly Choice[], value: string) {
   return choices.find((choice) => choice.value === value)?.id ?? "";
@@ -132,7 +148,8 @@ export function simbaBody(
   };
 
   const body = new FormData();
-  const put = (key: string, value: string) => body.append(key, value);
+  const put = (key: string, value: string) =>
+    body.append(key, withoutApostrophes(value));
 
   put("org", config.org);
   put("key", config.key);

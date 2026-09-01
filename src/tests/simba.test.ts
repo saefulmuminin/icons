@@ -6,6 +6,7 @@ import {
   simbaBody,
   simbaConfig,
   simbaVerdict,
+  withoutApostrophes,
 } from "@/lib/simba";
 import type { SimbaConfig } from "@/lib/simba";
 
@@ -273,5 +274,44 @@ describe("the registration number", () => {
 
     expect(of("777")).toBe("777");
     expect(of("888")).toBe("888");
+  });
+});
+
+/**
+ * A straight apostrophe is the one character SIMBA will not take, and it says
+ * so with the same three words it uses for every other refusal. Quotes,
+ * backslashes, semicolons, angle brackets, backticks, percent signs and
+ * accented letters were all tried against the live endpoint and all accepted.
+ */
+describe("the one character SIMBA refuses", () => {
+  it("is swapped for the typographic one, not stripped", () => {
+    expect(withoutApostrophes("Saeful Mu'minin")).toBe("Saeful Mu\u2019minin");
+    expect(withoutApostrophes("Ma'had Al-Jami'ah")).toBe(
+      "Ma\u2019had Al-Jami\u2019ah",
+    );
+  });
+
+  it("leaves everything else exactly as it was", () => {
+    const untouched =
+      'Dr. A & B, M.Si. "x" \\ ; <y> ` 100% / (z) Müller — 2026';
+    expect(withoutApostrophes(untouched)).toBe(untouched);
+  });
+
+  it("reaches every field of the body, name and institution alike", () => {
+    const body = simbaBody(
+      { ...local, fullName: "Saeful Mu'minin", institution: "Ma'had" },
+      config,
+      "1",
+    );
+
+    const parts: Record<string, string> = {};
+    for (const [key, value] of body) {
+      if (typeof value === "string") parts[key] = value;
+    }
+
+    expect(parts.nama).toBe("Mrs. Saeful Mu\u2019minin");
+    expect(parts.institusi).toBe("Ma\u2019had");
+    expect(parts.meta).not.toContain("'");
+    expect(parts.meta).toContain("Ma\u2019had");
   });
 });
