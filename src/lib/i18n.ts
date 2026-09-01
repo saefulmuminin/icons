@@ -108,6 +108,10 @@ const en = {
     "Fill in the form below and your place at the conference is booked. It takes about two minutes.",
   regCta: "Open registration form",
   regFormTitle: "Registration form",
+  regClosedTitle: "Registration opens soon",
+  regClosedOn: "Opens",
+  regClosedNote:
+    "The form appears here the moment it opens — no need to come back and check.",
   regMoreInfo: "For more information",
   regFormNote: "Every question is required.",
   regEmail: "Email",
@@ -313,6 +317,10 @@ const id: Dict = {
     "Isi formulir di bawah ini dan tempat Anda di konferensi langsung tercatat. Kira-kira dua menit saja.",
   regCta: "Buka formulir pendaftaran",
   regFormTitle: "Formulir pendaftaran",
+  regClosedTitle: "Pendaftaran segera dibuka",
+  regClosedOn: "Dibuka",
+  regClosedNote:
+    "Formulir akan muncul di sini begitu dibuka — tidak perlu bolak-balik memeriksa.",
   regMoreInfo: "Informasi lebih lanjut",
   regFormNote: "Semua pertanyaan wajib diisi.",
   regEmail: "Email",

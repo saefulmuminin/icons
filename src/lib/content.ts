@@ -46,6 +46,25 @@ export function conferenceRange(lang: Lang) {
     : `${on(from, { day: "numeric", month: "long" })} – ${on(to, { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
+/**
+ * When the registration form opens.
+ *
+ * Until then the page shows the date and counts down to it rather than a form
+ * nobody can submit. Set to null to open registration; nothing else has to
+ * change, and the form appears on its own the moment the clock passes this.
+ */
+export const REGISTRATION_OPENS: string | null = "2026-09-22T08:00:00+07:00";
+
+/** That date, written out in the reader's own language. */
+export function registrationOpensOn(lang: Lang) {
+  if (!REGISTRATION_OPENS) return "";
+
+  return dayOf(REGISTRATION_OPENS).toLocaleDateString(
+    lang === "id" ? "id-ID" : "en-GB",
+    { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" },
+  );
+}
+
 /** How many days the conference runs, counted from its own two dates. */
 const CONFERENCE_DAYS =
   Math.round(

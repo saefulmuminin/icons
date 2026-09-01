@@ -3,9 +3,16 @@ import { notFound } from "next/navigation";
 import { CalendarGlyph, PinGlyph } from "@/components/glyphs";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { PlateViewer } from "@/components/plate-viewer";
-import { RegistrationForm } from "@/components/registration-form";
+import { RegistrationGate } from "@/components/registration-gate";
 import { Container, Eyebrow, PageTitle } from "@/components/ui";
-import { conferenceRange, CONFERENCE, CONTACT, GALLERY } from "@/lib/content";
+import {
+  conferenceRange,
+  CONFERENCE,
+  CONTACT,
+  GALLERY,
+  REGISTRATION_OPENS,
+  registrationOpensOn,
+} from "@/lib/content";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
@@ -109,10 +116,15 @@ export default async function RegisterPage({
         */}
         <div className="-mx-5 border-y border-ink/10 bg-paper px-5 py-7 sm:mx-0 sm:rounded-2xl sm:border sm:p-8 lg:col-start-2 lg:row-start-1 lg:row-span-2">
           <h2 className="font-display text-[1.375rem] leading-tight font-bold">
-            {t.regFormTitle}
+            {REGISTRATION_OPENS ? t.regClosedTitle : t.regFormTitle}
           </h2>
           <div className="mt-6">
-            <RegistrationForm lang={lang} t={t} />
+            <RegistrationGate
+              lang={lang}
+              t={t}
+              opensAt={REGISTRATION_OPENS}
+              opensOn={registrationOpensOn(lang)}
+            />
           </div>
         </div>
 
