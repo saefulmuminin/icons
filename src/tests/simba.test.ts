@@ -54,8 +54,18 @@ function read(entry: Registration) {
   return out;
 }
 
-const meta = (entry: Registration) =>
-  JSON.parse(read(entry).meta) as Record<string, string>;
+/** The custom fields, read back as {name: value} whatever shape they went in. */
+const meta = (entry: Registration) => {
+  const rows = JSON.parse(read(entry).meta) as {
+    meta: string;
+    value: string;
+  }[];
+  return Object.fromEntries(rows.map((row) => [row.meta, row.value]));
+};
+
+/** The pairs as sent, so their order and shape can be checked. */
+const metaRows = (entry: Registration) =>
+  JSON.parse(read(entry).meta) as { meta: string; value: string }[];
 
 describe("the body SIMBA is sent", () => {
   /**
@@ -126,9 +136,17 @@ describe("the body SIMBA is sent", () => {
 });
 
 describe("the six custom fields", () => {
-  /** An object keyed by name, not a list of {meta, value} pairs. */
-  it("are keyed by the exact names SIMBA holds them under", () => {
-    expect(Object.keys(meta(local))).toEqual([...META_FIELDS]);
+  /**
+   * A list of {meta, value} pairs, which is the shape of the committee's most
+   * recent example and of SIMBA's own form. The object shape it replaced was
+   * also answered "Sukses", so nothing in the response distinguishes them.
+   */
+  it("are sent as pairs, in the order the event defines them", () => {
+    expect(metaRows(local).map((row) => row.meta)).toEqual([...META_FIELDS]);
+
+    for (const row of metaRows(local)) {
+      expect(Object.keys(row).sort()).toEqual(["meta", "value"]);
+    }
   });
 
   it("answer in Indonesian whoever filled the form in", () => {

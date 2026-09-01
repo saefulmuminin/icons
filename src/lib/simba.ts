@@ -134,19 +134,23 @@ export function simbaBody(
       ? entry.professionOther
       : label(PROFESSIONS, entry.profession);
 
-  // Keyed by each field's own name, not a list of {meta, value} pairs. Both
-  // shapes have been handed to us; only this one is read.
-  const meta: Record<string, string> = {
-    [META_FIELDS[0]]: entry.institution,
-    [META_FIELDS[1]]: label(CONTINENTS, entry.continent),
-    [META_FIELDS[2]]: label(COUNTRIES, entry.country),
-    [META_FIELDS[3]]: profession,
-    [META_FIELDS[4]]: label(PAPER_ANSWERS, entry.submittedPaper),
-    [META_FIELDS[5]]: entry.seminarDays
+  // A list of {meta, value} pairs, in the order the event defines them.
+  //
+  // Both shapes have been handed to us — an object keyed by field name, and
+  // this — and both are answered "Sukses", so a refusal never told us which
+  // one is read. This is the shape of the committee's most recent example and
+  // of SIMBA's own registration form, which posts the pairs as meta[]/data[].
+  const meta = [
+    entry.institution,
+    label(CONTINENTS, entry.continent),
+    label(COUNTRIES, entry.country),
+    profession,
+    label(PAPER_ANSWERS, entry.submittedPaper),
+    entry.seminarDays
       .map((day) => label(SEMINAR_DAYS, day))
       .filter(Boolean)
       .join(", "),
-  };
+  ].map((value, i) => ({ meta: META_FIELDS[i], value }));
 
   const body = new FormData();
   const put = (key: string, value: string) =>
