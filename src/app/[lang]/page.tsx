@@ -175,13 +175,6 @@ export default async function HomePage({
               close: t.imageClose,
               expertise: t.profileExpertise,
               highlights: t.profileHighlights,
-              education: t.profileEducation,
-              work: t.profileWork,
-              entrepreneur: t.profileEntrepreneur,
-              community: t.profileCommunity,
-              politics: t.profilePolitics,
-              dakwah: t.profileDakwah,
-              schooling: t.profileSchooling,
             }}
           />
         </Container>

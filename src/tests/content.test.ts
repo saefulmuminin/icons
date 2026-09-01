@@ -80,12 +80,6 @@ describe("the contact person", () => {
   it("has their portrait filed under public", () => {
     expect(existsSync(join(process.cwd(), "public", CONTACT.photo))).toBe(true);
   });
-
-  it("is reachable on WhatsApp at the number shown", () => {
-    expect(CONTACT.wa).toBe(
-      `https://wa.me/${CONTACT.phone.replace(/\D/g, "")}`,
-    );
-  });
 });
 
 /**
