@@ -146,6 +146,63 @@ export function simbaBody(
 }
 
 /**
+ * Whether SIMBA actually took the registration.
+ *
+ * It answers HTTP 200 to everything, refusals included, and says what really
+ * happened in the body:
+ *
+ *   {"status_code":"101","status":"Key Invalid"}
+ *   {"status_code":"101","status":"Data Invalid","error":"<div>Kolom …"}
+ *   {"status_code":"403","status":"Data exist or failed"}
+ *
+ * So a refusal is only visible to something that reads status_code, and the
+ * test is written the strict way round: accepted only on an explicit success,
+ * refused on anything else. A registration wrongly reported as failed costs
+ * somebody a second attempt; one wrongly reported as filed is simply gone, and
+ * nobody finds out until the day they are not on the list.
+ */
+export function simbaVerdict(
+  text: string,
+): { accepted: true } | { accepted: false; reason: string } {
+  let body: Record<string, unknown>;
+
+  try {
+    body = JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    // Not JSON at all: no evidence either way, and HTTP 200 is all that is
+    // left to go on.
+    return { accepted: true };
+  }
+
+  const code = String(body.status_code ?? "");
+  const status = String(body.status ?? "");
+
+  // An endpoint that reports no code is one this envelope does not describe.
+  if (!code && !status) return { accepted: true };
+
+  if (
+    code === "100" ||
+    code === "200" ||
+    /success|berhasil|^ok$/i.test(status)
+  ) {
+    return { accepted: true };
+  }
+
+  // The error field carries markup meant for a browser; the words are the part
+  // worth putting in a log.
+  const detail = String(body.error ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    accepted: false,
+    reason: [code, status, detail].filter(Boolean).join(" — ").slice(0, 500),
+  };
+}
+
+/**
  * Hand one registration to SIMBA, or throw.
  *
  * Throwing matters: the route turns it into a 503 and the reader is asked to
@@ -170,21 +227,6 @@ export async function submitToSimba(
     throw new Error(`SIMBA answered ${response.status}: ${text.slice(0, 400)}`);
   }
 
-  // A 200 is not yet a yes. SIMBA reports a refusal in the body, so anything
-  // that parses and says so is treated as the failure it is.
-  try {
-    const body = JSON.parse(text) as Record<string, unknown>;
-    const ok =
-      body.status ?? body.success ?? body.result ?? body.error ?? undefined;
-
-    if (ok === false || ok === "false" || ok === 0) {
-      throw new Error(`SIMBA refused it: ${text.slice(0, 400)}`);
-    }
-  } catch (cause) {
-    // Only a refusal is rethrown. A body that is not JSON at all is not
-    // evidence of anything, and a 200 is the best signal left.
-    if (cause instanceof Error && cause.message.startsWith("SIMBA refused")) {
-      throw cause;
-    }
-  }
+  const verdict = simbaVerdict(text);
+  if (!verdict.accepted) throw new Error(`SIMBA refused it: ${verdict.reason}`);
 }

@@ -77,7 +77,16 @@ export async function POST(request: Request) {
   } catch (cause) {
     // The reader is told to try again rather than being handed a success the
     // committee has no record of.
-    console.error("[register] could not be stored", cause);
+    //
+    // The whole entry goes to the log beside the reason. While the far side is
+    // refusing — a bad id, an expired key, an outage — this is the only copy
+    // that exists, and a registration recoverable from a log is worth more
+    // than the tidiness of not writing one.
+    console.error(
+      "[register] REFUSED, entry kept here: %s | %s",
+      cause instanceof Error ? cause.message : String(cause),
+      JSON.stringify({ ...result.value, receivedAt: new Date().toISOString() }),
+    );
     return NextResponse.json({ error: "unavailable" }, { status: 503 });
   }
 

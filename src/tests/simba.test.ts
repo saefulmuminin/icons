@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Registration } from "@/lib/registration";
-import { META_FIELDS, simbaBody, simbaConfig } from "@/lib/simba";
+import { META_FIELDS, simbaBody, simbaConfig, simbaVerdict } from "@/lib/simba";
 import type { SimbaConfig } from "@/lib/simba";
 
 const config: SimbaConfig = {
@@ -175,5 +175,53 @@ describe("the configuration", () => {
     expect(config?.spcId).toBe("5");
     expect(config?.jenis).toBe("2");
     expect(config?.institusi).toBe("28");
+  });
+});
+
+/**
+ * Every string here was captured from the live endpoint. SIMBA answers HTTP
+ * 200 to all of them, refusals included, which is exactly why the form once
+ * thanked people for registrations that were never filed.
+ */
+describe("reading what SIMBA answered", () => {
+  const refusals = [
+    ['{"status_code":"101","status":"Key Invalid"}', "Key Invalid"],
+    [
+      '{"status_code":"101","status":"Data Invalid","error":"<div><br>Kolom <span class=\\"field\\" >Nama peserta</span> harus diisi<br></div>"}',
+      "Nama peserta",
+    ],
+    ['{"status_code":"403","status":"Data exist or failed"}', "Data exist"],
+  ] as const;
+
+  it("treats every refusal as one", () => {
+    for (const [body, expected] of refusals) {
+      const verdict = simbaVerdict(body);
+      expect(verdict.accepted).toBe(false);
+      if (!verdict.accepted) expect(verdict.reason).toContain(expected);
+    }
+  });
+
+  it("keeps the words out of the markup SIMBA wraps them in", () => {
+    const verdict = simbaVerdict(refusals[1][0]);
+    if (!verdict.accepted) {
+      expect(verdict.reason).not.toContain("<");
+      expect(verdict.reason).toContain("harus diisi");
+    }
+  });
+
+  it("takes an explicit success", () => {
+    expect(simbaVerdict('{"status_code":"100","status":"OK"}').accepted).toBe(
+      true,
+    );
+    expect(
+      simbaVerdict('{"status_code":"200","status":"Berhasil"}').accepted,
+    ).toBe(true);
+  });
+
+  /** An envelope this does not describe is not evidence of a refusal. */
+  it("does not invent a refusal out of a body it cannot read", () => {
+    expect(simbaVerdict("").accepted).toBe(true);
+    expect(simbaVerdict("<html>oops</html>").accepted).toBe(true);
+    expect(simbaVerdict('{"id":91}').accepted).toBe(true);
   });
 });
