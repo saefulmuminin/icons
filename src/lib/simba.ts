@@ -25,7 +25,6 @@ export type SimbaConfig = {
   key: string;
   org: string;
   eventId: string;
-  spcId: string;
   jenis: string;
 };
 
@@ -51,7 +50,6 @@ export function simbaConfig(
     key,
     org,
     eventId,
-    spcId: env.SIMBA_SPC_ID ?? "5",
     jenis: env.SIMBA_JENIS ?? "Institusi",
   };
 }
@@ -94,7 +92,26 @@ export const META_FIELDS = [
  * one column should not find "Germany" under half the rows and "Jerman" under
  * the rest.
  */
-export function simbaBody(entry: Registration, config: SimbaConfig): FormData {
+/**
+ * A registration number nobody has used before.
+ *
+ * spc_id has to be unique across the event, and SIMBA reports a repeat as
+ * "Data exist or failed" — the same words it uses for every other refusal,
+ * which is why a fixed value looked for weeks like a broken endpoint rather
+ * than a number that had already been spent.
+ *
+ * Kept under 2^31 so it still fits wherever SIMBA stores it: a millisecond
+ * timestamp is thirteen digits and would not.
+ */
+export function newSpcId() {
+  return String(Math.floor(Math.random() * 2_000_000_000) + 1);
+}
+
+export function simbaBody(
+  entry: Registration,
+  config: SimbaConfig,
+  spcId: string,
+): FormData {
   const profession =
     entry.profession === PROFESSION_OTHER
       ? entry.professionOther
@@ -135,7 +152,7 @@ export function simbaBody(entry: Registration, config: SimbaConfig): FormData {
   // number filing all five hundred of them under a single institution.
   put("institusi", entry.institution);
   put("jenis", config.jenis);
-  put("spc_id", config.spcId);
+  put("spc_id", spcId);
 
   // The event takes no payment, but these are not allowed to be empty — sent
   // blank, the endpoint refuses the registration outright.
@@ -219,27 +236,43 @@ export function simbaVerdict(
  *
  * Throwing matters: the route turns it into a 503 and the reader is asked to
  * try again, rather than being thanked for a registration nobody received.
+ *
+ * "Data exist" is retried with a new number, because that is the one refusal a
+ * new number fixes. Two collisions in a row on a range of two billion is not
+ * something that happens, so a second refusal is a real one — an address
+ * already registered, most likely — and is reported as such.
  */
 export async function submitToSimba(
   entry: Registration,
   config: SimbaConfig,
 ): Promise<void> {
-  const response = await fetch(config.url, {
-    method: "POST",
-    // No content-type of our own: fetch writes multipart's boundary into the
-    // header itself, and setting one by hand leaves it off.
-    body: simbaBody(entry, config),
-    // Long enough for a slow upstream, short enough that the reader is not
-    // left watching a spinner that will never resolve.
-    signal: AbortSignal.timeout(15_000),
-  });
+  let last = "";
 
-  const text = await response.text();
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await fetch(config.url, {
+      method: "POST",
+      // No content-type of our own: fetch writes multipart's boundary into the
+      // header itself, and setting one by hand leaves it off.
+      body: simbaBody(entry, config, newSpcId()),
+      // Long enough for a slow upstream, short enough that the reader is not
+      // left watching a spinner that will never resolve.
+      signal: AbortSignal.timeout(15_000),
+    });
 
-  if (!response.ok) {
-    throw new Error(`SIMBA answered ${response.status}: ${text.slice(0, 400)}`);
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(
+        `SIMBA answered ${response.status}: ${text.slice(0, 400)}`,
+      );
+    }
+
+    const verdict = simbaVerdict(text);
+    if (verdict.accepted) return;
+
+    last = verdict.reason;
+    if (!/data exist/i.test(last)) break;
   }
 
-  const verdict = simbaVerdict(text);
-  if (!verdict.accepted) throw new Error(`SIMBA refused it: ${verdict.reason}`);
+  throw new Error(`SIMBA refused it: ${last}`);
 }

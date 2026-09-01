@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { Registration } from "@/lib/registration";
-import { META_FIELDS, simbaBody, simbaConfig, simbaVerdict } from "@/lib/simba";
+import {
+  META_FIELDS,
+  newSpcId,
+  simbaBody,
+  simbaConfig,
+  simbaVerdict,
+} from "@/lib/simba";
 import type { SimbaConfig } from "@/lib/simba";
 
 const config: SimbaConfig = {
@@ -8,7 +14,6 @@ const config: SimbaConfig = {
   key: "a-key",
   org: "3171100",
   eventId: "128",
-  spcId: "5",
   jenis: "Institusi",
 };
 
@@ -41,7 +46,7 @@ const abroad: Registration = {
 /** The multipart body, read back as plain strings. */
 function read(entry: Registration) {
   const out: Record<string, string> = {};
-  for (const [key, value] of simbaBody(entry, config)) {
+  for (const [key, value] of simbaBody(entry, config, "12345")) {
     out[key] = typeof value === "string" ? value : "";
   }
   return out;
@@ -83,7 +88,7 @@ describe("the body SIMBA is sent", () => {
     expect(body.org).toBe("3171100");
     expect(body.id_event).toBe("128");
     expect(body.key).toBe("a-key");
-    expect(body.spc_id).toBe("5");
+    expect(body.spc_id).toBe("12345");
     expect(body.jenis).toBe("Institusi");
   });
 
@@ -185,7 +190,6 @@ describe("the configuration", () => {
 
   it("falls back to the settings SIMBA accepted", () => {
     const config = simbaConfig(full);
-    expect(config?.spcId).toBe("5");
     expect(config?.jenis).toBe("Institusi");
   });
 });
@@ -236,5 +240,38 @@ describe("reading what SIMBA answered", () => {
     expect(simbaVerdict("").accepted).toBe(true);
     expect(simbaVerdict("<html>oops</html>").accepted).toBe(true);
     expect(simbaVerdict('{"id":91}').accepted).toBe(true);
+  });
+});
+
+/**
+ * The one that hid the whole problem. A repeated spc_id is refused as "Data
+ * exist or failed" — the same words SIMBA uses for every other refusal — so a
+ * fixed value worked twice and then looked like a broken endpoint for weeks.
+ */
+describe("the registration number", () => {
+  it("is different every time", () => {
+    const seen = new Set(Array.from({ length: 500 }, newSpcId));
+    expect(seen.size).toBe(500);
+  });
+
+  it("stays inside what SIMBA can store", () => {
+    for (let i = 0; i < 500; i++) {
+      const n = Number(newSpcId());
+      expect(Number.isInteger(n)).toBe(true);
+      expect(n).toBeGreaterThan(0);
+      // A millisecond timestamp is thirteen digits and would not fit.
+      expect(n).toBeLessThan(2_147_483_647);
+    }
+  });
+
+  it("reaches the body SIMBA is sent", () => {
+    const of = (spc: string) => {
+      for (const [key, value] of simbaBody(local, config, spc)) {
+        if (key === "spc_id") return value;
+      }
+    };
+
+    expect(of("777")).toBe("777");
+    expect(of("888")).toBe("888");
   });
 });
