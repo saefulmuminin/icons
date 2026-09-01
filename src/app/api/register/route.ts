@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { Registration } from "@/lib/registration";
 import { validateRegistration } from "@/lib/registration";
+import { simbaConfig, submitToSimba } from "@/lib/simba";
 
 /** A registration is never a cached read, and it is never prerendered. */
 export const dynamic = "force-dynamic";
@@ -13,19 +14,31 @@ export const dynamic = "force-dynamic";
 const MAX_BODY = 8 * 1024;
 
 /**
- * Where an accepted registration goes.
+ * Where an accepted registration goes: SIMBA, the committee's own event
+ * register.
  *
- * Nothing is stored yet: the committee has not settled on where the register
- * should live, so this writes the submission to the server log and reports
- * success. The form, its validation and the wire format are finished and do
- * not change when that decision lands — only the body of this function does,
- * to a spreadsheet append, a mail, or an insert.
+ * With no configuration there is nowhere to put it. In development that is
+ * ordinary — the endpoint is not something every contributor should be posting
+ * to — so the entry goes to the log and the form is left working. In
+ * production it is a misconfiguration, and saying "thank you" for a
+ * registration that reached nobody is the one outcome worth refusing outright.
  */
 async function store(entry: Registration) {
-  console.info(
-    "[register] %s",
-    JSON.stringify({ ...entry, receivedAt: new Date().toISOString() }),
-  );
+  const config = simbaConfig();
+
+  if (!config) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SIMBA is not configured; refusing to drop the entry");
+    }
+
+    console.info(
+      "[register] not configured, logging only: %s",
+      JSON.stringify({ ...entry, receivedAt: new Date().toISOString() }),
+    );
+    return;
+  }
+
+  await submitToSimba(entry, config);
 }
 
 export async function POST(request: Request) {
