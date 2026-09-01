@@ -3,6 +3,15 @@ import type { Registration } from "@/lib/registration";
 import { validateRegistration } from "@/lib/registration";
 import { simbaConfig, submitToSimba } from "@/lib/simba";
 
+/**
+ * The site has no SIMBA to file with.
+ *
+ * Told apart from a refusal on the way out: both leave the reader with the
+ * same "try again", but they need opposite fixes, and whoever is looking into
+ * it should not have to reach the server logs to find out which one this is.
+ */
+class NotConfigured extends Error {}
+
 /** A registration is never a cached read, and it is never prerendered. */
 export const dynamic = "force-dynamic";
 
@@ -28,7 +37,9 @@ async function store(entry: Registration) {
 
   if (!config) {
     if (process.env.NODE_ENV === "production") {
-      throw new Error("SIMBA is not configured; refusing to drop the entry");
+      throw new NotConfigured(
+        "no SIMBA credentials; refusing to drop the entry",
+      );
     }
 
     console.info(
@@ -87,7 +98,10 @@ export async function POST(request: Request) {
       cause instanceof Error ? cause.message : String(cause),
       JSON.stringify({ ...result.value, receivedAt: new Date().toISOString() }),
     );
-    return NextResponse.json({ error: "unavailable" }, { status: 503 });
+    return NextResponse.json(
+      { error: cause instanceof NotConfigured ? "unconfigured" : "refused" },
+      { status: 503 },
+    );
   }
 
   return NextResponse.json({ ok: true });
