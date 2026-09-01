@@ -5,7 +5,7 @@ import { PhotoCarousel } from "@/components/photo-carousel";
 import { PlateViewer } from "@/components/plate-viewer";
 import { RegistrationForm } from "@/components/registration-form";
 import { Container, Eyebrow, PageTitle } from "@/components/ui";
-import { CONFERENCE, CONTACT, GALLERY } from "@/lib/content";
+import { conferenceRange, CONFERENCE, CONTACT, GALLERY } from "@/lib/content";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
 
@@ -149,7 +149,7 @@ export default async function RegisterPage({
             {[
               {
                 label: t.dateOnly,
-                value: CONFERENCE.dateRange,
+                value: conferenceRange(lang),
                 Glyph: CalendarGlyph,
               },
               {

@@ -50,12 +50,15 @@ export function HeroVideo({
   soundOnLabel,
   soundOffLabel,
   comingSoonLabel,
+  dates,
 }: {
   videoId: string;
   title: string;
   soundOnLabel: string;
   soundOffLabel: string;
   comingSoonLabel: string;
+  /** The run of dates, already in the reader's language. */
+  dates: string;
 }) {
   const backdrop = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLIFrameElement>(null);
@@ -209,7 +212,9 @@ export function HeroVideo({
         <div className="absolute inset-0 opacity-[0.12] bg-[radial-gradient(rgba(255,255,255,0.35)_0.5px,transparent_0.5px)] [background-size:3px_3px]" />
       </div>
 
-      {!still && <HeroStinger active={outro} label={comingSoonLabel} />}
+      {!still && (
+        <HeroStinger active={outro} label={comingSoonLabel} dates={dates} />
+      )}
 
       {!still && (
         <button

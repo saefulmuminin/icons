@@ -15,9 +15,11 @@ import logo from "@/../public/iconz10-logo.png";
 export function HeroStinger({
   active,
   label,
+  dates,
 }: {
   active: boolean;
   label: string;
+  dates: string;
 }) {
   const card = useRef<HTMLDivElement>(null);
 
@@ -108,7 +110,7 @@ export function HeroStinger({
           data-stinger
           className="mt-2 font-sans text-xs tracking-[0.12em] uppercase text-white/60"
         >
-          {CONFERENCE.dateRange}
+          {dates}
         </div>
       </div>
     </div>

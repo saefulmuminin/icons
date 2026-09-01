@@ -10,7 +10,12 @@ import {
 } from "animejs";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { CONFERENCE, CONFERENCE_LINKS, HERO_VIDEO } from "@/lib/content";
+import {
+  conferenceRange,
+  CONFERENCE,
+  CONFERENCE_LINKS,
+  HERO_VIDEO,
+} from "@/lib/content";
 import type { Dict, Lang } from "@/lib/i18n";
 import { localizedHref } from "@/lib/nav";
 import { Countdown } from "./countdown";
@@ -150,6 +155,7 @@ export function Hero({ lang, t }: { lang: Lang; t: Dict }) {
         soundOnLabel={t.heroSoundOn}
         soundOffLabel={t.heroSoundOff}
         comingSoonLabel={t.heroComingSoon}
+        dates={conferenceRange(lang)}
       />
 
       <Container className="relative flex flex-1 flex-col justify-center pt-16 pb-14 sm:pt-20 sm:pb-16">
@@ -204,7 +210,7 @@ export function Hero({ lang, t }: { lang: Lang; t: Dict }) {
               className="group mt-1.5 block no-underline"
             >
               <span className="block font-display text-[1.375rem] leading-[1.3] font-bold transition-colors group-hover:text-mint-soft">
-                {CONFERENCE.dateRange}
+                {conferenceRange(lang)}
               </span>
               <span className="mt-1.5 inline-flex items-center gap-1.5 font-sans text-xs font-medium text-white/60 transition-colors group-hover:text-white">
                 <CalendarGlyph />

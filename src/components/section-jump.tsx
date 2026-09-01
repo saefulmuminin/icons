@@ -119,9 +119,27 @@ export function SectionJump({
             ) : (
               <>
                 <path d="M6 4.5h6.5M6 8h6.5M6 11.5h6.5" />
-                <circle cx="3.4" cy="4.5" r="0.9" fill="currentColor" stroke="none" />
-                <circle cx="3.4" cy="8" r="0.9" fill="currentColor" stroke="none" />
-                <circle cx="3.4" cy="11.5" r="0.9" fill="currentColor" stroke="none" />
+                <circle
+                  cx="3.4"
+                  cy="4.5"
+                  r="0.9"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <circle
+                  cx="3.4"
+                  cy="8"
+                  r="0.9"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <circle
+                  cx="3.4"
+                  cy="11.5"
+                  r="0.9"
+                  fill="currentColor"
+                  stroke="none"
+                />
               </>
             )}
           </svg>

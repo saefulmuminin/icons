@@ -2,9 +2,8 @@ import type { Lang } from "./i18n";
 import { INVITED_SPEAKERS } from "./speakers";
 
 export const CONFERENCE = {
-  startsAt: "2026-11-24T08:00:00+07:00",
-  endsAt: "2026-11-26T17:00:00+07:00",
-  dateRange: "24 – 26 November 2026",
+  startsAt: "2026-12-01T08:00:00+07:00",
+  endsAt: "2026-12-03T17:00:00+07:00",
   venue:
     "Faculty of Economics and Management (FEM), Jl. Agatis, IPB Dramaga Campus, Bogor 16680, West Java, Indonesia",
   venueShort:
@@ -15,6 +14,37 @@ export const CONFERENCE = {
   mapQuery:
     "Fakultas Ekonomi dan Manajemen IPB University, Jalan Agatis, Dramaga, Bogor",
 } as const;
+
+/** A date at midnight UTC, from the date part alone.
+ *
+ * Read with `new Date` instead, the timestamp resolves against the machine's
+ * clock, and any server west of Jakarta names the day before. */
+const dayOf = (iso: string) => {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+};
+
+/**
+ * The run of dates, written out in one language or the other.
+ *
+ * Spelled from startsAt and endsAt rather than typed beside them: the two had
+ * already drifted apart once, and a poster reading November while the register
+ * says December is the kind of mistake nobody catches until someone books a
+ * flight.
+ */
+export function conferenceRange(lang: Lang) {
+  const locale = lang === "id" ? "id-ID" : "en-GB";
+  const from = dayOf(CONFERENCE.startsAt);
+  const to = dayOf(CONFERENCE.endsAt);
+  const on = (d: Date, opts: Intl.DateTimeFormatOptions) =>
+    d.toLocaleDateString(locale, { ...opts, timeZone: "UTC" });
+
+  // Within one month the month is said once, at the end.
+  return from.getUTCMonth() === to.getUTCMonth() &&
+    from.getUTCFullYear() === to.getUTCFullYear()
+    ? `${from.getUTCDate()} – ${to.getUTCDate()} ${on(to, { month: "long", year: "numeric" })}`
+    : `${on(from, { day: "numeric", month: "long" })} – ${on(to, { day: "numeric", month: "long", year: "numeric" })}`;
+}
 
 /** How many days the conference runs, counted from its own two dates. */
 const CONFERENCE_DAYS =
@@ -168,12 +198,12 @@ const BOOK_DATES: Record<Lang, [label: string, date: string][]> = {
   en: [
     ["Full book chapter submission", "1 November 2026"],
     ["Notification of acceptance", "17 November 2026"],
-    ["Conference & chapter presentation", "24–26 November 2026"],
+    ["Conference & chapter presentation", "1–3 December 2026"],
   ],
   id: [
     ["Pengiriman bab lengkap", "1 November 2026"],
     ["Pemberitahuan penerimaan", "17 November 2026"],
-    ["Konferensi & presentasi bab", "24–26 November 2026"],
+    ["Konferensi & presentasi bab", "1–3 Desember 2026"],
   ],
 };
 
@@ -245,7 +275,7 @@ export const SUB_EVENTS: string[] = [
  * the same fact stated once.
  */
 export const FACTS = [
-  { value: "300", key: "factParticipants" },
+  { value: "500", key: "factParticipants" },
   { value: String(SUB_EVENTS.length), key: "factSubevents" },
   { value: String(CONFERENCE_DAYS), key: "factDays" },
   { value: String(JOURNALS.length), key: "factJournals" },
@@ -255,14 +285,14 @@ const CFP_DATES: Record<Lang, [label: string, date: string][]> = {
   en: [
     ["Full paper submission deadline", "1 November 2026"],
     ["Full paper acceptance notification", "10 November 2026"],
-    ["Technical meeting for paper presentation", "23 November 2026"],
-    ["Paper presentation", "24 November 2026"],
+    ["Technical meeting for paper presentation", "30 November 2026"],
+    ["Paper presentation", "1 December 2026"],
   ],
   id: [
     ["Batas waktu pengiriman full paper", "1 November 2026"],
     ["Pemberitahuan penerimaan full paper", "10 November 2026"],
-    ["Technical meeting presentasi paper", "23 November 2026"],
-    ["Presentasi paper", "24 November 2026"],
+    ["Technical meeting presentasi paper", "30 November 2026"],
+    ["Presentasi paper", "1 Desember 2026"],
   ],
 };
 
@@ -447,7 +477,7 @@ export function getKeyDates(lang: Lang) {
     ...getCfpDates(lang),
     {
       label: lang === "id" ? "Konferensi ICONZ ke-10" : "The 10th ICONZ",
-      date: CONFERENCE.dateRange,
+      date: conferenceRange(lang),
     },
   ];
 }

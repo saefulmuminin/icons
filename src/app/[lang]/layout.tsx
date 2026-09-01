@@ -6,7 +6,7 @@ import { RouteLoader } from "@/components/route-loader";
 import { Splash } from "@/components/splash";
 import { SiteHeader } from "@/components/site-header";
 import { ToTop } from "@/components/to-top";
-import { CONFERENCE } from "@/lib/content";
+import { conferenceRange, CONFERENCE } from "@/lib/content";
 import { getDictionary, isLang, LANGS } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
@@ -54,8 +54,8 @@ export async function generateMetadata({
       template: "%s · The 10th ICONZ",
     },
     description: isId
-      ? `Konferensi internasional ke-10 tentang zakat dan filantropi. ${CONFERENCE.dateRange}, IPB Dramaga Campus, Bogor, Indonesia.`
-      : `The 10th international conference on zakat and philanthropy. ${CONFERENCE.dateRange}, IPB Dramaga Campus, Bogor, Indonesia.`,
+      ? `Konferensi internasional ke-10 tentang zakat dan filantropi. ${conferenceRange("id")}, IPB Dramaga Campus, Bogor, Indonesia.`
+      : `The 10th international conference on zakat and philanthropy. ${conferenceRange("en")}, IPB Dramaga Campus, Bogor, Indonesia.`,
     // No canonical here: each page sets its own, and a canonical set at the
     // layout would point every page at the home page.
     openGraph: {

@@ -90,7 +90,7 @@ const en = {
 
   speakersTitle: "Invited speakers",
   speakersNote:
-    "These speakers have been invited and are currently subject to confirmation. The programme allows for up to 26 across the keynote and the panel sessions.",
+    "These speakers have been invited and are currently subject to confirmation.",
 
   datesTitle: "Key dates",
   orgTitle: "Organizers & supporters",
@@ -100,7 +100,7 @@ const en = {
   confTitle: "A three-day international forum on zakat and philanthropy",
   partTitle: "Participants",
   partIntro:
-    "The conference aims to invite 300 participants from both domestic and international backgrounds, including:",
+    "The conference aims to invite 500 participants from both domestic and international backgrounds, including:",
   eventsTitle: "Conference events",
   eventsIntro: "The conference will feature various sub-events, including:",
   regTitle: "Event registration",
@@ -295,7 +295,7 @@ const id: Dict = {
 
   speakersTitle: "Pembicara yang diundang",
   speakersNote:
-    "Para pembicara berikut telah diundang dan saat ini masih menunggu konfirmasi. Program menyediakan tempat hingga 26 pembicara, mencakup keynote dan sesi panel.",
+    "Para pembicara berikut telah diundang dan saat ini masih menunggu konfirmasi.",
 
   datesTitle: "Tanggal penting",
   orgTitle: "Penyelenggara & pendukung",
@@ -305,7 +305,7 @@ const id: Dict = {
   confTitle: "Forum internasional tiga hari tentang zakat dan filantropi",
   partTitle: "Peserta",
   partIntro:
-    "Konferensi ini menargetkan 300 peserta dari dalam dan luar negeri, meliputi:",
+    "Konferensi ini menargetkan 500 peserta dari dalam dan luar negeri, meliputi:",
   eventsTitle: "Rangkaian acara",
   eventsIntro: "Konferensi akan menghadirkan berbagai sub-acara, meliputi:",
   regTitle: "Pendaftaran acara",

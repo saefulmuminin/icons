@@ -185,7 +185,12 @@ export const COUNTRY_ROWS: readonly CountryRow[] = [
   ["PA", "north-america", "Panama", "Panama"],
   ["KN", "north-america", "St. Kitts & Nevis", "Saint Kitts dan Nevis"],
   ["LC", "north-america", "St. Lucia", "Saint Lucia"],
-  ["VC", "north-america", "St. Vincent & Grenadines", "Saint Vincent dan Grenadine"],
+  [
+    "VC",
+    "north-america",
+    "St. Vincent & Grenadines",
+    "Saint Vincent dan Grenadine",
+  ],
   ["TT", "north-america", "Trinidad & Tobago", "Trinidad dan Tobago"],
   ["US", "north-america", "United States", "Amerika Serikat"],
   ["AU", "oceania", "Australia", "Australia"],

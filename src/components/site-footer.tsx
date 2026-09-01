@@ -1,7 +1,7 @@
 import { CalendarGlyph, PinGlyph } from "./glyphs";
 import Image from "next/image";
 import Link from "next/link";
-import { CONFERENCE, ORGANIZERS } from "@/lib/content";
+import { conferenceRange, CONFERENCE, ORGANIZERS } from "@/lib/content";
 import type { Dict, Lang } from "@/lib/i18n";
 import { markFor } from "@/lib/marks";
 import { localizedHref, NAV_ITEMS } from "@/lib/nav";
@@ -38,7 +38,7 @@ export function SiteFooter({ lang, t }: { lang: Lang; t: Dict }) {
               <dt className="sr-only">{t.dateOnly}</dt>
               <CalendarGlyph className="mt-[0.1875rem] h-4 w-4 text-mint" />
               <dd className="font-medium text-mint-soft">
-                {CONFERENCE.dateRange}
+                {conferenceRange(lang)}
               </dd>
             </div>
             <div className="flex items-start gap-2.5">

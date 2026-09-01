@@ -89,11 +89,18 @@ export function SpeakerGrid({
 
   return (
     <>
-      {/* Ten columns, two to a card: five fill the first row and the
-          remaining four sit centred beneath them. */}
+      {/*
+        Five to a row, and whatever is left over sits centred under them.
+
+        Wrapping rather than a grid, because a grid gives the last row no way
+        to centre itself: twenty-two speakers across five columns leaves two,
+        and they would sit hard against the left edge under four full rows.
+        The widths are the row divided by its own gaps, so a full row still
+        reaches both edges.
+      */}
       <ul
         ref={grid}
-        className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 sm:mt-12 sm:grid-cols-3 lg:grid-cols-10"
+        className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-9 sm:mt-12"
       >
         {speakers.map((speaker, i) => (
           <SpeakerCard
@@ -101,7 +108,7 @@ export function SpeakerGrid({
             speaker={speaker}
             openLabel={labels.open}
             onOpen={() => setOpened(i)}
-            className={`lg:col-span-2 ${i === 5 ? "lg:col-start-2" : ""}`}
+            className="w-[calc((100%-1.25rem)/2)] sm:w-[calc((100%-2.5rem)/3)] lg:w-[calc((100%-5rem)/5)]"
           />
         ))}
       </ul>

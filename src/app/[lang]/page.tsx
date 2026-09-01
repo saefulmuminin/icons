@@ -13,6 +13,7 @@ import { SupporterMarquee } from "@/components/supporters";
 import Image from "next/image";
 import { Container, SectionTitle } from "@/components/ui";
 import {
+  conferenceRange,
   CONFERENCE,
   FACTS,
   getBackgroundMarks,
@@ -41,7 +42,7 @@ export async function generateMetadata({
   return pageMetadata({
     lang: safe,
     title: "The 10th International Conference on Zakat",
-    description: `${CONFERENCE.theme} — ${CONFERENCE.dateRange}, ${t.venueLabel}: ${CONFERENCE.venueShort}.`,
+    description: `${CONFERENCE.theme} — ${conferenceRange(safe)}, ${t.venueLabel}: ${CONFERENCE.venueShort}.`,
   });
 }
 

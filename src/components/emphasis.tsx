@@ -20,10 +20,7 @@ export function Emphasis({
   const pattern = new RegExp(`(${present.map(escape).join("|")})`, "g");
   const pieces: ReactNode[] = text.split(pattern).map((piece, i) =>
     present.includes(piece) ? (
-      <span
-        key={i}
-        className="font-semibold text-ink"
-      >
+      <span key={i} className="font-semibold text-ink">
         {piece}
       </span>
     ) : (

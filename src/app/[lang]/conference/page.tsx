@@ -11,6 +11,7 @@ import {
   SectionTitle,
 } from "@/components/ui";
 import {
+  conferenceRange,
   CONFERENCE,
   CONFERENCE_LINKS,
   getParticipants,
@@ -70,7 +71,7 @@ export default async function ConferencePage({
   const summary = [
     {
       label: t.dateOnly,
-      value: CONFERENCE.dateRange,
+      value: conferenceRange(lang),
       href: CONFERENCE_LINKS.calendar,
       cta: t.calendarCta,
     },

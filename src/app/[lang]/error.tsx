@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { Container, ctaClasses, Cta, Eyebrow, PageTitle } from "@/components/ui";
+import {
+  Container,
+  ctaClasses,
+  Cta,
+  Eyebrow,
+  PageTitle,
+} from "@/components/ui";
 import { getDictionary } from "@/lib/i18n";
 import { localizedHref } from "@/lib/nav";
 import { useRouteLang } from "@/lib/use-route-lang";
