@@ -154,6 +154,7 @@ function Text({
   type = "text",
   autoComplete,
   inputMode,
+  placeholder,
   clean,
 }: {
   ctl: Ctl;
@@ -161,6 +162,9 @@ function Text({
   type?: string;
   autoComplete?: string;
   inputMode?: "text" | "tel" | "email";
+  /** Shown in the empty field, for a question whose shape is easier to copy
+   *  than to describe. */
+  placeholder?: string;
   /** Rewrites what was typed before it is kept, for a field that takes only
    *  one kind of character. */
   clean?: (raw: string) => string;
@@ -171,6 +175,7 @@ function Text({
       type={type}
       autoComplete={autoComplete}
       inputMode={inputMode}
+      placeholder={placeholder}
       maxLength={MAX_FIELD}
       value={ctl.values[field] as string}
       onChange={(event) =>
@@ -439,6 +444,7 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
             type="tel"
             autoComplete="tel"
             inputMode="tel"
+            placeholder={t.regWhatsappHint}
             clean={normalisePhone}
           />
         </Row>
