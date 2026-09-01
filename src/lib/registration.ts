@@ -160,14 +160,25 @@ export function conferenceDate(day: number, lang: Lang) {
   });
 }
 
+/**
+ * A seminar day, carrying its number as well as its label.
+ *
+ * The label is one string because that is how it is filed — SIMBA gets "Hari 2
+ * — 25 November 2026" in a single cell. The number is here so the form can set
+ * the day and the date on separate lines without picking the label apart again.
+ */
+export type SeminarDay = Choice & { n: number };
+
 /** Day 1 is the call-for-papers day; the seminar proper runs on days 2 and 3. */
-export const SEMINAR_DAYS: Choice[] = [2, 3].map((day) => ({
-  value: `day-${day}`,
-  en: `Day ${day} — ${conferenceDate(day, "en")}`,
-  id: `Hari ${day} — ${conferenceDate(day, "id")}`,
+export const SEMINAR_DAYS: SeminarDay[] = [2, 3].map((n) => ({
+  n,
+  value: `day-${n}`,
+  en: `Day ${n} — ${conferenceDate(n, "en")}`,
+  id: `Hari ${n} — ${conferenceDate(n, "id")}`,
 }));
 
-export const PAPER_DAY = { en: "Day 1", id: "Hari 1" } as const;
+/** The day the papers are presented, which the paper question is asking about. */
+export const PAPER_DAY = 1;
 
 export type Registration = {
   email: string;
@@ -353,9 +364,14 @@ export function validateRegistration(
   // wave it through.
   const digits = value.whatsapp.replace(/\D/g, "");
   const badPhone =
-    !PHONE_SHAPE.test(value.whatsapp) || digits.length < 8 || digits.length > 16;
+    !PHONE_SHAPE.test(value.whatsapp) ||
+    digits.length < 8 ||
+    digits.length > 16;
 
-  set("whatsapp", checkText(value.whatsapp) ?? (badPhone ? "whatsapp" : undefined));
+  set(
+    "whatsapp",
+    checkText(value.whatsapp) ?? (badPhone ? "whatsapp" : undefined),
+  );
   if (!badPhone) value.whatsapp = normalisePhone(value.whatsapp);
 
   // Only asked for when "Other" is the answer, and then it is the answer.

@@ -128,6 +128,7 @@ const en = {
   regPaper:
     "Did you submit to the Call for Papers or the International Book Chapter?",
   regDays: "Which days of the international seminar will you attend?",
+  regDayWord: "Day",
   regDaysHelp: "Choose one or both.",
   regChoose: "Choose one",
   regContinentFirst: "Choose a continent first",
@@ -332,6 +333,7 @@ const id: Dict = {
   regPaper:
     "Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?",
   regDays: "Hari seminar internasional mana yang akan Anda hadiri?",
+  regDayWord: "Hari",
   regDaysHelp: "Pilih salah satu atau keduanya.",
   regChoose: "Pilih salah satu",
   regContinentFirst: "Pilih benua dulu",

@@ -10,12 +10,15 @@ import type {
   Errors,
   Field,
   Registration,
+  SeminarDay,
 } from "@/lib/registration";
 import {
   CONTINENTS,
   EMPTY,
   INDONESIA,
+  PAPER_DAY,
   cascade,
+  conferenceDate,
   normalisePhone,
   countriesIn,
   MAX_FIELD,
@@ -284,6 +287,88 @@ function Pills({
   );
 }
 
+/**
+ * The seminar days, each on its own card.
+ *
+ * They were chips beside a long question, which made two dates that decide
+ * where somebody spends a Wednesday look like an afterthought — and hid the
+ * fact that both can be taken at once. A card per day gives the date room to
+ * be read, and the box in the corner says plainly that this is a question you
+ * are allowed to answer twice.
+ */
+function DayCards({ ctl, days }: { ctl: Ctl; days: readonly SeminarDay[] }) {
+  const chosen = ctl.values.seminarDays;
+  const bad = wrongAt(ctl, "seminarDays");
+
+  return (
+    <span className="grid gap-3 sm:grid-cols-2">
+      {days.map((day, index) => {
+        const on = chosen.includes(day.value);
+
+        return (
+          <label
+            key={day.value}
+            className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand ${
+              on
+                ? "border-brand bg-sage"
+                : `${bad ? "border-step-amber" : "border-ink/15"} bg-paper hover:border-brand`
+            }`}
+          >
+            <input
+              type="checkbox"
+              id={index === 0 ? ctl.idOf("seminarDays") : undefined}
+              name={`${ctl.idOf("seminarDays")}-choice`}
+              value={day.value}
+              checked={on}
+              aria-invalid={bad || undefined}
+              aria-describedby={
+                bad ? `${ctl.idOf("seminarDays")}-error` : undefined
+              }
+              onChange={() =>
+                ctl.set(
+                  "seminarDays",
+                  on
+                    ? chosen.filter((one) => one !== day.value)
+                    : [...chosen, day.value],
+                )
+              }
+              className="sr-only"
+            />
+
+            <span
+              aria-hidden
+              className={`grid size-5 flex-none place-items-center rounded-md border transition-colors ${
+                on ? "border-brand bg-brand text-white" : "border-ink/25"
+              }`}
+            >
+              {on && (
+                <svg viewBox="0 0 12 12" fill="none" className="size-3">
+                  <path
+                    d="m2.5 6.2 2.3 2.3 4.7-4.7"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </span>
+
+            <span className="min-w-0">
+              <span className="block font-display text-[0.9375rem] leading-tight font-bold text-ink">
+                {ctl.t.regDayWord} {day.n}
+              </span>
+              <span className="mt-0.5 block font-sans text-[0.8125rem] text-muted">
+                {conferenceDate(day.n, ctl.lang)}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </span>
+  );
+}
+
 const blank = (): Registration => ({ ...EMPTY, seminarDays: [] });
 
 export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
@@ -495,6 +580,7 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
           ctl={ctl}
           field="submittedPaper"
           label={t.regPaper}
+          help={`${t.regDayWord} ${PAPER_DAY} — ${conferenceDate(PAPER_DAY, lang)}`}
           group
           className="sm:col-span-2"
         >
@@ -509,12 +595,7 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
           group
           className="sm:col-span-2"
         >
-          <Pills
-            ctl={ctl}
-            field="seminarDays"
-            choices={SEMINAR_DAYS}
-            multiple
-          />
+          <DayCards ctl={ctl} days={SEMINAR_DAYS} />
         </Row>
 
         {/* Left uncontrolled for a script to find and fill, and read straight
