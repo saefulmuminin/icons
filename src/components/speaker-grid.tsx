@@ -2,7 +2,7 @@
 
 import { animate, createTimeline, onScroll, stagger, utils } from "animejs";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import type { ProfileGroupKey, SpeakerProfile } from "@/lib/content";
 
 export type Speaker = {
@@ -16,6 +16,9 @@ export type ProfileLabels = Record<ProfileGroupKey, string> & {
   open: string;
   close: string;
 };
+
+/** How many speakers open the section on a row of their own. */
+const HEADLINE = 2;
 
 export function SpeakerGrid({
   speakers,
@@ -90,26 +93,36 @@ export function SpeakerGrid({
   return (
     <>
       {/*
-        Five to a row, and whatever is left over sits centred under them.
+        The two the conference opens with sit alone on the first row, centred;
+        five to a row after that, and whatever is left over centred again
+        beneath them.
 
-        Wrapping rather than a grid, because a grid gives the last row no way
-        to centre itself: twenty-two speakers across five columns leaves two,
-        and they would sit hard against the left edge under four full rows.
-        The widths are the row divided by its own gaps, so a full row still
-        reaches both edges.
+        Wrapping rather than a grid, because a grid gives a short row no way to
+        centre itself: twenty-two speakers across five columns leaves two, and
+        they would sit hard against the left edge under four full rows. The
+        widths are the row less its own gaps, so a full row still reaches both
+        edges.
       */}
       <ul
         ref={grid}
         className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-9 sm:mt-12"
       >
         {speakers.map((speaker, i) => (
-          <SpeakerCard
-            key={speaker.name}
-            speaker={speaker}
-            openLabel={labels.open}
-            onOpen={() => setOpened(i)}
-            className="w-[calc((100%-1.25rem)/2)] sm:w-[calc((100%-2.5rem)/3)] lg:w-[calc((100%-5rem)/5)]"
-          />
+          <Fragment key={speaker.name}>
+            <SpeakerCard
+              speaker={speaker}
+              openLabel={labels.open}
+              onOpen={() => setOpened(i)}
+              className="w-[calc((100%-1.25rem)/2)] sm:w-[calc((100%-2.5rem)/3)] lg:w-[calc((100%-5rem)/5)]"
+            />
+            {/* Nothing to see: a full-width item of no height, which is what
+                ends a flex row early. Only from the third breakpoint up —
+                narrower than that the rows are two and three wide and the
+                opening pair already sits on its own. */}
+            {i === HEADLINE - 1 && (
+              <li aria-hidden className="hidden w-full lg:block" />
+            )}
+          </Fragment>
         ))}
       </ul>
 

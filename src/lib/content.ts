@@ -241,8 +241,8 @@ export const JOURNALS: string[] = [
  * the middle, BAZNAS on the right, as markom asks.
  */
 export const ORGANIZERS: string[] = [
-  "Ministry of Religious Affairs",
   "IPB University",
+  "Ministry of Religious Affairs",
   "The National Board of Zakat",
 ];
 
