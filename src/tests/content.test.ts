@@ -158,10 +158,15 @@ describe("when registration opens", () => {
     }
   });
 
+  /**
+   * October, not September: September is spelled the same in both languages,
+   * so the version of this test that used it passed without ever showing that
+   * anything was translated.
+   */
   it("writes the date in the reader's own language", () => {
-    const iso = "2026-09-22T08:00:00+07:00";
-    expect(registrationOpensOn(iso, "en")).toBe("22 September 2026");
-    expect(registrationOpensOn(iso, "id")).toBe("22 September 2026");
+    const iso = "2026-10-01T08:00:00+07:00";
+    expect(registrationOpensOn(iso, "en")).toBe("1 October 2026");
+    expect(registrationOpensOn(iso, "id")).toBe("1 Oktober 2026");
     expect(registrationOpensOn(null, "en")).toBe("");
   });
 });

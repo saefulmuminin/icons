@@ -47,7 +47,7 @@ export function conferenceRange(lang: Lang) {
 }
 
 /** When registration opens, unless the environment says otherwise. */
-const OPENS_BY_DEFAULT = "2026-09-22T08:00:00+07:00";
+const OPENS_BY_DEFAULT = "2026-10-01T08:00:00+07:00";
 
 /**
  * When the registration form opens, or null if it is open now.
