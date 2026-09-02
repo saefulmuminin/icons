@@ -43,7 +43,6 @@ const good: Registration = {
   dialCode: "+62",
   whatsapp: "8180652974",
   institution: "IPB University",
-  institutionKind: "kampus",
   continent: "asia",
   country: "ID",
   province: "jawa-barat",
@@ -253,7 +252,6 @@ describe("an empty form", () => {
         "email",
         "fullName",
         "institution",
-        "institutionKind",
         "prefix",
         "profession",
         "seminarDays",
@@ -488,23 +486,22 @@ describe("the kind of institution", () => {
   });
 });
 
-describe("the kind, once somebody has chosen one", () => {
-  const typing = (institution: string, kind: string) =>
-    cascade({ ...good, institution, institutionKind: kind }, "institution", {
-      ...good,
-      institution: "BAZNAS Kabupaten Bogor",
-      institutionKind: kind,
-    });
-
-  /** While the box holds our own guess, it is ours to keep updating. */
-  it("follows the name while nobody has overridden it", () => {
-    expect(typing("IPB University", "baznas-kabkota").institutionKind).toBe(
-      "kampus",
-    );
+/**
+ * Nobody is asked this. It is worked out from the institution and sent on the
+ * registrant's behalf, so the guess is the whole of the answer — there is no
+ * dropdown behind it to catch what it gets wrong.
+ */
+describe("the kind that is never asked for", () => {
+  it("has an answer for any name at all", () => {
+    const values = INSTITUTION_KINDS.map((one) => one.value);
+    for (const name of ["BAZNAS RI", "IPB", "Kemenag", "apa saja", ""]) {
+      expect(values).toContain(kindOf(name));
+    }
   });
 
-  /** Once it holds theirs, it is theirs. */
-  it("leaves a chosen kind alone", () => {
-    expect(typing("IPB University", "laz").institutionKind).toBe("laz");
+  it("is not a question the form can fail on", () => {
+    const result = validateRegistration(good);
+    expect(result.ok).toBe(true);
+    expect(Object.keys(good)).not.toContain("institutionKind");
   });
 });

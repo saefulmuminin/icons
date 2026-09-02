@@ -26,7 +26,6 @@ const local: Registration = {
   dialCode: "+62",
   whatsapp: "82303948822",
   institution: "BAZNAS Kabupaten Bogor",
-  institutionKind: "baznas-kabkota",
   continent: "asia",
   country: "ID",
   province: "jawa-barat",

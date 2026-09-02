@@ -149,6 +149,11 @@ export const PROVINCES: Choice[] = [
  *
  * The Indonesian label is what is filed, because that is the language the
  * register is read in.
+ *
+ * Not asked for. The kind is worked out from the name the registrant typed and
+ * sent on their behalf, which is one question fewer on a form that already has
+ * fourteen — at the cost of the names the guess cannot read, which land on
+ * "Institusi lainnya".
  */
 export const INSTITUTION_KINDS: Choice[] = [
   { value: "baznas-ri", en: "BAZNAS RI", id: "BAZNAS RI" },
@@ -165,7 +170,11 @@ export const INSTITUTION_KINDS: Choice[] = [
     en: "Ministry or government body",
     id: "Kementerian / Lembaga Pemerintah",
   },
-  { value: "institusi", en: "Other institution", id: "Institusi" },
+  // "Institusi" alone would not read as a catch-all next to "Perguruan
+  // Tinggi" — a university is an institution too, and two people would file
+  // the same campus under different kinds. The word that does the work here is
+  // "lainnya".
+  { value: "institusi", en: "Other institution", id: "Institusi lainnya" },
 ];
 
 /**
@@ -299,7 +308,6 @@ export type Registration = {
   sex: string;
   whatsapp: string;
   institution: string;
-  institutionKind: string;
   continent: string;
   country: string;
   province: string;
@@ -320,7 +328,6 @@ export const EMPTY: Registration = {
   sex: "",
   whatsapp: "",
   institution: "",
-  institutionKind: "",
   continent: "",
   country: "",
   province: "",
@@ -384,24 +391,7 @@ function checkChoice(value: string, choices: Choice[]): ErrorCode | undefined {
  * province that may not belong to it. Both are cleared rather than left to be
  * submitted and rejected.
  */
-export function cascade(
-  value: Registration,
-  changed: Field,
-  before?: Registration,
-): Registration {
-  // The kind follows the institution, but only while nobody has said
-  // otherwise. Compared against the guess the old name would have made: if it
-  // still matches, the box was filled in by us and is ours to update; if it
-  // does not, the reader chose it and it stays.
-  if (changed === "institution") {
-    const chosen =
-      before && before.institutionKind !== kindOf(before.institution);
-
-    return chosen
-      ? value
-      : { ...value, institutionKind: kindOf(value.institution) };
-  }
-
+export function cascade(value: Registration, changed: Field): Registration {
   if (changed === "continent") {
     return { ...value, country: "", dialCode: "", province: "", city: "" };
   }
@@ -439,7 +429,6 @@ export function validateRegistration(
     sex: text(input.sex),
     whatsapp: text(input.whatsapp),
     institution: text(input.institution),
-    institutionKind: text(input.institutionKind),
     continent: text(input.continent),
     country: text(input.country),
     province: text(input.province),
@@ -463,7 +452,6 @@ export function validateRegistration(
   set("fullName", checkText(value.fullName));
   set("sex", checkChoice(value.sex, SEXES));
   set("institution", checkText(value.institution));
-  set("institutionKind", checkChoice(value.institutionKind, INSTITUTION_KINDS));
   set("continent", checkChoice(value.continent, CONTINENTS));
 
   // A country is only an answer if it sits on the continent already named.

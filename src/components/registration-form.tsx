@@ -17,7 +17,6 @@ import {
   DIAL_CODES,
   EMPTY,
   INDONESIA,
-  INSTITUTION_KINDS,
   PAPER_DAY,
   cascade,
   conferenceDate,
@@ -389,11 +388,7 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
   const idOf = (field: Field) => `${uid}-${field}`;
 
   const set = (field: Field, value: string | string[]) => {
-    const next = cascade(
-      { ...values, [field]: value } as Registration,
-      field,
-      values,
-    );
+    const next = cascade({ ...values, [field]: value } as Registration, field);
     setValues(next);
 
     // Once the form has complained, it takes the correction back straight
@@ -516,18 +511,13 @@ export function RegistrationForm({ lang, t }: { lang: Lang; t: Dict }) {
           <Pills ctl={ctl} field="sex" choices={SEXES} />
         </Row>
 
-        <Row ctl={ctl} field="institution" label={t.regInstitution}>
+        <Row
+          ctl={ctl}
+          field="institution"
+          label={t.regInstitution}
+          className="sm:col-span-2"
+        >
           <Text ctl={ctl} field="institution" autoComplete="organization" />
-        </Row>
-        {/* Guessed from the name above and left open to correction, which is
-            the only way a free-text field on the far side ends up with
-            categories anyone can count. */}
-        <Row ctl={ctl} field="institutionKind" label={t.regInstitutionKind}>
-          <Select
-            ctl={ctl}
-            field="institutionKind"
-            choices={INSTITUTION_KINDS}
-          />
         </Row>
 
         <Row ctl={ctl} field="continent" label={t.regContinent}>

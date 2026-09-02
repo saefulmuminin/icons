@@ -8,6 +8,7 @@ import {
   PROFESSIONS,
   PROFESSION_OTHER,
   INSTITUTION_KINDS,
+  kindOf,
   PROVINCES,
   SEMINAR_DAYS,
   fullPhone,
@@ -182,7 +183,9 @@ export function simbaBody(
   // number filing all five hundred of them under a single institution.
   put("institusi", entry.institution);
   // The kind of body the registrant chose, not one value for all of them.
-  put("jenis", label(INSTITUTION_KINDS, entry.institutionKind));
+  // Worked out from the institution rather than asked for. The form does not
+  // put the question, so this is the only place the answer exists.
+  put("jenis", label(INSTITUTION_KINDS, kindOf(entry.institution)));
   put("spc_id", spcId);
 
   // The event takes no payment, but these are not allowed to be empty — sent
