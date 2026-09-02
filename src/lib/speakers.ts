@@ -182,6 +182,29 @@ export const INVITED_SPEAKERS: readonly InvitedSpeaker[] = [
     ],
   },
   {
+    name: "Prof. Dr. H. Waryono Abdul Ghofur, M.Ag.",
+    role: {
+      en: "Director of Zakat and Waqf Empowerment, Ministry of Religious Affairs of the Republic of Indonesia",
+      id: "Direktur Pemberdayaan Zakat dan Wakaf, Kementerian Agama Republik Indonesia",
+    },
+    bio: "Prof. Dr. H. Waryono Abdul Ghofur, M.Ag. is an academic and Islamic scholar specializing in Qur'anic exegesis and the study of religions. He is a lecturer at the Graduate School of UIN Sunan Kalijaga Yogyakarta, where he teaches Tafsir and contributes to the development of contemporary Islamic scholarship. He completed his undergraduate, master's, and doctoral education at UIN Sunan Kalijaga, with academic specialization in Islamic studies, religion and philosophy, and Qur'anic studies. Alongside his academic career, he serves as Director of Zakat and Waqf Empowerment at the Ministry of Religious Affairs of the Republic of Indonesia, where he contributes to strengthening the management and empowerment of zakat and waqf as instruments for community welfare and economic empowerment.",
+    expertise: [
+      "Qur'anic Exegesis and Islamic Studies",
+      "Zakat and Waqf Empowerment",
+      "Religious Studies and Islamic Thought",
+    ],
+    highlights: [
+      "Director of Zakat and Waqf Empowerment, Ministry of Religious Affairs of the Republic of Indonesia",
+      "Lecturer, Graduate School, UIN Sunan Kalijaga Yogyakarta",
+      "Lecturer in Tafsir and Qur'anic Studies",
+      "Academic and researcher in Islamic studies, religious studies, and contemporary Islamic thought",
+      "Contributor to academic publications on zakat, waqf, and religious thought in Indonesia",
+      "Bachelor's Degree, Faculty of Ushuluddin, UIN Sunan Kalijaga Yogyakarta",
+      "Master's Degree, Religion and Philosophy, UIN Sunan Kalijaga Yogyakarta",
+      "Doctoral Degree in Islamic Studies, UIN Sunan Kalijaga Yogyakarta",
+    ],
+  },
+  {
     name: "KH. Miftahul Huda, Lc.",
     role: {
       en: "Secretary, Fatwa Commission, Indonesian Ulema Council (MUI)",
@@ -542,29 +565,6 @@ export const INVITED_SPEAKERS: readonly InvitedSpeaker[] = [
       "Ph.D. in Islamic Sharia, Darul Ulum University, Cairo (2015)",
       "Master's Degree in Islamic Sharia, Cairo University (2004)",
       "Bachelor's Degree in Islamic Sharia, Al-Azhar University, Cairo (1997)",
-    ],
-  },
-  {
-    name: "Prof. Dr. H. Waryono Abdul Ghofur, M.Ag.",
-    role: {
-      en: "Director of Zakat and Waqf Empowerment, Ministry of Religious Affairs of the Republic of Indonesia",
-      id: "Direktur Pemberdayaan Zakat dan Wakaf, Kementerian Agama Republik Indonesia",
-    },
-    bio: "Prof. Dr. H. Waryono Abdul Ghofur, M.Ag. is an academic and Islamic scholar specializing in Qur'anic exegesis and the study of religions. He is a lecturer at the Graduate School of UIN Sunan Kalijaga Yogyakarta, where he teaches Tafsir and contributes to the development of contemporary Islamic scholarship. He completed his undergraduate, master's, and doctoral education at UIN Sunan Kalijaga, with academic specialization in Islamic studies, religion and philosophy, and Qur'anic studies. Alongside his academic career, he serves as Director of Zakat and Waqf Empowerment at the Ministry of Religious Affairs of the Republic of Indonesia, where he contributes to strengthening the management and empowerment of zakat and waqf as instruments for community welfare and economic empowerment.",
-    expertise: [
-      "Qur'anic Exegesis and Islamic Studies",
-      "Zakat and Waqf Empowerment",
-      "Religious Studies and Islamic Thought",
-    ],
-    highlights: [
-      "Director of Zakat and Waqf Empowerment, Ministry of Religious Affairs of the Republic of Indonesia",
-      "Lecturer, Graduate School, UIN Sunan Kalijaga Yogyakarta",
-      "Lecturer in Tafsir and Qur'anic Studies",
-      "Academic and researcher in Islamic studies, religious studies, and contemporary Islamic thought",
-      "Contributor to academic publications on zakat, waqf, and religious thought in Indonesia",
-      "Bachelor's Degree, Faculty of Ushuluddin, UIN Sunan Kalijaga Yogyakarta",
-      "Master's Degree, Religion and Philosophy, UIN Sunan Kalijaga Yogyakarta",
-      "Doctoral Degree in Islamic Studies, UIN Sunan Kalijaga Yogyakarta",
     ],
   },
 ];
