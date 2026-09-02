@@ -15,7 +15,6 @@ const config: SimbaConfig = {
   key: "a-key",
   org: "3171100",
   eventId: "202",
-  jenis: "Institusi",
 };
 
 /** An Indonesian registrant, filled in as the form would leave it. */
@@ -27,6 +26,7 @@ const local: Registration = {
   dialCode: "+62",
   whatsapp: "82303948822",
   institution: "BAZNAS Kabupaten Bogor",
+  institutionKind: "baznas-kabkota",
   continent: "asia",
   country: "ID",
   province: "jawa-barat",
@@ -101,7 +101,8 @@ describe("the body SIMBA is sent", () => {
     expect(body.id_event).toBe("202");
     expect(body.key).toBe("a-key");
     expect(body.spc_id).toBe("12345");
-    expect(body.jenis).toBe("Institusi");
+    // Now sent from the registration itself, not from a fixed setting.
+    expect(body.jenis).toBe("BAZNAS Kab/Kota");
   });
 
   /**
@@ -207,7 +208,6 @@ describe("the configuration", () => {
     expect(config.key.trim()).not.toBe("");
     expect(config.org).toBe("3171100");
     expect(config.eventId).toBe("202");
-    expect(config.jenis).toBe("Institusi");
     expect(config.url).toBe(
       "https://simba.baznas.go.id/api/ajax_event_register_peserta",
     );

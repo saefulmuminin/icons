@@ -139,6 +139,88 @@ export const PROVINCES: Choice[] = [
   })),
 ];
 
+/**
+ * The kind of body a registrant belongs to.
+ *
+ * SIMBA does not check this — anything non-empty is accepted, "GADO-GADO XYZ"
+ * included — which is precisely why it is a list here. Nothing on the far side
+ * will tidy five spellings of one office into one category, so the tidying has
+ * to happen at the point of asking.
+ *
+ * The Indonesian label is what is filed, because that is the language the
+ * register is read in.
+ */
+export const INSTITUTION_KINDS: Choice[] = [
+  { value: "baznas-ri", en: "BAZNAS RI", id: "BAZNAS RI" },
+  { value: "baznas-provinsi", en: "BAZNAS Provincial", id: "BAZNAS Provinsi" },
+  {
+    value: "baznas-kabkota",
+    en: "BAZNAS Regency/City",
+    id: "BAZNAS Kab/Kota",
+  },
+  { value: "laz", en: "Zakat institution (LAZ)", id: "LAZ" },
+  { value: "kampus", en: "University", id: "Perguruan Tinggi" },
+  {
+    value: "pemerintah",
+    en: "Ministry or government body",
+    id: "Kementerian / Lembaga Pemerintah",
+  },
+  { value: "institusi", en: "Other institution", id: "Institusi" },
+];
+
+/**
+ * A first guess at the kind, from the name the registrant typed.
+ *
+ * A guess and nothing more: it fills the box in so that most people never have
+ * to think about it, and every one of them can change it. Deliberately plain —
+ * an unrecognised name lands on "Institusi", which is where it would have gone
+ * anyway, rather than on a cleverer answer that is wrong.
+ */
+export function kindOf(institution: string) {
+  const name = institution.toLowerCase();
+  const has = (...words: string[]) => words.some((word) => name.includes(word));
+
+  if (has("baznas")) {
+    if (has("prov")) return "baznas-provinsi";
+    if (has("kab", "kota")) return "baznas-kabkota";
+    return "baznas-ri";
+  }
+
+  if (has("laz", "dompet dhuafa", "rumah zakat", "inisiatif zakat"))
+    return "laz";
+
+  if (
+    has(
+      "universit",
+      "institut",
+      "sekolah tinggi",
+      "politeknik",
+      "akademi",
+      "college",
+      "school of",
+      "uin ",
+      "iain",
+      "ipb",
+      "itb",
+      "ugm",
+      "undip",
+      "unpad",
+      "unair",
+      "kampus",
+    )
+  ) {
+    return "kampus";
+  }
+
+  if (
+    has("kementerian", "ministry", "kemenag", "dinas", "pemerintah", "pemda")
+  ) {
+    return "pemerintah";
+  }
+
+  return "institusi";
+}
+
 export const PROFESSIONS: Choice[] = [
   { value: "researcher", en: "Researcher", id: "Peneliti" },
   { value: "lecturer", en: "Lecturer", id: "Dosen Pengajar" },
@@ -217,6 +299,7 @@ export type Registration = {
   sex: string;
   whatsapp: string;
   institution: string;
+  institutionKind: string;
   continent: string;
   country: string;
   province: string;
@@ -237,6 +320,7 @@ export const EMPTY: Registration = {
   sex: "",
   whatsapp: "",
   institution: "",
+  institutionKind: "",
   continent: "",
   country: "",
   province: "",
@@ -300,7 +384,24 @@ function checkChoice(value: string, choices: Choice[]): ErrorCode | undefined {
  * province that may not belong to it. Both are cleared rather than left to be
  * submitted and rejected.
  */
-export function cascade(value: Registration, changed: Field): Registration {
+export function cascade(
+  value: Registration,
+  changed: Field,
+  before?: Registration,
+): Registration {
+  // The kind follows the institution, but only while nobody has said
+  // otherwise. Compared against the guess the old name would have made: if it
+  // still matches, the box was filled in by us and is ours to update; if it
+  // does not, the reader chose it and it stays.
+  if (changed === "institution") {
+    const chosen =
+      before && before.institutionKind !== kindOf(before.institution);
+
+    return chosen
+      ? value
+      : { ...value, institutionKind: kindOf(value.institution) };
+  }
+
   if (changed === "continent") {
     return { ...value, country: "", dialCode: "", province: "", city: "" };
   }
@@ -338,6 +439,7 @@ export function validateRegistration(
     sex: text(input.sex),
     whatsapp: text(input.whatsapp),
     institution: text(input.institution),
+    institutionKind: text(input.institutionKind),
     continent: text(input.continent),
     country: text(input.country),
     province: text(input.province),
@@ -361,6 +463,7 @@ export function validateRegistration(
   set("fullName", checkText(value.fullName));
   set("sex", checkChoice(value.sex, SEXES));
   set("institution", checkText(value.institution));
+  set("institutionKind", checkChoice(value.institutionKind, INSTITUTION_KINDS));
   set("continent", checkChoice(value.continent, CONTINENTS));
 
   // A country is only an answer if it sits on the continent already named.

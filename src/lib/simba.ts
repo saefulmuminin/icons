@@ -7,6 +7,7 @@ import {
   PREFIXES,
   PROFESSIONS,
   PROFESSION_OTHER,
+  INSTITUTION_KINDS,
   PROVINCES,
   SEMINAR_DAYS,
   fullPhone,
@@ -24,16 +25,13 @@ export type SimbaConfig = {
   key: string;
   org: string;
   eventId: string;
-  jenis: string;
 };
 
 /**
  * The event, and the credentials for it.
  *
  * 202 is the tenth ICONZ; 128 was the event this was built against and is not
- * it. "Institusi" is the category the institution falls under, as free text — a
- * BAZNAS office would be "BAZNAS Kab/Kota" or "BAZNAS Provinsi", but the form
- * does not ask and most registrants are universities and institutions.
+ * it.
  *
  * The key is here at the committee's decision, so that the site has no
  * settings outside its own source. Two things follow from that, and neither is
@@ -53,7 +51,6 @@ const SIMBA: SimbaConfig = {
   url: "https://simba.baznas.go.id/api/ajax_event_register_peserta",
   org: "3171100",
   eventId: "202",
-  jenis: "Institusi",
 
   // Paste the production key here. Left blank, registrations are refused
   // outright rather than quietly dropped.
@@ -184,7 +181,8 @@ export function simbaBody(
   // Free text, not an id: the registrant's own answer, rather than one fixed
   // number filing all five hundred of them under a single institution.
   put("institusi", entry.institution);
-  put("jenis", config.jenis);
+  // The kind of body the registrant chose, not one value for all of them.
+  put("jenis", label(INSTITUTION_KINDS, entry.institutionKind));
   put("spc_id", spcId);
 
   // The event takes no payment, but these are not allowed to be empty — sent

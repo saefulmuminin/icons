@@ -7,9 +7,11 @@ import {
   INDONESIA,
   INTERNATIONAL,
   DIAL_CODES,
+  INSTITUTION_KINDS,
   cascade,
   countriesIn,
   dialOf,
+  kindOf,
   fullPhone,
   MAX_FIELD,
   PAPER_ANSWERS,
@@ -41,6 +43,7 @@ const good: Registration = {
   dialCode: "+62",
   whatsapp: "8180652974",
   institution: "IPB University",
+  institutionKind: "kampus",
   continent: "asia",
   country: "ID",
   province: "jawa-barat",
@@ -250,6 +253,7 @@ describe("an empty form", () => {
         "email",
         "fullName",
         "institution",
+        "institutionKind",
         "prefix",
         "profession",
         "seminarDays",
@@ -425,5 +429,82 @@ describe("an answer longer than the form takes", () => {
     expect(why({ fullName: "a".repeat(MAX_FIELD + 1) }, "fullName")).toBe(
       "long",
     );
+  });
+});
+
+/**
+ * SIMBA accepts anything non-empty here — "GADO-GADO XYZ 123" was taken — so
+ * nothing on the far side will turn five spellings of one office into one
+ * category. The list is what does that, and the guess is what stops it being
+ * another question people have to think about.
+ */
+describe("the kind of institution", () => {
+  it("offers each kind once, named in both languages", () => {
+    const values = INSTITUTION_KINDS.map((one) => one.value);
+    expect(new Set(values).size).toBe(values.length);
+
+    for (const kind of INSTITUTION_KINDS) {
+      expect(kind.en.trim()).not.toBe("");
+      expect(kind.id.trim()).not.toBe("");
+    }
+  });
+
+  it("reads a BAZNAS office down to its level", () => {
+    expect(kindOf("BAZNAS Provinsi Jawa Barat")).toBe("baznas-provinsi");
+    expect(kindOf("BAZNAS Kabupaten Bogor")).toBe("baznas-kabkota");
+    expect(kindOf("BAZNAS Kota Bandung")).toBe("baznas-kabkota");
+    expect(kindOf("BAZNAS RI")).toBe("baznas-ri");
+    expect(kindOf("baznas")).toBe("baznas-ri");
+  });
+
+  it("reads a campus, however it is written", () => {
+    for (const name of [
+      "IPB University",
+      "Universitas Indonesia",
+      "UIN Syarif Hidayatullah",
+      "Institut Teknologi Bandung",
+      "Politeknik Negeri Jakarta",
+    ]) {
+      expect(kindOf(name)).toBe("kampus");
+    }
+  });
+
+  it("reads a ministry and a zakat institution", () => {
+    expect(kindOf("Kementerian Agama")).toBe("pemerintah");
+    expect(kindOf("LAZ Al-Azhar")).toBe("laz");
+  });
+
+  /** Anything it cannot read lands where it would have gone anyway. */
+  it("falls to Institusi rather than guessing cleverly", () => {
+    expect(kindOf("PT Sejahtera Abadi")).toBe("institusi");
+    expect(kindOf("")).toBe("institusi");
+  });
+
+  it("is a kind the form actually offers", () => {
+    const values = INSTITUTION_KINDS.map((one) => one.value);
+    for (const name of ["BAZNAS RI", "IPB", "Kemenag", "apa saja", ""]) {
+      expect(values).toContain(kindOf(name));
+    }
+  });
+});
+
+describe("the kind, once somebody has chosen one", () => {
+  const typing = (institution: string, kind: string) =>
+    cascade({ ...good, institution, institutionKind: kind }, "institution", {
+      ...good,
+      institution: "BAZNAS Kabupaten Bogor",
+      institutionKind: kind,
+    });
+
+  /** While the box holds our own guess, it is ours to keep updating. */
+  it("follows the name while nobody has overridden it", () => {
+    expect(typing("IPB University", "baznas-kabkota").institutionKind).toBe(
+      "kampus",
+    );
+  });
+
+  /** Once it holds theirs, it is theirs. */
+  it("leaves a chosen kind alone", () => {
+    expect(typing("IPB University", "laz").institutionKind).toBe("laz");
   });
 });
