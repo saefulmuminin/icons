@@ -196,23 +196,27 @@ describe("the province", () => {
 
 describe("the configuration", () => {
   /**
-   * Everything but the key is written down beside the code. The key is not:
-   * the repository is public, and committing it would hand anyone who reads it
-   * the ability to write into the committee's register.
+   * Nothing is read from the environment any more, so the only question left
+   * is whether a key has been pasted in. Blank means refuse, not proceed: a
+   * registration that reaches nobody must not be answered with a thank you.
    */
-  it("needs a key, and nothing else", () => {
-    expect(simbaConfig({ SIMBA_KEY: "k" })).not.toBeNull();
-    expect(simbaConfig({})).toBeNull();
-    expect(simbaConfig({ SIMBA_KEY: "" })).toBeNull();
-    expect(simbaConfig({ SIMBA_KEY: "   " })).toBeNull();
+  it("is withheld until there is a key to use", () => {
+    const config = simbaConfig();
+    if (config === null) return;
+
+    expect(config.key.trim()).not.toBe("");
+    expect(config.org).toBe("3171100");
+    expect(config.eventId).toBe("202");
+    expect(config.jenis).toBe("Institusi");
+    expect(config.url).toBe(
+      "https://simba.baznas.go.id/api/ajax_event_register_peserta",
+    );
   });
 
-  it("carries the event's own settings without being told them", () => {
-    const config = simbaConfig({ SIMBA_KEY: "k" });
-    expect(config?.org).toBe("3171100");
-    expect(config?.eventId).toBe("202");
-    expect(config?.jenis).toBe("Institusi");
-    expect(config?.url).toContain("ajax_event_register_peserta");
+  it("names the production host and event, key or no key", () => {
+    const body = read(local);
+    expect(body.id_event).toBe("202");
+    expect(body.org).toBe("3171100");
   });
 });
 

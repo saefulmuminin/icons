@@ -16,10 +16,8 @@ import {
 /**
  * What SIMBA needs to know before it will take a registration.
  *
- * All of it is opaque to this site — an organisation number, an event number,
- * a key, and the category the institution falls under — and all of it is
- * written down here except the key, which is a credential and is read from the
- * environment. This repository is public.
+ * All of it is opaque to this site: an organisation number, an event number, a
+ * key, and the category the institution falls under.
  */
 export type SimbaConfig = {
   url: string;
@@ -30,32 +28,41 @@ export type SimbaConfig = {
 };
 
 /**
- * The event's own settings.
+ * The event, and the credentials for it.
  *
- * 202 is the tenth ICONZ. 128 was the one it was built against, and is not it. "Institusi" is the category the institution falls
- * under, as free text — a BAZNAS office would be "BAZNAS Kab/Kota" or
- * "BAZNAS Provinsi", but the form does not ask and most registrants are
- * universities and institutions.
+ * 202 is the tenth ICONZ; 128 was the event this was built against and is not
+ * it. "Institusi" is the category the institution falls under, as free text — a
+ * BAZNAS office would be "BAZNAS Kab/Kota" or "BAZNAS Provinsi", but the form
+ * does not ask and most registrants are universities and institutions.
+ *
+ * The key is here at the committee's decision, so that the site has no
+ * settings outside its own source. Two things follow from that, and neither is
+ * an argument against it — only worth knowing:
+ *
+ *   This repository is public, so the key is readable by anyone, and whoever
+ *   reads it can write participants into the register.
+ *
+ *   Git keeps it. Taking it out of this file later removes it from the working
+ *   tree and not from the history, so the only way to withdraw it is to have
+ *   SIMBA issue a new one.
+ *
+ * Worth rotating once the conference has closed, and worth making the
+ * repository private if it is ever going to hold anything else.
  */
-const EVENT = {
+const SIMBA: SimbaConfig = {
   url: "https://simba.baznas.go.id/api/ajax_event_register_peserta",
   org: "3171100",
   eventId: "202",
   jenis: "Institusi",
-} as const;
 
-/**
- * The configuration, or null when the site has not been given a key.
- *
- * The key is the one thing that cannot live in the file beside this one. With
- * the repository public, committing it would hand anyone who reads it the
- * ability to write into the committee's register.
- */
-export function simbaConfig(
-  env: Record<string, string | undefined> = process.env,
-): SimbaConfig | null {
-  const key = env.SIMBA_KEY?.trim();
-  return key ? { ...EVENT, key } : null;
+  // Paste the production key here. Left blank, registrations are refused
+  // outright rather than quietly dropped.
+  key: "",
+};
+
+/** The configuration, or null while it has no key to go with. */
+export function simbaConfig(): SimbaConfig | null {
+  return SIMBA.key.trim() ? SIMBA : null;
 }
 
 /**
