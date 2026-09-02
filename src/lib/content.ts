@@ -46,44 +46,14 @@ export function conferenceRange(lang: Lang) {
     : `${on(from, { day: "numeric", month: "long" })} – ${on(to, { day: "numeric", month: "long", year: "numeric" })}`;
 }
 
-/** When registration opens, unless the environment says otherwise. */
-const OPENS_BY_DEFAULT = "2026-10-01T08:00:00+07:00";
-
 /**
- * When the registration form opens, or null if it is open now.
+ * When the registration form opens, or null once it simply is open.
  *
- * REGISTRATION_OPENS overrides the date above, which is what lets staging take
- * test submissions while production stays shut. Set it to "open" there and the
- * form is live; leave it unset everywhere else and the date in code applies.
- *
- * A value that is neither falls back to that date rather than opening the
- * form. A typo should not start taking real registrations three months early,
- * and it says so in the log on the way past.
+ * A date here rather than a setting somewhere else: there is one deployment of
+ * this site, so a variable would only be this line written twice, in two
+ * places, with the second one easy to forget.
  */
-export function registrationOpensAt(
-  env: Record<string, string | undefined> = process.env,
-): string | null {
-  const raw = env.REGISTRATION_OPENS?.trim();
-
-  if (!raw) return OPENS_BY_DEFAULT;
-  if (/^(open|now)$/i.test(raw)) return null;
-
-  // Shape first, then parse. Date.parse is lenient enough to read "22 sept" as
-  // a real date in the past — which would open the form rather than hold it.
-  const ISO =
-    /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/;
-
-  if (!ISO.test(raw) || Number.isNaN(Date.parse(raw))) {
-    console.error(
-      "[registration] REGISTRATION_OPENS is not a date: %o — holding to %s",
-      raw,
-      OPENS_BY_DEFAULT,
-    );
-    return OPENS_BY_DEFAULT;
-  }
-
-  return raw;
-}
+export const REGISTRATION_OPENS: string | null = "2026-10-01T08:00:00+07:00";
 
 /** That date, written out in the reader's own language. */
 export function registrationOpensOn(opensAt: string | null, lang: Lang) {

@@ -7,7 +7,7 @@ import {
   CONFERENCE,
   CONTACT,
   GALLERY,
-  registrationOpensAt,
+  REGISTRATION_OPENS,
   registrationOpensOn,
   EDITIONS,
   FACTS,
@@ -116,52 +116,17 @@ describe("where a question about the conference goes", () => {
   });
 });
 
-/**
- * Staging needs the form open to be tested while production stays shut, so the
- * date is overridable — and an override that cannot be read must not be the
- * thing that opens it.
- */
 describe("when registration opens", () => {
-  const at = (value?: string) =>
-    registrationOpensAt(
-      value === undefined ? {} : { REGISTRATION_OPENS: value },
-    );
-
-  it("holds to the date in code when nothing is set", () => {
-    expect(at()).toBe(at(""));
-    expect(Number.isNaN(Date.parse(at() as string))).toBe(false);
-  });
-
-  it("opens on the word, which is what staging sets", () => {
-    expect(at("open")).toBeNull();
-    expect(at("OPEN")).toBeNull();
-    expect(at("now")).toBeNull();
-  });
-
-  it("takes a date, for moving it without a deploy", () => {
-    expect(at("2026-10-01T00:00:00+07:00")).toBe("2026-10-01T00:00:00+07:00");
-  });
-
-  /** A typo must not start taking registrations three months early. */
-  it("falls back to the date in code rather than opening on nonsense", () => {
-    // "22 sept" is the one that matters: Date.parse reads it happily, as a
-    // date already past, which would open the form instead of holding it.
-    for (const junk of [
-      "yes",
-      "true",
-      "22 sept",
-      "-",
-      "2026-13-45",
-      "sept 22",
-    ]) {
-      expect(at(junk)).toBe(at());
+  it("is a date the site can read, or nothing at all", () => {
+    if (REGISTRATION_OPENS !== null) {
+      expect(Number.isNaN(Date.parse(REGISTRATION_OPENS))).toBe(false);
     }
   });
 
   /**
    * October, not September: September is spelled the same in both languages,
-   * so the version of this test that used it passed without ever showing that
-   * anything was translated.
+   * so a test written around it passes without ever showing that anything was
+   * translated.
    */
   it("writes the date in the reader's own language", () => {
     const iso = "2026-10-01T08:00:00+07:00";

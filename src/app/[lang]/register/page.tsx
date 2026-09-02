@@ -10,21 +10,11 @@ import {
   CONFERENCE,
   CONTACT,
   GALLERY,
-  registrationOpensAt,
+  REGISTRATION_OPENS,
   registrationOpensOn,
 } from "@/lib/content";
 import { getDictionary, isLang } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
-
-/**
- * Rendered per request, so REGISTRATION_OPENS is read when somebody opens the
- * page rather than when the site was built.
- *
- * Prerendered, the date would be baked in at build time and changing the
- * variable would appear to do nothing until the next deploy — which is exactly
- * the surprise an environment variable is supposed to spare you.
- */
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -96,10 +86,6 @@ export default async function RegisterPage({
 
   const t = getDictionary(lang);
 
-  // Read here, on the server, so the date never has to reach the browser as
-  // anything but a prop.
-  const opensAt = registrationOpensAt();
-
   return (
     <section className="relative overflow-hidden bg-paper/70">
       <div
@@ -130,14 +116,14 @@ export default async function RegisterPage({
         */}
         <div className="-mx-5 border-y border-ink/10 bg-paper px-5 py-7 sm:mx-0 sm:rounded-2xl sm:border sm:p-8 lg:col-start-2 lg:row-start-1 lg:row-span-2">
           <h2 className="font-display text-[1.375rem] leading-tight font-bold">
-            {opensAt ? t.regClosedTitle : t.regFormTitle}
+            {REGISTRATION_OPENS ? t.regClosedTitle : t.regFormTitle}
           </h2>
           <div className="mt-6">
             <RegistrationGate
               lang={lang}
               t={t}
-              opensAt={opensAt}
-              opensOn={registrationOpensOn(opensAt, lang)}
+              opensAt={REGISTRATION_OPENS}
+              opensOn={registrationOpensOn(REGISTRATION_OPENS, lang)}
             />
           </div>
         </div>

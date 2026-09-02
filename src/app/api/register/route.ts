@@ -98,21 +98,6 @@ export async function POST(request: Request) {
       cause instanceof Error ? cause.message : String(cause),
       JSON.stringify({ ...result.value, receivedAt: new Date().toISOString() }),
     );
-    // A valve for the days the far side is down.
-    //
-    // Off unless REGISTRATION_ACCEPT_ON_REFUSAL is set, and deliberately so:
-    // switching it on means telling a registrant they are on the list when the
-    // only record is the line above. That is a promise the committee has to
-    // keep by hand, out of the logs, and it is theirs to make rather than
-    // mine. It beats the alternative while SIMBA is refusing — turning
-    // everybody away registers nobody at all — but it is not a default.
-    if (
-      !(cause instanceof NotConfigured) &&
-      process.env.REGISTRATION_ACCEPT_ON_REFUSAL === "1"
-    ) {
-      return NextResponse.json({ ok: true, filed: "log" });
-    }
-
     return NextResponse.json(
       { error: cause instanceof NotConfigured ? "unconfigured" : "refused" },
       { status: 503 },

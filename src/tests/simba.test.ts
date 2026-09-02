@@ -193,24 +193,24 @@ describe("the province", () => {
 });
 
 describe("the configuration", () => {
-  const full = {
-    SIMBA_URL: "https://example.test",
-    SIMBA_KEY: "k",
-    SIMBA_ORG: "1",
-    SIMBA_EVENT_ID: "2",
-  };
-
-  it("is refused unless all four of the essentials are given", () => {
-    expect(simbaConfig(full)).not.toBeNull();
-
-    for (const missing of Object.keys(full)) {
-      expect(simbaConfig({ ...full, [missing]: "" })).toBeNull();
-    }
+  /**
+   * Everything but the key is written down beside the code. The key is not:
+   * the repository is public, and committing it would hand anyone who reads it
+   * the ability to write into the committee's register.
+   */
+  it("needs a key, and nothing else", () => {
+    expect(simbaConfig({ SIMBA_KEY: "k" })).not.toBeNull();
+    expect(simbaConfig({})).toBeNull();
+    expect(simbaConfig({ SIMBA_KEY: "" })).toBeNull();
+    expect(simbaConfig({ SIMBA_KEY: "   " })).toBeNull();
   });
 
-  it("falls back to the settings SIMBA accepted", () => {
-    const config = simbaConfig(full);
+  it("carries the event's own settings without being told them", () => {
+    const config = simbaConfig({ SIMBA_KEY: "k" });
+    expect(config?.org).toBe("3171100");
+    expect(config?.eventId).toBe("128");
     expect(config?.jenis).toBe("Institusi");
+    expect(config?.url).toContain("ajax_event_register_peserta");
   });
 });
 

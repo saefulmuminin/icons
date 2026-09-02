@@ -17,9 +17,9 @@ import {
  * What SIMBA needs to know before it will take a registration.
  *
  * All of it is opaque to this site — an organisation number, an event number,
- * a key, and three ids whose meaning lives in SIMBA's own tables — so none of
- * it is written down here. The key in particular is a credential and belongs
- * in the environment, not in the repository.
+ * a key, and the category the institution falls under — and all of it is
+ * written down here except the key, which is a credential and is read from the
+ * environment. This repository is public.
  */
 export type SimbaConfig = {
   url: string;
@@ -30,29 +30,32 @@ export type SimbaConfig = {
 };
 
 /**
- * The configuration, or null when the site has not been given one.
+ * The event's own settings.
  *
- * The three ids at the end carry the values from the committee's own example,
- * because they are event settings rather than secrets and a missing one would
- * otherwise be a silent rejection.
+ * 128 is the tenth ICONZ. "Institusi" is the category the institution falls
+ * under, as free text — a BAZNAS office would be "BAZNAS Kab/Kota" or
+ * "BAZNAS Provinsi", but the form does not ask and most registrants are
+ * universities and institutions.
+ */
+const EVENT = {
+  url: "https://demo-simba.baznas.or.id/api/ajax_event_register_peserta",
+  org: "3171100",
+  eventId: "128",
+  jenis: "Institusi",
+} as const;
+
+/**
+ * The configuration, or null when the site has not been given a key.
+ *
+ * The key is the one thing that cannot live in the file beside this one. With
+ * the repository public, committing it would hand anyone who reads it the
+ * ability to write into the committee's register.
  */
 export function simbaConfig(
   env: Record<string, string | undefined> = process.env,
 ): SimbaConfig | null {
-  const url = env.SIMBA_URL;
-  const key = env.SIMBA_KEY;
-  const org = env.SIMBA_ORG;
-  const eventId = env.SIMBA_EVENT_ID;
-
-  if (!url || !key || !org || !eventId) return null;
-
-  return {
-    url,
-    key,
-    org,
-    eventId,
-    jenis: env.SIMBA_JENIS ?? "Institusi",
-  };
+  const key = env.SIMBA_KEY?.trim();
+  return key ? { ...EVENT, key } : null;
 }
 
 /**
