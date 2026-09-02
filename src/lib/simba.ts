@@ -32,15 +32,15 @@ export type SimbaConfig = {
 /**
  * The event's own settings.
  *
- * 128 is the tenth ICONZ. "Institusi" is the category the institution falls
+ * 202 is the tenth ICONZ. 128 was the one it was built against, and is not it. "Institusi" is the category the institution falls
  * under, as free text — a BAZNAS office would be "BAZNAS Kab/Kota" or
  * "BAZNAS Provinsi", but the form does not ask and most registrants are
  * universities and institutions.
  */
 const EVENT = {
-  url: "https://demo-simba.baznas.or.id/api/ajax_event_register_peserta",
+  url: "https://simba.baznas.go.id/api/ajax_event_register_peserta",
   org: "3171100",
-  eventId: "128",
+  eventId: "202",
   jenis: "Institusi",
 } as const;
 
@@ -80,15 +80,17 @@ function label(choices: readonly Choice[], value: string) {
 }
 
 /**
- * The six custom fields the committee defined on this event, by the exact
+ * The five custom fields the committee defined on this event, by the exact
  * names SIMBA holds them under.
+ *
+ * There is no "Nama institusi" among them any more: the institution is a field
+ * of its own now, and repeating it here would file the same answer twice.
  *
  * The names are the join. SIMBA matches on them rather than on the numbers
  * beside them in its admin table, so a rename there is a silent break here —
  * which is why they are spelled out in one place and checked by a test.
  */
 export const META_FIELDS = [
-  "Nama institusi",
   "Asal benua",
   "Asal negara",
   "Profesi/pekerjaan",
@@ -144,7 +146,6 @@ export function simbaBody(
   // one is read. This is the shape of the committee's most recent example and
   // of SIMBA's own registration form, which posts the pairs as meta[]/data[].
   const meta = [
-    entry.institution,
     label(CONTINENTS, entry.continent),
     label(COUNTRIES, entry.country),
     profession,

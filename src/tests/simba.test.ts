@@ -14,7 +14,7 @@ const config: SimbaConfig = {
   url: "https://example.test/api/ajax_event_register_peserta",
   key: "a-key",
   org: "3171100",
-  eventId: "128",
+  eventId: "202",
   jenis: "Institusi",
 };
 
@@ -98,7 +98,7 @@ describe("the body SIMBA is sent", () => {
   it("passes the event's own settings through untouched", () => {
     const body = read(local);
     expect(body.org).toBe("3171100");
-    expect(body.id_event).toBe("128");
+    expect(body.id_event).toBe("202");
     expect(body.key).toBe("a-key");
     expect(body.spc_id).toBe("12345");
     expect(body.jenis).toBe("Institusi");
@@ -151,22 +151,24 @@ describe("the six custom fields", () => {
 
   it("answer in Indonesian whoever filled the form in", () => {
     const rows = meta(abroad);
-    expect(rows[META_FIELDS[1]]).toBe("Eropa");
-    expect(rows[META_FIELDS[2]]).toBe("Jerman");
-    expect(rows[META_FIELDS[4]]).toBe("Ya");
+    expect(rows[META_FIELDS[0]]).toBe("Eropa");
+    expect(rows[META_FIELDS[1]]).toBe("Jerman");
+    expect(rows[META_FIELDS[3]]).toBe("Ya");
   });
 
-  it("carry the institution as written", () => {
-    expect(meta(local)[META_FIELDS[0]]).toBe("BAZNAS Kabupaten Bogor");
+  /** It goes in the field of its own, not in a custom one as well. */
+  it("leave the institution to its own field", () => {
+    expect(Object.keys(meta(local))).not.toContain("Nama institusi");
+    expect(read(local).institusi).toBe("BAZNAS Kabupaten Bogor");
   });
 
   it("name both seminar days when both were chosen", () => {
-    const value = meta(local)[META_FIELDS[5]];
+    const value = meta(local)[META_FIELDS[4]];
     expect(value).toContain("Hari 2");
     expect(value).toContain("Hari 3");
 
     expect(
-      meta({ ...local, seminarDays: ["day-3"] })[META_FIELDS[5]],
+      meta({ ...local, seminarDays: ["day-3"] })[META_FIELDS[4]],
     ).not.toContain("Hari 2");
   });
 
@@ -174,11 +176,11 @@ describe("the six custom fields", () => {
   it("send what Other actually meant", () => {
     expect(
       meta({ ...local, profession: "other", professionOther: "Journalist" })[
-        META_FIELDS[3]
+        META_FIELDS[2]
       ],
     ).toBe("Journalist");
 
-    expect(meta(local)[META_FIELDS[3]]).toBe("Amil");
+    expect(meta(local)[META_FIELDS[2]]).toBe("Amil");
   });
 });
 
@@ -208,7 +210,7 @@ describe("the configuration", () => {
   it("carries the event's own settings without being told them", () => {
     const config = simbaConfig({ SIMBA_KEY: "k" });
     expect(config?.org).toBe("3171100");
-    expect(config?.eventId).toBe("128");
+    expect(config?.eventId).toBe("202");
     expect(config?.jenis).toBe("Institusi");
     expect(config?.url).toContain("ajax_event_register_peserta");
   });
@@ -330,7 +332,9 @@ describe("the one character SIMBA refuses", () => {
 
     expect(parts.nama).toBe("Mrs. Saeful Mu\u2019minin");
     expect(parts.institusi).toBe("Ma\u2019had");
+
+    // The custom fields carry free text of their own — a profession typed
+    // under "Other" reaches SIMBA through here.
     expect(parts.meta).not.toContain("'");
-    expect(parts.meta).toContain("Ma\u2019had");
   });
 });
