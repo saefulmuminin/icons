@@ -29,38 +29,38 @@ export type SimbaConfig = {
 };
 
 /**
- * The event, and the credentials for it.
+ * The event's own settings.
  *
  * 202 is the tenth ICONZ; 128 was the event this was built against and is not
- * it.
- *
- * The key is here at the committee's decision, so that the site has no
- * settings outside its own source. Two things follow from that, and neither is
- * an argument against it — only worth knowing:
- *
- *   This repository is public, so the key is readable by anyone, and whoever
- *   reads it can write participants into the register.
- *
- *   Git keeps it. Taking it out of this file later removes it from the working
- *   tree and not from the history, so the only way to withdraw it is to have
- *   SIMBA issue a new one.
- *
- * Worth rotating once the conference has closed, and worth making the
- * repository private if it is ever going to hold anything else.
+ * it. These are not secrets — an organisation number and an event number — so
+ * they live here rather than in a variable that would only be this line
+ * written twice.
  */
-const SIMBA: SimbaConfig = {
+const EVENT = {
   url: "https://simba.baznas.go.id/api/ajax_event_register_peserta",
   org: "3171100",
   eventId: "202",
+} as const;
 
-  // Paste the production key here. Left blank, registrations are refused
-  // outright rather than quietly dropped.
-  key: "",
-};
-
-/** The configuration, or null while it has no key to go with. */
-export function simbaConfig(): SimbaConfig | null {
-  return SIMBA.key.trim() ? SIMBA : null;
+/**
+ * The configuration, or null when no key has been given.
+ *
+ * The key is the one thing that does not live beside the code. This repository
+ * is public: committed, it would be readable by anyone, and reading it is
+ * enough to write participants into the committee's register — and git would
+ * keep it after any later removal, so withdrawing it would mean having SIMBA
+ * issue a new one.
+ *
+ * Set SIMBA_KEY in the deployment, and in .env.local for local work.
+ *
+ * Missing, this returns null and the route refuses the registration rather
+ * than accepting one that reaches nobody.
+ */
+export function simbaConfig(
+  env: Record<string, string | undefined> = process.env,
+): SimbaConfig | null {
+  const key = env.SIMBA_KEY?.trim();
+  return key ? { ...EVENT, key } : null;
 }
 
 /**
