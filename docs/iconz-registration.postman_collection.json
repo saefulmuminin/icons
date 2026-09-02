@@ -1,23 +1,27 @@
 {
   "info": {
-    "name": "ICONZ 10 — Registration",
-    "_postman_id": "iconz10-registration",
-    "description": "Two APIs, and the requests used to work out why registrations are not arriving.\n\n**SIMBA** is where a registration is meant to land. It answers HTTP 200 to everything — refusals included — and puts the real verdict in `status_code`. Every request here therefore asserts on `status_code`, not on the HTTP status. A green tick in Postman's status column means nothing on its own.\n\n**Site** is the conference site's own endpoint, which validates a submission and then hands it to SIMBA.\n\nSet `key` before running anything — it is a credential and is deliberately left blank here rather than committed to the repository.\n\nEach run mints a fresh name, e-mail and phone number, so a refusal can never be put down to duplicate data.\n\nAs of 1 September 2026 the four SIMBA requests answer 403 'Data exist or failed', including the control built from BAZNAS's own example — and SIMBA's own admin interface refuses the same event with 406. The three controls below are what rules out the key, the payload and the field values as the cause.",
+    "name": "ICONZ 10 — Registration (production)",
+    "_postman_id": "iconz10-registration-prod",
+    "description": "**Set `key` before running anything.**\n\nSIMBA answers HTTP 200 to everything, refusals included, and puts the real verdict in `status_code`. Every test here asserts on that, not on the HTTP status — a green tick in Postman's status column means nothing on its own. `000` is success.\n\nEach run mints a fresh name, e-mail, phone and `spc_id`. That last one is not decoration: **spc_id has to be unique for every registration**, and a repeat is refused as \"Data exist or failed\" — the same sentence SIMBA returns for a bad key and for a missing column. A fixed value looked for weeks like an endpoint that had stopped accepting registrations.\n\n**The open question**, as of 2 September 2026: the same key is accepted by demo-simba (`000 Sukses`) and refused by production (`101 Key Invalid`). The two folders below are laid out so that can be shown side by side. The controls rule out the payload: production answers a deliberately wrong key exactly as it answers ours, and names the field itself when no key is sent at all.\n\nOther things worth knowing, all learned the hard way:\n\n- multipart, not urlencoded\n- `meta` is a list of `{meta, value}` pairs, and the five names must match the event's own definitions exactly, down to the lowercase b in \"Asal benua\"\n- `institusi` and `jenis` are free text, not ids — SIMBA accepts anything non-empty, so nothing on its side will tidy five spellings of one office\n- `tanggal_bayar` and `jumlah` must not be blank, even though the event is free\n- a straight apostrophe in any value is refused outright",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
-      "key": "simbaUrl",
+      "key": "simbaProd",
+      "value": "https://simba.baznas.go.id/api/ajax_event_register_peserta"
+    },
+    {
+      "key": "simbaDemo",
       "value": "https://demo-simba.baznas.or.id/api/ajax_event_register_peserta"
     },
     {
       "key": "siteUrl",
-      "value": "https://icons-jet.vercel.app"
+      "value": "https://iconz.baznas.go.id"
     },
     {
       "key": "key",
       "value": "",
-      "description": "SIMBA API key. A credential — paste it here, do not commit it."
+      "description": "SIMBA API key. Paste it here."
     },
     {
       "key": "org",
@@ -25,30 +29,27 @@
     },
     {
       "key": "eventId",
+      "value": "202",
+      "description": "202 = the tenth ICONZ on production."
+    },
+    {
+      "key": "eventDemo",
       "value": "128",
-      "description": "128 = The 10th ICONZ. The 116 in the original example is a different demo event."
-    },
-    {
-      "key": "spcId",
-      "value": "5"
-    },
-    {
-      "key": "institusi",
-      "value": "28"
-    },
-    {
-      "key": "jenis",
-      "value": "2"
+      "description": "The event this was built against, on demo."
     },
     {
       "key": "unique",
+      "value": ""
+    },
+    {
+      "key": "spcId",
       "value": ""
     }
   ],
   "item": [
     {
-      "name": "SIMBA",
-      "description": "The committee's event register, called exactly as the site calls it.",
+      "name": "1 · Production",
+      "description": "simba.baznas.go.id, event 202. The one that has to work.",
       "item": [
         {
           "name": "Register a participant",
@@ -58,10 +59,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -70,13 +74,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// SIMBA answers HTTP 200 to everything, refusals included. The verdict",
-                  "// lives in status_code, so that is what is asserted.",
+                  "// SIMBA answers HTTP 200 to everything, refusals included. The verdict is",
+                  "// in status_code, so that is what is asserted. A green tick in Postman's",
+                  "// status column means nothing on its own.",
                   "const body = pm.response.json();",
                   "console.log(body);",
-                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
-                  "pm.test('SIMBA accepted it (status_code 100/200)', function () {",
-                  "    pm.expect(String(body.status_code)).to.be.oneOf(['100', '200']);",
+                  "pm.test('SIMBA accepted it (status_code 000)', function () {",
+                  "    pm.expect(String(body.status_code)).to.be.oneOf(['000', '100', '200']);",
                   "});"
                 ]
               }
@@ -84,23 +88,18 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
+            "header": [],
             "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "org",
-                  "value": "{{org}}",
-                  "type": "text"
-                },
+              "mode": "formdata",
+              "formdata": [
                 {
                   "key": "key",
                   "value": "{{key}}",
+                  "type": "text"
+                },
+                {
+                  "key": "org",
+                  "value": "{{org}}",
                   "type": "text"
                 },
                 {
@@ -110,12 +109,12 @@
                 },
                 {
                   "key": "nama",
-                  "value": "Mr. Uji Integrasi {{unique}}",
+                  "value": "ZZ HAPUS Uji {{unique}}",
                   "type": "text"
                 },
                 {
                   "key": "hp",
-                  "value": "0812{{unique}}",
+                  "value": "+628120000{{unique}}",
                   "type": "text"
                 },
                 {
@@ -134,151 +133,44 @@
                   "type": "text"
                 },
                 {
-                  "key": "institusi",
-                  "value": "{{institusi}}",
-                  "type": "text"
-                },
-                {
-                  "key": "jenis",
-                  "value": "{{jenis}}",
-                  "type": "text"
-                },
-                {
-                  "key": "provinsi",
-                  "value": "DKI Jakarta",
-                  "type": "text"
-                },
-                {
-                  "key": "meta",
-                  "value": "[{\"meta\": \"Nama institusi\", \"value\": \"BAZNAS RI\"}, {\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 25 November 2026, Hari 3 — 26 November 2026\"}]",
-                  "type": "text"
-                },
-                {
                   "key": "tanggal_bayar",
-                  "value": "",
+                  "value": "1970-01-01",
                   "type": "text"
                 },
                 {
                   "key": "jumlah",
-                  "value": "",
-                  "type": "text"
-                },
-                {
-                  "key": "payment_attachment",
-                  "value": "",
-                  "type": "text"
-                },
-                {
-                  "key": "payment",
-                  "value": "",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{simbaUrl}}",
-              "host": [
-                "{{simbaUrl}}"
-              ]
-            },
-            "description": "The body the site sends, field for field. This is the one that should succeed and currently answers 403."
-          }
-        },
-        {
-          "name": "Control · minimal body",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const body = pm.response.json();",
-                  "console.log(body);",
-                  "// Control request: this one is *meant* to fail — kept as evidence that even the smallest valid body is refused",
-                  "pm.test('refused with status_code 403', function () {",
-                  "    pm.expect(String(body.status_code)).to.eql('403');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
-            "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "org",
-                  "value": "{{org}}",
-                  "type": "text"
-                },
-                {
-                  "key": "key",
-                  "value": "{{key}}",
-                  "type": "text"
-                },
-                {
-                  "key": "id_event",
-                  "value": "{{eventId}}",
-                  "type": "text"
-                },
-                {
-                  "key": "nama",
-                  "value": "Mr. Uji Integrasi {{unique}}",
-                  "type": "text"
-                },
-                {
-                  "key": "hp",
-                  "value": "0812{{unique}}",
-                  "type": "text"
-                },
-                {
-                  "key": "email",
-                  "value": "uji{{unique}}@example.com",
-                  "type": "text"
-                },
-                {
-                  "key": "jenis_kelamin",
-                  "value": "pria",
+                  "value": "0",
                   "type": "text"
                 },
                 {
                   "key": "institusi",
-                  "value": "{{institusi}}",
+                  "value": "BAZNAS Provinsi Jawa Barat",
                   "type": "text"
                 },
                 {
                   "key": "jenis",
-                  "value": "{{jenis}}",
+                  "value": "BAZNAS Provinsi",
+                  "type": "text"
+                },
+                {
+                  "key": "foto",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "meta",
+                  "value": "[{\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 2 Desember 2026, Hari 3 — 3 Desember 2026\"}]",
                   "type": "text"
                 }
               ]
             },
             "url": {
-              "raw": "{{simbaUrl}}",
+              "raw": "{{simbaProd}}",
               "host": [
-                "{{simbaUrl}}"
+                "{{simbaProd}}"
               ]
             },
-            "description": "Only the fields SIMBA reports as required — no meta, no spc_id, no provinsi, no payment keys. Rules out an extra field being the cause."
+            "description": "The body the site sends, field for field. Answers 101 Key Invalid with the demo key."
           }
         },
         {
@@ -289,10 +181,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -303,7 +198,7 @@
                 "exec": [
                   "const body = pm.response.json();",
                   "console.log(body);",
-                  "// Control request: this one is *meant* to fail — the key is wrong on purpose",
+                  "// Control: meant to fail — the key is wrong on purpose",
                   "pm.test('refused with status_code 101', function () {",
                   "    pm.expect(String(body.status_code)).to.eql('101');",
                   "});"
@@ -313,23 +208,18 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
+            "header": [],
             "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
-                {
-                  "key": "org",
-                  "value": "{{org}}",
-                  "type": "text"
-                },
+              "mode": "formdata",
+              "formdata": [
                 {
                   "key": "key",
                   "value": "DELIBERATELY-WRONG",
+                  "type": "text"
+                },
+                {
+                  "key": "org",
+                  "value": "{{org}}",
                   "type": "text"
                 },
                 {
@@ -339,12 +229,12 @@
                 },
                 {
                   "key": "nama",
-                  "value": "Mr. Uji Integrasi {{unique}}",
+                  "value": "ZZ HAPUS Uji {{unique}}",
                   "type": "text"
                 },
                 {
                   "key": "hp",
-                  "value": "0812{{unique}}",
+                  "value": "+628120000{{unique}}",
                   "type": "text"
                 },
                 {
@@ -363,68 +253,61 @@
                   "type": "text"
                 },
                 {
-                  "key": "institusi",
-                  "value": "{{institusi}}",
-                  "type": "text"
-                },
-                {
-                  "key": "jenis",
-                  "value": "{{jenis}}",
-                  "type": "text"
-                },
-                {
-                  "key": "provinsi",
-                  "value": "DKI Jakarta",
-                  "type": "text"
-                },
-                {
-                  "key": "meta",
-                  "value": "[{\"meta\": \"Nama institusi\", \"value\": \"BAZNAS RI\"}, {\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 25 November 2026, Hari 3 — 26 November 2026\"}]",
-                  "type": "text"
-                },
-                {
                   "key": "tanggal_bayar",
-                  "value": "",
+                  "value": "1970-01-01",
                   "type": "text"
                 },
                 {
                   "key": "jumlah",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "institusi",
+                  "value": "BAZNAS Provinsi Jawa Barat",
+                  "type": "text"
+                },
+                {
+                  "key": "jenis",
+                  "value": "BAZNAS Provinsi",
+                  "type": "text"
+                },
+                {
+                  "key": "foto",
                   "value": "",
                   "type": "text"
                 },
                 {
-                  "key": "payment_attachment",
-                  "value": "",
-                  "type": "text"
-                },
-                {
-                  "key": "payment",
-                  "value": "",
+                  "key": "meta",
+                  "value": "[{\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 2 Desember 2026, Hari 3 — 3 Desember 2026\"}]",
                   "type": "text"
                 }
               ]
             },
             "url": {
-              "raw": "{{simbaUrl}}",
+              "raw": "{{simbaProd}}",
               "host": [
-                "{{simbaUrl}}"
+                "{{simbaProd}}"
               ]
             },
-            "description": "Proves the key is checked, and that the real key passes that check: this answers 101 'Key Invalid' while the real key gets past it to 403."
+            "description": "Answers exactly what our own key answers, which is what rules out the payload and points at the key."
           }
         },
         {
-          "name": "Control · missing required fields",
+          "name": "Control · no key at all",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -435,7 +318,7 @@
                 "exec": [
                   "const body = pm.response.json();",
                   "console.log(body);",
-                  "// Control request: this one is *meant* to fail — the required fields are empty on purpose",
+                  "// Control: meant to fail — the key is missing on purpose",
                   "pm.test('refused with status_code 101', function () {",
                   "    pm.expect(String(body.status_code)).to.eql('101');",
                   "});"
@@ -445,23 +328,13 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/x-www-form-urlencoded"
-              }
-            ],
+            "header": [],
             "body": {
-              "mode": "urlencoded",
-              "urlencoded": [
+              "mode": "formdata",
+              "formdata": [
                 {
                   "key": "org",
                   "value": "{{org}}",
-                  "type": "text"
-                },
-                {
-                  "key": "key",
-                  "value": "{{key}}",
                   "type": "text"
                 },
                 {
@@ -471,48 +344,91 @@
                 },
                 {
                   "key": "nama",
-                  "value": "",
+                  "value": "ZZ HAPUS Uji {{unique}}",
                   "type": "text"
                 },
                 {
                   "key": "hp",
-                  "value": "",
+                  "value": "+628120000{{unique}}",
                   "type": "text"
                 },
                 {
                   "key": "email",
+                  "value": "uji{{unique}}@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "jenis_kelamin",
+                  "value": "pria",
+                  "type": "text"
+                },
+                {
+                  "key": "spc_id",
+                  "value": "{{spcId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "tanggal_bayar",
+                  "value": "1970-01-01",
+                  "type": "text"
+                },
+                {
+                  "key": "jumlah",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "institusi",
+                  "value": "BAZNAS Provinsi Jawa Barat",
+                  "type": "text"
+                },
+                {
+                  "key": "jenis",
+                  "value": "BAZNAS Provinsi",
+                  "type": "text"
+                },
+                {
+                  "key": "foto",
                   "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "meta",
+                  "value": "[{\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 2 Desember 2026, Hari 3 — 3 Desember 2026\"}]",
                   "type": "text"
                 }
               ]
             },
             "url": {
-              "raw": "{{simbaUrl}}",
+              "raw": "{{simbaProd}}",
               "host": [
-                "{{simbaUrl}}"
+                "{{simbaProd}}"
               ]
             },
-            "description": "Proves field validation works and names the fields it wants: answers 101 'Data Invalid' listing Nama peserta, Handphone, Email, Jenis Kelamin, Institusi and Jenis Peserta."
+            "description": "Answers 101 Data Invalid naming the field — \"Kolom SiIMBA API Key harus diisi\" — which proves the URL and the parameter name are right."
           }
         }
       ]
     },
     {
-      "name": "Site",
-      "description": "The conference site's own endpoint.",
+      "name": "2 · Demo",
+      "description": "demo-simba.baznas.or.id, event 128. Here to show the same key working.",
       "item": [
         {
-          "name": "Register — valid",
+          "name": "Register a participant",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -521,53 +437,126 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "// SIMBA answers HTTP 200 to everything, refusals included. The verdict is",
+                  "// in status_code, so that is what is asserted. A green tick in Postman's",
+                  "// status column means nothing on its own.",
                   "const body = pm.response.json();",
                   "console.log(body);",
-                  "// 503 'refused' is SIMBA saying no; 503 'unconfigured' is a missing",
-                  "// environment variable. They need opposite fixes.",
-                  "pm.test('accepted', () => pm.expect(pm.response.code).to.eql(200));"
+                  "pm.test('SIMBA accepted it (status_code 000)', function () {",
+                  "    pm.expect(String(body.status_code)).to.be.oneOf(['000', '100', '200']);",
+                  "});"
                 ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"uji{{unique}}@example.com\",\n  \"prefix\": \"mrs\",\n  \"fullName\": \"Aisyah Putri\",\n  \"sex\": \"female\",\n  \"whatsapp\": \"0812{{unique}}\",\n  \"institution\": \"BAZNAS RI\",\n  \"continent\": \"asia\",\n  \"country\": \"ID\",\n  \"province\": \"dki-jakarta\",\n  \"city\": \"Jakarta Selatan\",\n  \"profession\": \"amil\",\n  \"professionOther\": \"\",\n  \"submittedPaper\": \"yes\",\n  \"seminarDays\": [\n    \"day-2\",\n    \"day-3\"\n  ]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "key",
+                  "value": "{{key}}",
+                  "type": "text"
+                },
+                {
+                  "key": "org",
+                  "value": "{{org}}",
+                  "type": "text"
+                },
+                {
+                  "key": "id_event",
+                  "value": "{{eventDemo}}",
+                  "type": "text"
+                },
+                {
+                  "key": "nama",
+                  "value": "ZZ HAPUS Uji {{unique}}",
+                  "type": "text"
+                },
+                {
+                  "key": "hp",
+                  "value": "+628120000{{unique}}",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "uji{{unique}}@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "jenis_kelamin",
+                  "value": "pria",
+                  "type": "text"
+                },
+                {
+                  "key": "spc_id",
+                  "value": "{{spcId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "tanggal_bayar",
+                  "value": "1970-01-01",
+                  "type": "text"
+                },
+                {
+                  "key": "jumlah",
+                  "value": "0",
+                  "type": "text"
+                },
+                {
+                  "key": "institusi",
+                  "value": "BAZNAS Provinsi Jawa Barat",
+                  "type": "text"
+                },
+                {
+                  "key": "jenis",
+                  "value": "BAZNAS Provinsi",
+                  "type": "text"
+                },
+                {
+                  "key": "foto",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "meta",
+                  "value": "[{\"meta\": \"Asal benua\", \"value\": \"Asia\"}, {\"meta\": \"Asal negara\", \"value\": \"Indonesia\"}, {\"meta\": \"Profesi/pekerjaan\", \"value\": \"Amil\"}, {\"meta\": \"Apakah Anda mengirimkan naskah pada Call for Papers atau International Book Chapter?\", \"value\": \"Ya\"}, {\"meta\": \"Hari seminar internasional mana yang akan Anda hadiri?\", \"value\": \"Hari 2 — 2 Desember 2026, Hari 3 — 3 Desember 2026\"}]",
+                  "type": "text"
                 }
-              }
-            },
-            "url": {
-              "raw": "{{siteUrl}}/api/register",
-              "host": [
-                "{{siteUrl}}/api/register"
               ]
             },
-            "description": "A complete Indonesian registration. 200 {ok:true} when SIMBA takes it; 503 {error:'refused'} when SIMBA turns it down; 503 {error:'unconfigured'} when the SIMBA environment variables are missing."
+            "url": {
+              "raw": "{{simbaDemo}}",
+              "host": [
+                "{{simbaDemo}}"
+              ]
+            },
+            "description": "The identical request against demo. Answers 000 Sukses with the key that production refuses — which is the whole of the open question."
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "3 · The site",
+      "description": "The conference site's own endpoint, which validates and then hands on.",
+      "item": [
         {
-          "name": "Register — international",
+          "name": "Register — Indonesian",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -584,15 +573,10 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"intl{{unique}}@example.com\",\n  \"prefix\": \"mr\",\n  \"fullName\": \"Hans Mueller\",\n  \"sex\": \"male\",\n  \"whatsapp\": \"+4930{{unique}}\",\n  \"institution\": \"Universität Bonn\",\n  \"continent\": \"europe\",\n  \"country\": \"DE\",\n  \"province\": \"\",\n  \"city\": \"\",\n  \"profession\": \"researcher\",\n  \"professionOther\": \"\",\n  \"submittedPaper\": \"no\",\n  \"seminarDays\": [\n    \"day-3\"\n  ]\n}",
+              "raw": "{\n  \"email\": \"uji{{unique}}@example.com\",\n  \"prefix\": \"mrs\",\n  \"fullName\": \"Aisyah Putri\",\n  \"sex\": \"female\",\n  \"dialCode\": \"+62\",\n  \"whatsapp\": \"8120000{{unique}}\",\n  \"institution\": \"BAZNAS Provinsi Jawa Barat\",\n  \"institutionKind\": \"baznas-provinsi\",\n  \"continent\": \"asia\",\n  \"country\": \"ID\",\n  \"province\": \"jawa-barat\",\n  \"city\": \"Bandung\",\n  \"profession\": \"amil\",\n  \"professionOther\": \"\",\n  \"submittedPaper\": \"yes\",\n  \"seminarDays\": [\n    \"day-2\",\n    \"day-3\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -605,7 +589,57 @@
                 "{{siteUrl}}/api/register"
               ]
             },
-            "description": "Germany rather than Indonesia. Province and city are never asked and are filed as Peserta Internasional on the registrant's behalf."
+            "description": "200 {ok:true} when SIMBA takes it. 503 {error:'refused'} when SIMBA turns it down — the reason goes to the server log. 503 {error:'unconfigured'} when no key is set in the code."
+          }
+        },
+        {
+          "name": "Register — international",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "console.log(pm.response.json());",
+                  "pm.test('accepted', () => pm.expect(pm.response.code).to.eql(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"intl{{unique}}@example.com\",\n  \"prefix\": \"mr\",\n  \"fullName\": \"Hans Mueller\",\n  \"sex\": \"male\",\n  \"dialCode\": \"+49\",\n  \"whatsapp\": \"301234{{unique}}\",\n  \"institution\": \"Universitat Bonn\",\n  \"institutionKind\": \"kampus\",\n  \"continent\": \"europe\",\n  \"country\": \"DE\",\n  \"province\": \"\",\n  \"city\": \"\",\n  \"profession\": \"researcher\",\n  \"professionOther\": \"\",\n  \"submittedPaper\": \"no\",\n  \"seminarDays\": [\n    \"day-3\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{siteUrl}}/api/register",
+              "host": [
+                "{{siteUrl}}/api/register"
+              ]
+            },
+            "description": "Germany. Province and city are never asked and are filed as Peserta Internasional on the registrant's behalf."
           }
         },
         {
@@ -616,10 +650,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// A fresh identity each run, so a refusal can never be blamed on",
-                  "// duplicate data.",
-                  "const n = Date.now().toString().slice(-8);",
-                  "pm.collectionVariables.set('unique', n);"
+                  "// spc_id has to be unique for every registration. A repeat is refused as",
+                  "// \"Data exist or failed\" — the same sentence SIMBA uses for a bad key and",
+                  "// for a missing column — which is why a fixed value looked for weeks like a",
+                  "// broken endpoint. Fresh identity each run, so nothing can be blamed on it.",
+                  "const n = Date.now().toString().slice(-7);",
+                  "pm.collectionVariables.set('unique', n);",
+                  "pm.collectionVariables.set('spcId', String(Math.floor(Math.random() * 2000000000) + 1));"
                 ]
               }
             },
@@ -633,7 +670,7 @@
                   "pm.test('400 with a code per field', function () {",
                   "    pm.expect(pm.response.code).to.eql(400);",
                   "    pm.expect(body.error).to.eql('invalid');",
-                  "    pm.expect(Object.keys(body.fields)).to.include('email');",
+                  "    pm.expect(Object.keys(body.fields)).to.include('institutionKind');",
                   "});"
                 ]
               }
@@ -641,12 +678,7 @@
           ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [],
             "body": {
               "mode": "raw",
               "raw": "{}",
