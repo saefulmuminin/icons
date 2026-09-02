@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { LANGS } from "@/lib/i18n";
+import { getDictionary, LANGS } from "@/lib/i18n";
 import {
   BOOK_CHAPTER,
   CONFERENCE,
@@ -133,6 +133,20 @@ describe("when registration opens", () => {
     expect(registrationOpensOn(iso, "en")).toBe("1 October 2026");
     expect(registrationOpensOn(iso, "id")).toBe("1 Oktober 2026");
     expect(registrationOpensOn(null, "en")).toBe("");
+  });
+});
+
+/**
+ * The theme is written once as a fact and quoted again inside the background
+ * paragraph, in both languages. Nothing joins the two, so a reworded theme
+ * leaves the old one sitting in a paragraph halfway down the page — which is
+ * exactly what happened to the dates.
+ */
+describe("the conference theme", () => {
+  it("is quoted as it stands, in both dictionaries", () => {
+    for (const lang of LANGS) {
+      expect(getDictionary(lang).bg3).toContain(CONFERENCE.theme);
+    }
   });
 });
 

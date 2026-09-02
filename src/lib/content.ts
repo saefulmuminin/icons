@@ -9,7 +9,7 @@ export const CONFERENCE = {
   venueShort:
     "Faculty of Economics and Management (FEM), IPB Dramaga Campus, Bogor",
   theme:
-    "From Local Impact to Global Solidarity: The Future of Zakat and Philanthropy",
+    "From Local Impact to Global Solidarity: The Future of Zakat and Philanthropy in Strengthening Socio-Economic Resilience",
   /** The search string that lands Google Maps on the venue. */
   mapQuery:
     "Fakultas Ekonomi dan Manajemen IPB University, Jalan Agatis, Dramaga, Bogor",
